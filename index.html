@@ -10,14 +10,252 @@
         padding: 0;
         box-sizing: border-box;
       }
+
+      @font-face {
+        font-family: 'Helvetica Neue';
+        src: local('Helvetica Neue'), local('Arial');
+      }
+
+
       html,
       body {
         margin: 0;
         width: 1920px;
         height: 1080px;
         overflow: hidden;
-        background: #000;
+        background: #1a1a1a;
+        color: #ffffff;
+        font-family: 'Helvetica Neue', sans-serif;
       }
+
+      .clip {
+        position: absolute;
+        width: 1920px;
+        height: 1080px;
+        top: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      /* Background Texture - Grid Lines */
+      .grid-bg {
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+        background-size: 80px 80px;
+        z-index: 0;
+        opacity: 0.5;
+      }
+
+      /* Typography Setup */
+      .headline {
+        font-family: 'Helvetica Neue', sans-serif;
+        font-size: 80px;
+        font-weight: 700;
+        letter-spacing: -2px;
+        z-index: 10;
+        text-align: center;
+      }
+
+      .stat {
+        font-family: 'Helvetica Neue', sans-serif;
+        font-size: 200px;
+        font-weight: 700;
+        color: #0066FF;
+        font-variant-numeric: tabular-nums;
+        line-height: 1;
+        z-index: 10;
+      }
+
+      .label {
+        font-family: 'Inter', sans-serif;
+        font-size: 32px;
+        font-weight: 400;
+        color: rgba(255, 255, 255, 0.7);
+        margin-top: 24px;
+        z-index: 10;
+      }
+
+      .registration-marks::before,
+      .registration-marks::after {
+        content: '';
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        z-index: 1;
+      }
+      .registration-marks::before {
+        top: 40px;
+        left: 40px;
+        border-right: none;
+        border-bottom: none;
+      }
+      .registration-marks::after {
+        bottom: 40px;
+        right: 40px;
+        border-left: none;
+        border-top: none;
+      }
+
+      /* Scene 1 Specific */
+      #scene1-stat {
+        position: absolute;
+        top: 400px;
+      }
+
+      /* Scene 2 Specific */
+      .kv-container {
+        position: absolute;
+        top: 300px;
+        width: 600px;
+        height: 400px;
+        border: 4px solid rgba(255, 255, 255, 0.2);
+        display: flex;
+        flex-direction: column-reverse;
+        padding: 10px;
+        z-index: 5;
+        overflow: visible; /* Fix layout overflow warnings */
+      }
+
+      .kv-container-wrapper {
+        position: absolute;
+        top: 300px;
+        width: 1000px;
+        height: 500px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .kv-fill {
+        width: 100%;
+        height: 0%;
+        background-color: #0066FF;
+        border-radius: 2px;
+      }
+
+      .vram-limit-line {
+        position: absolute;
+        top: 50px;
+        left: -20px;
+        right: -20px;
+        height: 4px;
+        background-color: #FF3366;
+        z-index: 10;
+        opacity: 0;
+      }
+
+      .vram-limit-text {
+        position: absolute;
+        top: 10px;
+        right: -180px;
+        color: #FF3366;
+        font-family: 'Helvetica Neue', sans-serif;
+        font-weight: 700;
+        font-size: 24px;
+        letter-spacing: 2px;
+        opacity: 0;
+      }
+
+      #scene2-text {
+        position: absolute;
+        top: 750px;
+        width: 1400px;
+      }
+
+      /* Scene 3 & 4 Specific */
+      .ring-container {
+        position: absolute;
+        top: 300px;
+        width: 600px;
+        height: 600px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 2px dashed rgba(255, 255, 255, 0.1);
+      }
+
+      .gpu-node {
+        position: absolute;
+        width: 80px;
+        height: 80px;
+        background: #1a1a1a;
+        border: 4px solid #ffffff;
+        border-radius: 12px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: 'Helvetica Neue', sans-serif;
+        font-weight: 700;
+        font-size: 24px;
+        color: #ffffff;
+        z-index: 20;
+      }
+
+      .gpu-1 { top: -40px; left: 260px; }
+      .gpu-2 { bottom: 260px; right: -40px; }
+      .gpu-3 { bottom: -40px; left: 260px; }
+      .gpu-4 { bottom: 260px; left: -40px; }
+
+      .data-block {
+        position: absolute;
+        width: 60px;
+        height: 60px;
+        background: #0066FF;
+        border-radius: 4px;
+        z-index: 15;
+      }
+
+      .final-ring {
+        position: absolute;
+        width: 600px;
+        height: 600px;
+        border-radius: 50%;
+        border: 12px solid #0066FF;
+        box-shadow: 0 0 40px rgba(0, 102, 255, 0.6);
+        opacity: 0;
+        z-index: 10;
+      }
+
+      #scene3-text, #scene4-text {
+        position: absolute;
+        top: 850px;
+        width: 1600px;
+      }
+
+      #scene1-text {
+        position: absolute;
+        top: 650px;
+        width: 1400px;
+      }
+
+      .stack-container {
+        position: absolute;
+        top: 200px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 200px;
+        height: 150px;
+        display: flex;
+        justify-content: center;
+      }
+
+      .doc-icon {
+        position: absolute;
+        width: 60px;
+        height: 80px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        border-radius: 4px;
+      }
+
     </style>
   </head>
   <body>
@@ -25,26 +263,168 @@
       id="root"
       data-composition-id="main"
       data-start="0"
-      data-duration="10"
+      data-duration="20"
       data-width="1920"
       data-height="1080"
     >
-      
-      
+      <div class="grid-bg"></div>
+      <div class="registration-marks"></div>
 
-      <!--
-        Add your clips here. Example:
-        <div id="title" class="clip" data-start="0" data-duration="5" data-track-index="1"
-             style="font-size: 64px; color: #fff; padding: 40px">
-          Hello World
+      <!-- Scene 1: Evolution of Context (0 - 4s) -->
+      <div id="scene1" class="clip" data-start="0" data-duration="4" data-track-index="1">
+        <div class="scene-content" id="scene1-content" style="position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+          <div class="stack-container" id="s1-docs">
+            <div class="doc-icon doc1"></div>
+            <div class="doc-icon doc2"></div>
+            <div class="doc-icon doc3"></div>
+            <div class="doc-icon doc4"></div>
+            <div class="doc-icon doc5"></div>
+          </div>
+
+          <div id="scene1-stat" class="stat">4K</div>
+          <div id="scene1-text" class="headline">FROM A FEW PAGES TO ENTIRE LIBRARIES</div>
         </div>
-      -->
+      </div>
+
+      <!-- Scene 2: The KV Cache Bottleneck (4 - 10s) -->
+      <div id="scene2" class="clip" data-start="4" data-duration="6" data-track-index="1">
+        <div class="scene-content" id="scene2-content" style="position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+          <div class="kv-container-wrapper">
+            <div class="kv-container" data-layout-allow-overflow="true">
+              <div class="kv-fill" id="kv-fill-bar"></div>
+              <div class="vram-limit-line" id="vram-line"></div>
+              <div class="vram-limit-text" id="vram-text">VRAM LIMIT</div>
+              <div class="label" style="position: absolute; top: -50px; left: 0; width: 100%; text-align: center;">KEYS & VALUES CACHE</div>
+            </div>
+          </div>
+
+          <div id="scene2-text" class="headline">EVERY TOKEN REMEMBERS THE PAST</div>
+        </div>
+      </div>
+
+      <!-- Scene 3 & 4: RingAttention & Outcome (10 - 20s) -->
+      <div id="scene3" class="clip" data-start="10" data-duration="10" data-track-index="1">
+        <div class="scene-content" id="scene3-content" style="position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+
+          <div class="ring-container" id="ring-system">
+            <div class="final-ring" id="final-ring"></div>
+            <div class="gpu-node gpu-1">G1</div>
+            <div class="gpu-node gpu-2">G2</div>
+            <div class="gpu-node gpu-3">G3</div>
+            <div class="gpu-node gpu-4">G4</div>
+            <div class="data-block db-1"></div>
+            <div class="data-block db-2"></div>
+            <div class="data-block db-3"></div>
+            <div class="data-block db-4"></div>
+          </div>
+
+          <div id="scene3-text" class="headline">RING ATTENTION: BLOCKWISE COMPUTE</div>
+          <div id="scene4-text" class="headline" style="opacity: 0;">1M+ CONTEXT: INFINITE RECALL</div>
+        </div>
+      </div>
+
     </div>
 
     <script>
       window.__timelines = window.__timelines || {};
-      const tl = gsap.timeline({ paused: true });
-      // Example: tl.from("#title", { opacity: 0, y: -50, duration: 1 }, 0);
+      const tl = gsap.timeline({ paused: true, defaults: { ease: "power2.out" } });
+
+      // Scene 1: 0s to 4s
+
+      // Docs entrance
+      tl.set(".doc-icon", { y: 20, opacity: 0, rotation: 0 }, 0);
+      tl.fromTo(".doc1", {y: 20, opacity: 0}, {y: 0, opacity: 1, duration: 0.5}, 0.2);
+
+      // Number progression
+      tl.fromTo("#scene1-stat", { scale: 1.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: "expo.out" }, 0);
+      tl.fromTo("#scene1-text", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6 }, 0.3);
+
+      // 1s: 32K
+      tl.to("#scene1-stat", { textContent: "32K", snap: { textContent: 1 }, duration: 0.1 }, 1);
+      tl.to("#scene1-stat", { scale: 1.1, duration: 0.2, yoyo: true, repeat: 1 }, 1);
+      tl.to(".doc2", {y: -10, x: 10, rotation: 5, opacity: 1, duration: 0.3}, 1);
+      tl.to(".doc3", {y: -5, x: -10, rotation: -5, opacity: 1, duration: 0.3}, 1.1);
+
+      // 2s: 128K
+      tl.to("#scene1-stat", { textContent: "128K", snap: { textContent: 1 }, duration: 0.1 }, 2);
+      tl.to("#scene1-stat", { scale: 1.2, duration: 0.2, yoyo: true, repeat: 1 }, 2);
+      tl.to(".doc4", {y: -20, x: 20, rotation: 10, opacity: 1, duration: 0.3}, 2);
+      tl.to(".doc5", {y: -15, x: -20, rotation: -10, opacity: 1, duration: 0.3}, 2.1);
+
+      // 3s: 1M+
+      tl.to("#scene1-stat", { textContent: "1,000,000+", snap: { textContent: 1 }, duration: 0.1 }, 3);
+      tl.to("#scene1-stat", { scale: 1.4, color: "#ffffff", duration: 0.5, ease: "back.out(1.5)" }, 3);
+
+      // Ambient doc motion
+      tl.to(".doc-icon", {y: "-=5", duration: 2, yoyo: true, repeat: 1, ease: "sine.inOut"}, 1);
+
+      // Scene 1 Exit (hard kill at t=4)
+      tl.to("#scene1-content", { opacity: 0, duration: 0.3, ease: "power2.in" }, 3.7);
+      tl.set("#scene1-content", { opacity: 0, visibility: "hidden" }, 4.0);
+
+      // Scene 2: 4s to 10s
+
+      // Enter KV container & text
+      tl.fromTo(".kv-container", { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: "back.out(1.2)" }, 4.2);
+      tl.fromTo("#scene2-text", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6 }, 4.4);
+
+      // Fill KV Cache
+      tl.to("#kv-fill-bar", { height: "100%", duration: 3, ease: "power1.in" }, 5.0);
+
+      // VRAM Limit warning triggers as it fills
+      tl.to("#vram-line", { opacity: 1, duration: 0.2 }, 7.5);
+      tl.to("#vram-text", { opacity: 1, x: -20, duration: 0.4, ease: "back.out(2)" }, 7.5);
+
+      // Shake effect when hit limit
+      tl.to(".kv-container", { x: 5, duration: 0.1, yoyo: true, repeat: 5 }, 8.0);
+      tl.to("#vram-text", { scale: 1.1, color: "#ffffff", duration: 0.1, yoyo: true, repeat: 5 }, 8.0);
+
+      // Scene 2 Exit (hard kill at t=10)
+      tl.to("#scene2-content", { opacity: 0, scale: 0.9, duration: 0.4, ease: "power3.in" }, 9.6);
+      tl.set("#scene2-content", { opacity: 0, visibility: "hidden" }, 10.0);
+
+      // Scene 3: 10s to 16s
+
+      // Initialize Blocks in center
+      tl.set(".data-block", { top: "270px", left: "270px", scale: 0, opacity: 0 }, 10);
+
+      // Ring system entrance
+      tl.fromTo("#ring-system", { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.8, ease: "expo.out" }, 10.2);
+      tl.fromTo(".gpu-node", { scale: 0, rotation: 180 }, { scale: 1, rotation: 0, duration: 0.5, stagger: 0.1, ease: "back.out(1.5)" }, 10.5);
+      tl.fromTo("#scene3-text", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6 }, 10.8);
+
+      // Blocks explode from center
+      tl.to(".data-block", { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(2)" }, 11.2);
+
+      // Move to GPUs
+      tl.to(".db-1", { top: "-30px", left: "270px", duration: 0.5 }, 11.5);
+      tl.to(".db-2", { top: "270px", left: "570px", duration: 0.5 }, 11.5);
+      tl.to(".db-3", { top: "570px", left: "270px", duration: 0.5 }, 11.5);
+      tl.to(".db-4", { top: "270px", left: "-30px", duration: 0.5 }, 11.5);
+
+      // Rotate system (Ring processing)
+      tl.to("#ring-system", { rotation: 360, duration: 4, ease: "none", repeat: 0 }, 12.0);
+      // Keep GPUs upright
+      tl.to(".gpu-node", { rotation: -360, duration: 4, ease: "none", repeat: 0 }, 12.0);
+      tl.to(".data-block", { rotation: -360, duration: 4, ease: "none", repeat: 0 }, 12.0);
+
+      // Scene 4: Outcome (16s to 20s)
+
+      // Hide old text, show new text
+      tl.to("#scene3-text", { opacity: 0, y: -20, duration: 0.4 }, 16.0);
+      tl.fromTo("#scene4-text", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" }, 16.2);
+
+      // Merge blocks to create final ring
+      tl.to(".data-block", { scale: 0, opacity: 0, duration: 0.4 }, 16.5);
+      tl.to("#final-ring", { opacity: 1, scale: 1.1, duration: 0.8, ease: "expo.out" }, 16.6);
+
+      // Final Ring pulse
+      tl.to("#final-ring", { scale: 1.15, duration: 1.5, yoyo: true, repeat: 1, ease: "sine.inOut" }, 17.5);
+      tl.to(".gpu-node", { borderColor: "#0066FF", duration: 0.8 }, 16.8);
+
+      // Final Exit
+      tl.to("#scene3-content", { opacity: 0, scale: 1.05, duration: 0.8, ease: "power2.inOut" }, 19.2);
+
       window.__timelines["main"] = tl;
     </script>
   </body>

@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" crossorigin="anonymous" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #000;
+        font-family: 'Inter', sans-serif;
+      }
+    </style>
+    <style type="text/tailwindcss">
+      @theme {
+        --color-ink: #0A0A1F;
+        --color-cyan-pill: #22d3ee;
+        --color-indigo-pill: #818cf8;
+        --color-rose-pill: #fb7185;
+        --color-yellow-pill: #facc15;
+        --color-mint-pill: #34d399;
+
+        --font-sans: 'Inter', sans-serif;
+        --font-mono: 'JetBrains Mono', monospace;
+      }
+
+      @utility headline-balance {
+        text-wrap: balance;
+        letter-spacing: -0.02em;
+      }
+    </style>
+
+<script>
+window.__tailwindReady=new Promise(function(resolve){
+var loaded=document.readyState==="complete";
+var resolved=false;
+var observer;
+function readTailwindCss(){var styles=document.querySelectorAll("style");for(var i=styles.length-1;i>=0;i--){var text=styles[i].textContent||"";if(text.indexOf("tailwindcss v")!==-1)return text;}return "";}
+function finish(){if(resolved||!loaded||!readTailwindCss())return;resolved=true;if(observer)observer.disconnect();resolve(true);}
+observer=new MutationObserver(finish);
+observer.observe(document.documentElement,{childList:true,subtree:true,characterData:true});
+if(loaded){finish();}else{window.addEventListener("load",function(){loaded=true;finish();},{once:true});}
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.2.4/dist/index.global.js" integrity="sha384-v5YF9xS+gLRWdvrQ0u/WRbCkjSIH0NjHIPe8tBL1ZRrmI7PiSH6LLdzs0aAIMCuh" crossorigin="anonymous"></script>
+</head>
+  <body class="bg-ink text-white font-sans">
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="54.5"
+      data-width="1080"
+      data-height="1920"
+      class="bg-ink"
+    >
+      <audio id="narration" class="clip" data-start="0" data-duration="54.5" data-track-index="1" src="assets/narration.wav"></audio>
+
+      <!-- Subtitles Wrapper -->
+      <div id="subtitles-wrapper" class="absolute bottom-[650px] left-0 w-full z-50 pointer-events-none flex flex-col items-center justify-center">
+        <div class="px-16 w-full text-center">
+          <h2 id="caption-text" class="text-[48px] font-bold text-white leading-tight drop-shadow-lg text-balance opacity-0"></h2>
+        </div>
+      </div>
+
+      <!-- Scene 1: Hook (0 - 9.3s) -->
+      <div id="scene1" class="absolute inset-0 flex flex-col items-center justify-center px-12 z-10">
+        <div id="s1-prompt" class="s1-prompt clip bg-white/10 border border-white/20 rounded-3xl p-8 mb-12 transform-gpu" data-start="0" data-duration="9.3" data-track-index="11">
+          <p class="text-white text-[52px] font-medium headline-balance text-center">Count the R's in strawberry.</p>
+        </div>
+
+        <div class="w-full flex flex-col items-center gap-6 mt-8">
+          <div id="s1-reply-1" class="s1-reply clip self-start bg-indigo-pill/20 text-indigo-pill border border-indigo-pill/30 rounded-2xl px-8 py-5 text-[42px] transform-gpu opacity-0 translate-y-[20px]" data-start="3.5" data-duration="5.8" data-track-index="12">There are two Rs in strawberry.</div>
+          <div id="s1-reply-2" class="s1-reply clip self-end bg-rose-pill/20 text-rose-pill border border-rose-pill/30 rounded-2xl px-8 py-5 text-[42px] transform-gpu opacity-0 translate-y-[20px]" data-start="4.8" data-duration="4.5" data-track-index="13">I count 2 Rs.</div>
+          <div id="s1-reply-3" class="s1-reply clip self-start bg-cyan-pill/20 text-cyan-pill border border-cyan-pill/30 rounded-2xl px-8 py-5 text-[42px] transform-gpu opacity-0 translate-y-[20px]" data-start="6.0" data-duration="3.3" data-track-index="14">The word strawberry has 2 'r's.</div>
+        </div>
+      </div>
+
+      <!-- Scene 2: The Reveal (9.3s - 16.5s) -->
+      <div id="scene2" class="absolute inset-0 flex flex-col items-center justify-center z-10">
+        <div class="s2-word-wrapper absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex gap-4 text-[132px] font-black tracking-tighter w-full justify-center">
+          <div class="s2-part clip transform-gpu" id="s2-straw" data-start="9.3" data-duration="7.2" data-track-index="21">
+            <span class="s2-text text-white">straw</span>
+            <div class="s2-pill absolute inset-0 bg-cyan-pill rounded-full -z-10 opacity-0 scale-90 flex items-end justify-center pb-[-60px]" data-layout-allow-overflow>
+              <span class="s2-id font-mono text-[32px] text-ink/80 absolute -bottom-16 opacity-0">11481</span>
+            </div>
+          </div>
+          <div class="s2-part clip transform-gpu" id="s2-berry" data-start="9.3" data-duration="7.2" data-track-index="22">
+            <span class="s2-text text-white">berry</span>
+            <div class="s2-pill absolute inset-0 bg-indigo-pill rounded-full -z-10 opacity-0 scale-90 flex items-end justify-center pb-[-60px]" data-layout-allow-overflow>
+              <span class="s2-id font-mono text-[32px] text-ink/80 absolute -bottom-16 opacity-0">5852</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scene 3: What is a token? (16.5s - 24.4s) -->
+      <div id="scene3" class="absolute inset-0 flex flex-col items-center justify-center gap-16 z-10">
+        <div id="s3-row-1" class="s3-row clip flex items-center gap-6 opacity-0" data-start="16.5" data-duration="7.9" data-track-index="31">
+          <div class="bg-mint-pill rounded-full px-12 py-6 text-ink text-[64px] font-bold">apple</div>
+        </div>
+        <div id="s3-row-2" class="s3-row clip flex items-center gap-4 opacity-0" data-start="19.0" data-duration="5.4" data-track-index="32">
+          <div class="bg-cyan-pill rounded-full px-8 py-6 text-ink text-[64px] font-bold">un</div>
+          <div class="bg-indigo-pill rounded-full px-8 py-6 text-ink text-[64px] font-bold">believ</div>
+          <div class="bg-rose-pill rounded-full px-8 py-6 text-ink text-[64px] font-bold">able</div>
+        </div>
+        <div id="s3-row-3" class="s3-row clip flex items-center gap-6 opacity-0" data-start="21.5" data-duration="2.9" data-track-index="33">
+          <div class="bg-yellow-pill rounded-full px-12 py-6 text-[80px]">🤖</div>
+        </div>
+      </div>
+
+      <!-- Scene 4: Byte-pair encoding (24.4s - 32.0s) -->
+      <div id="scene4" class="absolute inset-0 flex items-center justify-center z-10">
+        <div id="s4-bytes-wrapper" class="clip flex flex-wrap justify-center gap-4 w-[800px]" data-start="24.4" data-duration="7.6" data-track-index="41">
+           <div class="s4-byte bg-white/10 text-white font-mono text-[42px] px-6 py-4 rounded-xl border border-white/20">t</div>
+           <div class="s4-byte bg-white/10 text-white font-mono text-[42px] px-6 py-4 rounded-xl border border-white/20">h</div>
+           <div class="s4-byte bg-white/10 text-white font-mono text-[42px] px-6 py-4 rounded-xl border border-white/20">e</div>
+           <div class="s4-byte bg-white/10 text-white font-mono text-[42px] px-6 py-4 rounded-xl border border-white/20">_</div>
+           <div class="s4-byte bg-white/10 text-white font-mono text-[42px] px-6 py-4 rounded-xl border border-white/20">w</div>
+           <div class="s4-byte bg-white/10 text-white font-mono text-[42px] px-6 py-4 rounded-xl border border-white/20">o</div>
+           <div class="s4-byte bg-white/10 text-white font-mono text-[42px] px-6 py-4 rounded-xl border border-white/20">r</div>
+           <div class="s4-byte bg-white/10 text-white font-mono text-[42px] px-6 py-4 rounded-xl border border-white/20">d</div>
+        </div>
+        <div class="s4-merged absolute inset-0 flex items-center justify-center gap-6 opacity-0 scale-90">
+          <div class="bg-cyan-pill text-ink font-bold text-[64px] px-12 py-6 rounded-full shadow-lg">the</div>
+          <div class="bg-indigo-pill text-ink font-bold text-[64px] px-12 py-6 rounded-full shadow-lg">_word</div>
+        </div>
+      </div>
+
+      <!-- Scene 5: The Language Tax (32.0s - 41.0s) -->
+      <div id="scene5" class="absolute inset-0 flex flex-col items-center justify-center gap-12 z-10 px-16" data-layout-allow-overflow>
+        <div id="s5-lang-en" class="s5-lang clip w-full flex flex-col items-start gap-4 opacity-0" data-start="32.0" data-duration="9.0" data-track-index="51">
+          <div class="text-[36px] text-white/90 font-medium">English</div>
+          <div class="bg-cyan-pill text-ink font-bold text-[52px] px-10 py-5 rounded-full">Hello</div>
+        </div>
+        <div id="s5-lang-hi" class="s5-lang clip w-full flex flex-col items-start gap-4 opacity-0" data-start="36.0" data-duration="5.0" data-track-index="52">
+          <div class="text-[36px] text-white/90 font-medium">Hindi (3x cost)</div>
+          <div class="flex gap-2">
+            <div class="bg-indigo-pill text-ink font-bold text-[52px] px-8 py-5 rounded-full">न</div>
+            <div class="bg-indigo-pill text-ink font-bold text-[52px] px-8 py-5 rounded-full">म</div>
+            <div class="bg-indigo-pill text-ink font-bold text-[52px] px-8 py-5 rounded-full">स्त</div>
+            <div class="bg-indigo-pill text-ink font-bold text-[52px] px-8 py-5 rounded-full">े</div>
+          </div>
+        </div>
+        <div id="s5-lang-ko" class="s5-lang clip w-full flex flex-col items-start gap-4 opacity-0" data-start="37.0" data-duration="4.0" data-track-index="53">
+          <div class="text-[36px] text-white/90 font-medium">Korean (3x cost)</div>
+          <div class="flex gap-2">
+            <div class="bg-rose-pill text-ink font-bold text-[52px] px-8 py-5 rounded-full">안</div>
+            <div class="bg-rose-pill text-ink font-bold text-[52px] px-8 py-5 rounded-full">녕</div>
+            <div class="bg-rose-pill text-ink font-bold text-[52px] px-8 py-5 rounded-full">하</div>
+            <div class="bg-rose-pill text-ink font-bold text-[52px] px-8 py-5 rounded-full">세요</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scene 6: Strawberry Callback (41.0s - 50.8s) -->
+      <div id="scene6" class="absolute inset-0 flex flex-col items-center justify-center z-10">
+        <div class="s6-word-wrapper absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex gap-4 text-[132px] font-black tracking-tighter w-full justify-center">
+          <div id="s6-part-1" class="s6-part clip transform-gpu relative opacity-0 scale-90" data-start="41.0" data-duration="9.8" data-track-index="61">
+            <span class="s6-text text-ink relative z-10">straw</span>
+            <div class="absolute inset-[-12px] bg-cyan-pill rounded-full shadow-lg"></div>
+          </div>
+          <div id="s6-part-2" class="s6-part clip transform-gpu relative opacity-0 scale-90" data-start="41.0" data-duration="9.8" data-track-index="62">
+            <span class="s6-text text-ink relative z-10">berry</span>
+            <div class="absolute inset-[-12px] bg-indigo-pill rounded-full shadow-lg border-4 border-indigo-pill s6-blocker"></div>
+          </div>
+        </div>
+
+        <!-- Scanner lines trying to penetrate -->
+        <div id="s6-scanner" class="s6-scanner clip absolute top-0 left-0 w-full h-full flex justify-center pointer-events-none opacity-0" data-start="46.0" data-duration="4.8" data-track-index="63">
+           <div class="w-[800px] h-[10px] bg-white/40 shadow-[0_0_20px_rgba(255,255,255,0.8)] absolute top-[-20px] rounded-full s6-scan-beam"></div>
+           <div class="absolute text-rose-pill font-mono text-[42px] s6-scan-text top-[40%] text-center px-12 opacity-0 font-bold">Scanning for 'r'... <br/> <span class="text-[32px] font-normal text-white/90">Cannot read inside token 5852</span></div>
+        </div>
+      </div>
+
+      <!-- Scene 7: Outro (50.8s - 54.5s) -->
+      <div id="scene7" class="absolute inset-0 flex flex-col items-center justify-center z-10">
+        <div id="s7-text-1" class="clip s7-text text-[96px] font-black text-white leading-none tracking-tight opacity-0 translate-y-12" data-start="50.8" data-duration="3.7" data-track-index="71">
+          You speak words.
+        </div>
+        <div id="s7-text-2" class="clip s7-text text-[112px] font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-pill via-indigo-pill to-rose-pill mt-6 opacity-0 translate-y-12" data-start="52.0" data-duration="2.5" data-track-index="72">
+          It hears tokens.
+        </div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__hfAnime = window.__hfAnime || [];
+
+      const tl = gsap.timeline({ paused: true });
+
+      // Scene 1: Hook
+      tl.from("#s1-prompt", { opacity: 0, scale: 0.9, y: 30, duration: 0.6, ease: "power3.out" }, 0.5);
+      tl.to("#s1-reply-1", { opacity: 1, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 3.5);
+      tl.to("#s1-reply-2", { opacity: 1, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 4.8);
+      tl.to("#s1-reply-3", { opacity: 1, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 6.0);
+      tl.to(["#s1-prompt", ".s1-reply"], { opacity: 0, scale: 0.95, duration: 0.4, stagger: 0.05, ease: "power2.in" }, 8.8);
+
+      // Scene 2: The Reveal
+      tl.from(".s2-word-wrapper", { scale: 0.5, opacity: 0, duration: 0.8, ease: "power3.out" }, 9.3);
+
+      // Split the word using GSAP
+      tl.to("#s2-straw", { x: -80, duration: 0.6, ease: "power3.inOut" }, 11.5);
+      tl.to("#s2-berry", { x: 80, duration: 0.6, ease: "power3.inOut" }, 11.5);
+
+      tl.to("#s2-straw .s2-text", { color: "#0A0A1F", duration: 0.4 }, 11.7);
+      tl.to("#s2-berry .s2-text", { color: "#0A0A1F", duration: 0.4 }, 11.7);
+
+      tl.to("#s2-straw .s2-pill", { opacity: 1, scale: 1, duration: 0.6, ease: "back.out(1.2)" }, 11.6);
+      tl.to("#s2-berry .s2-pill", { opacity: 1, scale: 1, duration: 0.6, ease: "back.out(1.2)" }, 11.7);
+
+      tl.to(".s2-id", { opacity: 1, y: 10, duration: 0.4, stagger: 0.1 }, 12.0);
+      tl.to(".s2-word-wrapper", { opacity: 0, scale: 0.9, duration: 0.5, ease: "power2.in" }, 16.0);
+      tl.set(".s2-word-wrapper", { opacity: 0 }, 16.50);
+
+      // Scene 3: What is a token?
+      tl.to("#s3-row-1", { opacity: 1, y: -20, duration: 0.6, ease: "power3.out" }, 16.5);
+      tl.to("#s3-row-2", { opacity: 1, y: -20, duration: 0.6, ease: "power3.out" }, 19.0);
+
+      const a3 = anime({
+        targets: '#s3-row-2 > div',
+        translateX: [-20, 0],
+        opacity: [0, 1],
+        delay: anime.stagger(150, { start: 19000 }),
+        duration: 600,
+        easing: 'easeOutElastic(1, .8)',
+        autoplay: false
+      });
+      window.__hfAnime.push(a3);
+      tl.to({}, { duration: 0, onStart: () => {} }, 19.0); // Animejs takes over styling, we just sequence timeline progression
+
+      tl.to("#s3-row-3", { opacity: 1, scale: 1.1, duration: 0.6, ease: "back.out(1.5)" }, 21.5);
+      tl.to(".s3-row", { opacity: 0, y: 20, duration: 0.4, stagger: 0.1, ease: "power2.in" }, 24.0);
+      tl.set(".s3-row", { opacity: 0 }, 24.40);
+
+      // Scene 4: Byte-pair encoding
+      const a4 = anime({
+        targets: '.s4-byte',
+        translateY: [20, 0],
+        opacity: [0, 1],
+        delay: anime.stagger(45, { start: 24400 }),
+        duration: 400,
+        easing: 'easeOutQuad',
+        autoplay: false
+      });
+      window.__hfAnime.push(a4);
+
+      tl.to(".s4-byte", {
+        scale: 0.8,
+        opacity: 0,
+        duration: 0.5,
+        stagger: {
+          each: 0.05,
+          from: "center"
+        },
+        ease: "power2.in"
+      }, 26.5);
+
+      tl.to(".s4-merged", { opacity: 1, scale: 1, duration: 0.8, ease: "elastic.out(1, 0.5)" }, 27.0);
+      tl.to(".s4-merged", { opacity: 0, scale: 0.9, duration: 0.4, ease: "power2.in" }, 31.5);
+
+      // Scene 5: The Language Tax
+      tl.to("#s5-lang-en", { opacity: 1, x: 20, duration: 0.6, ease: "power2.out" }, 32.0);
+      tl.to("#s5-lang-hi", { opacity: 1, x: 20, duration: 0.6, ease: "power2.out" }, 36.0);
+      tl.to("#s5-lang-ko", { opacity: 1, x: 20, duration: 0.6, ease: "power2.out" }, 37.0);
+
+      const a5 = anime({
+        targets: '#s5-lang-hi > div:nth-child(2) > div',
+        scale: [0.5, 1],
+        opacity: [0, 1],
+        delay: anime.stagger(100, { start: 36000 }),
+        duration: 500,
+        easing: 'easeOutBack',
+        autoplay: false
+      });
+      window.__hfAnime.push(a5);
+
+      const a5_2 = anime({
+        targets: '#s5-lang-ko > div:nth-child(2) > div',
+        scale: [0.5, 1],
+        opacity: [0, 1],
+        delay: anime.stagger(100, { start: 37000 }),
+        duration: 500,
+        easing: 'easeOutBack',
+        autoplay: false
+      });
+      window.__hfAnime.push(a5_2);
+      window.__hfAnime.push(a5);
+
+      tl.to(".s5-lang", { opacity: 0, x: -20, duration: 0.4, stagger: 0.1, ease: "power2.in" }, 40.5);
+
+      // Scene 6: Strawberry Callback
+      tl.to("#s6-part-1", { opacity: 1, scale: 1, x: -80, duration: 0.6, ease: "power3.out" }, 41.0);
+      tl.to("#s6-part-2", { opacity: 1, scale: 1, x: 80, duration: 0.6, ease: "power3.out" }, 41.0);
+
+      tl.to(".s6-scanner", { opacity: 1, duration: 0.4 }, 46.0);
+      tl.fromTo(".s6-scan-beam", { y: -100 }, { y: 200, duration: 2, ease: "power1.inOut", yoyo: true, repeat: 1 }, 46.0);
+      tl.to(".s6-scan-text", { opacity: 1, y: -20, duration: 0.4 }, 46.5);
+
+      tl.to(".s6-word-wrapper, .s6-scanner", { opacity: 0, scale: 0.95, duration: 0.5, ease: "power2.in" }, 50.3);
+      tl.set(".s6-word-wrapper, .s6-scanner", { opacity: 0 }, 50.80);
+
+      // Scene 7: Outro
+      tl.to("#s7-text-1", { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 50.8);
+      tl.to("#s7-text-2", { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 52.0);
+
+
+      // Subtitles
+      const captionText = document.getElementById("caption-text");
+      const words = [{"text":"Ask","start":0.04,"end":0.2},{"text":"any","start":0.26,"end":0.42},{"text":"AI","start":0.42,"end":0.56},{"text":"to","start":0.56,"end":0.7},{"text":"count","start":0.7,"end":1},{"text":"the","start":1.05,"end":1.26},{"text":"R's","start":1.26,"end":1.47},{"text":"in","start":1.47,"end":1.61},{"text":"the","start":1.61,"end":1.82},{"text":"word","start":1.82,"end":2.1},{"text":"strawberry.","start":2.1,"end":3.08},{"text":"Watch","start":3.12,"end":3.43},{"text":"what","start":3.43,"end":3.71},{"text":"happens.","start":3.71,"end":4.44},{"text":"It","start":4.48,"end":4.55},{"text":"confidently","start":4.55,"end":5.17},{"text":"tells","start":5.17,"end":5.44},{"text":"you","start":5.49,"end":5.62},{"text":"there","start":5.62,"end":5.9},{"text":"are","start":5.9,"end":6.07},{"text":"two.","start":6.07,"end":6.44},{"text":"Why","start":6.48,"end":6.64},{"text":"does","start":6.7,"end":6.93},{"text":"an","start":6.93,"end":7.07},{"text":"advanced","start":7.07,"end":7.63},{"text":"AI","start":7.63,"end":7.77},{"text":"fail","start":7.77,"end":8.05},{"text":"at","start":8.05,"end":8.17},{"text":"basic","start":8.19,"end":8.54},{"text":"counting?","start":8.54,"end":9.17},{"text":"Because","start":9.36,"end":9.68},{"text":"the","start":9.68,"end":9.83},{"text":"model","start":9.83,"end":10.09},{"text":"doesn't","start":10.09,"end":10.45},{"text":"see","start":10.45,"end":10.58},{"text":"letters.","start":10.64,"end":11.16},{"text":"It","start":11.2,"end":11.31},{"text":"sees","start":11.36,"end":11.76},{"text":"tokens.","start":11.76,"end":12.66},{"text":"Tokens","start":12.7,"end":13.03},{"text":"are","start":13.03,"end":13.21},{"text":"chunks","start":13.21,"end":13.56},{"text":"of","start":13.61,"end":13.66},{"text":"text","start":13.71,"end":13.92},{"text":"the","start":13.98,"end":14.29},{"text":"AI","start":14.29,"end":14.52},{"text":"learned","start":14.56,"end":14.95},{"text":"by","start":15,"end":15.09},{"text":"scanning","start":15.09,"end":15.52},{"text":"the","start":15.61,"end":15.78},{"text":"internet.","start":15.84,"end":16.52},{"text":"A","start":16.56,"end":16.6},{"text":"short,","start":16.6,"end":17.14},{"text":"common","start":17.14,"end":17.52},{"text":"word","start":17.61,"end":17.92},{"text":"is","start":17.92,"end":18.07},{"text":"a","start":18.07,"end":18.15},{"text":"single","start":18.15,"end":18.62},{"text":"token.","start":18.62,"end":19.24},{"text":"A","start":19.34,"end":19.37},{"text":"longer","start":19.37,"end":19.8},{"text":"word","start":19.8,"end":20.08},{"text":"gets","start":20.08,"end":20.35},{"text":"chopped","start":20.36,"end":20.86},{"text":"up","start":20.86,"end":20.99},{"text":"into","start":21,"end":21.28},{"text":"pieces.","start":21.28,"end":21.94},{"text":"Even","start":22,"end":22.28},{"text":"emojis","start":22.28,"end":22.74},{"text":"are","start":22.74,"end":22.96},{"text":"their","start":23.01,"end":23.37},{"text":"own","start":23.38,"end":23.62},{"text":"tokens.","start":23.62,"end":24.36},{"text":"This","start":24.4,"end":24.56},{"text":"chunking","start":24.62,"end":25.02},{"text":"happens","start":25.02,"end":25.36},{"text":"through","start":25.41,"end":25.8},{"text":"byte","start":25.8,"end":26.02},{"text":"pair","start":26.02,"end":26.24},{"text":"encoding.","start":26.24,"end":26.88},{"text":"Merging","start":26.92,"end":27.31},{"text":"common","start":27.36,"end":27.75},{"text":"letter","start":27.75,"end":28.14},{"text":"pairs","start":28.2,"end":28.49},{"text":"into","start":28.49,"end":28.76},{"text":"bigger","start":28.76,"end":29.12},{"text":"blocks.","start":29.16,"end":29.6},{"text":"But","start":29.64,"end":29.75},{"text":"this","start":29.8,"end":30.03},{"text":"creates","start":30.08,"end":30.5},{"text":"a","start":30.55,"end":30.6},{"text":"massive","start":30.6,"end":31.07},{"text":"language","start":31.07,"end":31.61},{"text":"tax.","start":31.61,"end":32.04},{"text":"Take","start":32.08,"end":32.24},{"text":"the","start":32.3,"end":32.44},{"text":"exact","start":32.44,"end":32.73},{"text":"same","start":32.73,"end":32.94},{"text":"sentence","start":32.99,"end":33.44},{"text":"in","start":33.44,"end":33.6},{"text":"English,","start":33.6,"end":34.08},{"text":"Hindi,","start":34.08,"end":34.48},{"text":"and","start":34.48,"end":34.74},{"text":"Korean.","start":34.74,"end":35.46},{"text":"English","start":35.56,"end":36.03},{"text":"is","start":36.03,"end":36.17},{"text":"cheap.","start":36.17,"end":36.76},{"text":"But","start":36.8,"end":36.91},{"text":"Hindi","start":36.96,"end":37.19},{"text":"and","start":37.24,"end":37.42},{"text":"Korean","start":37.42,"end":37.76},{"text":"cost","start":37.81,"end":38.02},{"text":"three","start":38.02,"end":38.32},{"text":"times","start":38.32,"end":38.64},{"text":"more","start":38.64,"end":38.8},{"text":"tokens","start":38.8,"end":39.32},{"text":"for","start":39.36,"end":39.47},{"text":"the","start":39.52,"end":39.72},{"text":"exact","start":39.72,"end":40.06},{"text":"same","start":40.06,"end":40.32},{"text":"meaning.","start":40.37,"end":41.04},{"text":"So","start":41.08,"end":41.19},{"text":"back","start":41.19,"end":41.47},{"text":"to","start":41.52,"end":41.64},{"text":"strawberry.","start":41.64,"end":42.64},{"text":"Why","start":42.68,"end":42.79},{"text":"does","start":42.84,"end":43.07},{"text":"it","start":43.12,"end":43.2},{"text":"break?","start":43.2,"end":43.7},{"text":"The","start":43.76,"end":43.87},{"text":"model","start":43.92,"end":44.23},{"text":"saw","start":44.23,"end":44.42},{"text":"the","start":44.42,"end":44.61},{"text":"tokens","start":44.61,"end":44.98},{"text":"straw","start":45.04,"end":45.32},{"text":"and","start":45.32,"end":45.51},{"text":"berry.","start":45.51,"end":46.08},{"text":"The","start":46.12,"end":46.23},{"text":"R's","start":46.28,"end":46.4},{"text":"were","start":46.4,"end":46.62},{"text":"trapped","start":46.62,"end":46.98},{"text":"inside","start":47.03,"end":47.34},{"text":"those","start":47.34,"end":47.62},{"text":"chunks","start":47.62,"end":48},{"text":"the","start":48,"end":48.19},{"text":"whole","start":48.19,"end":48.52},{"text":"time,","start":48.53,"end":48.8},{"text":"and","start":48.84,"end":48.95},{"text":"the","start":49,"end":49.16},{"text":"model","start":49.16,"end":49.45},{"text":"can't","start":49.45,"end":49.71},{"text":"look","start":49.75,"end":49.98},{"text":"inside","start":49.98,"end":50.33},{"text":"them.","start":50.33,"end":50.78},{"text":"You","start":50.82,"end":50.98},{"text":"speak","start":51.04,"end":51.38},{"text":"words.","start":51.38,"end":52},{"text":"It","start":52.04,"end":52.15},{"text":"hears","start":52.15,"end":52.53},{"text":"tokens.","start":52.53,"end":53.24}];
+
+      const subTl = gsap.timeline();
+      words.forEach((word) => {
+        subTl.set(captionText, { innerHTML: word.text }, word.start);
+      });
+      subTl.to(captionText, { opacity: 1, duration: 0.2 }, words[0].start);
+      subTl.set(captionText, { opacity: 0 }, words[words.length - 1].end);
+
+      tl.add(subTl, 0);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

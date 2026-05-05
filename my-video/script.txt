@@ -1,0 +1,14 @@
+Ask any AI to count the R's in the word strawberry. Watch what happens. It confidently tells you there are two.
+Why does an advanced AI fail at basic counting?
+Because the model doesn't see letters. It sees tokens.
+Tokens are chunks of text the AI learned by scanning the internet.
+A short, common word is a single token.
+A longer word gets chopped up into pieces.
+Even emojis are their own tokens.
+This chunking happens through byte-pair encoding, merging common letter pairs into bigger blocks.
+But this creates a massive language tax.
+Take the exact same sentence in English, Hindi, and Korean.
+English is cheap. But Hindi and Korean cost three times more tokens for the exact same meaning.
+So, back to strawberry. Why does it break?
+The model saw the tokens 'straw' and 'berry'. The R's were trapped inside those chunks the whole time, and the model can't look inside them.
+You speak words. It hears tokens.

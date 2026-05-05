@@ -1,0 +1,23 @@
+<div data-composition-id="scene1" data-width="800" data-height="1040">
+<div class="center-flex" style="color: white; font-family: Inter;">
+  <div id="s1-word" class="display" style="opacity: 0;">strawberry</div>
+  <div id="s1-answer" class="body-text" style="opacity: 0; color: #F43F5E; margin-top: 40px; font-weight: 600;">
+    AI: There are <span style="font-family: 'JetBrains Mono'; font-weight: 700; color: #FFF;">2</span> R's.
+  </div>
+</div>
+<script>
+  window.__timelines = window.__timelines || {};
+  const tl = gsap.timeline({ paused: true });
+
+  // Audio: "Ask any AI to count the R's in strawberry..." (0 to ~3s). Need motion AND hook word in first 1.5s
+  tl.fromTo("#s1-word", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 0.2);
+
+  // "...Watch what happens. It confidently says two." (3s to ~5.6s)
+  tl.fromTo("#s1-answer", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 2.0);
+
+  // Exit at ~6s (6.2s total scene duration)
+  tl.to(["#s1-word", "#s1-answer"], { opacity: 0, y: -40, duration: 0.5, stagger: 0.1, ease: "power2.in" }, 5.5);
+
+  window.__timelines["scene1"] = tl;
+</script>
+</div>

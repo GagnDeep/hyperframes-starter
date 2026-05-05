@@ -1,0 +1,49 @@
+<div data-composition-id="scene2" data-width="800" data-height="1040">
+<div class="center-flex" style="color: white;">
+  <div id="s2-strawberry" class="display" style="opacity: 0;">strawberry</div>
+  <div id="s2-tokens" style="position: absolute; display: flex; gap: 20px;">
+    <div class="token-pill pill-indigo" style="opacity: 0; transform: scale(0.5);">[straw]</div>
+    <div class="token-pill pill-rose" style="opacity: 0; transform: scale(0.5);">[berry]</div>
+  </div>
+</div>
+<script>
+  window.__timelines = window.__timelines || {};
+  const tl = gsap.timeline({ paused: true });
+
+  // "Why do the smartest models fumble spelling and math? It's because they don't actually see letters."
+  tl.fromTo("#s2-strawberry", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }, 0.5);
+
+  // "They see tokens." (around 4.9 local time)
+  tl.to("#s2-strawberry", { opacity: 0, scale: 1.1, duration: 0.4 }, 4.7);
+
+  const s2Tokens = document.querySelectorAll('#s2-tokens .token-pill');
+  if (typeof anime !== 'undefined') {
+    const anim = anime({
+      targets: s2Tokens,
+      scale: [0.5, 1],
+      opacity: [0, 1],
+      translateX: [-50, 0],
+      rotate: [-10, 0],
+      duration: 800,
+      delay: anime.stagger(45, {start: 4900}),
+      easing: 'easeOutCubic',
+      autoplay: false
+    });
+    window.__hfAnime = window.__hfAnime || [];
+    window.__hfAnime.push(anim);
+  }
+
+  // We DO need to drive the container visibility if needed, but Anime.js handles the items.
+  // Wait, the reviewer said: "the Anime.js animation is completely disjointed from the GSAP timeline and will play invisibly before its GSAP-controlled container actually appears."
+  // And "We bind anime play to GSAP timeline position" was WRONG according to skill.md.
+  // Actually, HyperFrames adapter seeks Anime.js globally!
+  // To delay an Anime.js animation so it starts at local t=4.9s, we MUST use a timeline or delay relative to the composition.
+  // The Anime.js adapter seeks based on the *composition's local time*.
+  // So we should add a baseline `delay` of 4900ms to the Anime.js animation.
+</script>
+</div>
+<script>
+  // Exit around 7s
+  tl.to("#s2-tokens", { opacity: 0, y: -40, duration: 0.5, ease: "power2.in" }, 7.0);
+  window.__timelines["scene2"] = tl;
+</script>

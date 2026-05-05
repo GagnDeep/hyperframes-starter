@@ -1,0 +1,23 @@
+<div data-composition-id="scene5" data-width="800" data-height="1040">
+<div class="center-flex" style="color: white;">
+  <div id="s5-tokens" style="display: flex; gap: 20px; opacity: 0;">
+    <div class="token-pill pill-indigo" style="opacity: 0.5;">[straw]</div>
+    <div id="s5-berry" class="token-pill pill-rose">[be<span id="s5-r1" style="color: #00F0FF; display: inline-block;">r</span><span id="s5-r2" style="color: #00F0FF; display: inline-block;">r</span>y]</div>
+  </div>
+</div>
+<script>
+  window.__timelines = window.__timelines || {};
+  const tl = gsap.timeline({ paused: true });
+
+  // "So back to our strawberry... It sees the token straw and the token berry." (Local time: 1.3)
+  tl.fromTo("#s5-tokens", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }, 1.3);
+
+  // "The R's were hidden inside the chunks the whole time." (Local time: 6.3)
+  tl.to(["#s5-r1", "#s5-r2"], { color: "#FFF", scale: 1.5, duration: 0.4, stagger: 0.1, yoyo: true, repeat: 1 }, 6.3);
+
+  // Exit around 9.5
+  tl.to("#s5-tokens", { opacity: 0, scale: 0.9, duration: 0.5, ease: "power2.in" }, 9.5);
+
+  window.__timelines["scene5"] = tl;
+</script>
+</div>

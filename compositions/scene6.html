@@ -1,0 +1,18 @@
+<div data-composition-id="scene6" data-width="800" data-height="1040">
+<div class="center-flex" style="color: white;">
+  <div id="s6-words" class="display" style="opacity: 0; margin-bottom: 40px;">Words.</div>
+  <div id="s6-tokens" class="display mono" style="opacity: 0; color: #00F0FF;">[Tokens]</div>
+</div>
+<script>
+  window.__timelines = window.__timelines || {};
+  const tl = gsap.timeline({ paused: true });
+
+  // "You speak words." (Local time 0.2)
+  tl.fromTo("#s6-words", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 0.2);
+
+  // "It hears tokens." (Local time 1.4)
+  tl.fromTo("#s6-tokens", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 1.4);
+
+  window.__timelines["scene6"] = tl;
+</script>
+</div>

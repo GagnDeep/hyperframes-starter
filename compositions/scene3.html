@@ -1,0 +1,47 @@
+<div data-composition-id="scene3" data-width="800" data-height="1040">
+<div class="center-flex" style="color: white; width: 800px;">
+  <div id="s3-short" style="display: flex; align-items: center; justify-content: space-between; width: 100%; opacity: 0; margin-bottom: 20px;">
+    <div class="body-text">"the"</div>
+    <div class="token-pill pill-mint" style="font-size: 40px; padding: 12px 24px;">[the]</div>
+  </div>
+
+  <div id="s3-long" style="display: flex; align-items: center; justify-content: space-between; width: 100%; opacity: 0; margin-bottom: 20px;">
+    <div class="body-text">"indivisible"</div>
+    <div style="display: flex; gap: 10px;">
+      <div class="token-pill pill-cyan" style="font-size: 30px; padding: 12px 16px;">[ind]</div>
+      <div class="token-pill pill-indigo" style="font-size: 30px; padding: 12px 16px;">[ivis]</div>
+      <div class="token-pill pill-rose" style="font-size: 30px; padding: 12px 16px;">[ible]</div>
+    </div>
+  </div>
+
+  <div id="s3-emoji" style="display: flex; align-items: center; justify-content: space-between; width: 100%; opacity: 0; margin-bottom: 60px;">
+    <div class="display">🚀</div>
+    <div class="token-pill pill-yellow" style="font-size: 40px; padding: 12px 24px;">[🚀]</div>
+  </div>
+
+  <div id="s3-bpe" style="display: flex; flex-direction: column; align-items: center; opacity: 0;">
+    <div class="body-text" style="color: #6366F1; margin-bottom: 10px;">Byte-Pair Encoding</div>
+    <div style="display: flex; gap: 5px; align-items: center;">
+      <div class="token-pill pill-mint" style="font-size: 30px; padding: 10px;">e</div>
+      <div class="token-pill pill-mint" style="font-size: 30px; padding: 10px;">d</div>
+      <div id="s3-arrow" style="font-size: 40px; margin: 0 10px;">→</div>
+      <div class="token-pill pill-indigo" style="font-size: 30px; padding: 10px;">ed</div>
+    </div>
+  </div>
+</div>
+<script>
+  window.__timelines = window.__timelines || {};
+  const tl = gsap.timeline({ paused: true });
+
+  tl.fromTo("#s3-short", { opacity: 0, x: 20 }, { opacity: 1, x: 0, duration: 0.6, ease: "power2.out" }, 0.3);
+  tl.fromTo("#s3-long", { opacity: 0, x: 20 }, { opacity: 1, x: 0, duration: 0.6, ease: "power2.out" }, 2.5);
+  tl.fromTo("#s3-emoji", { opacity: 0, x: 20 }, { opacity: 1, x: 0, duration: 0.6, ease: "power2.out" }, 4.8);
+
+  // "The model learns these chunks by scanning the entire internet and merging common letter pairs together." (7.1 to 12.0 local)
+  tl.fromTo("#s3-bpe", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 7.5);
+
+  tl.to(["#s3-short", "#s3-long", "#s3-emoji", "#s3-bpe"], { opacity: 0, x: -40, duration: 0.5, stagger: 0.1, ease: "power2.in" }, 11.5);
+
+  window.__timelines["scene3"] = tl;
+</script>
+</div>

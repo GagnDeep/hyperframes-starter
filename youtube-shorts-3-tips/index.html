@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+      }
+    </style>
+
+<script>
+window.__tailwindReady=new Promise(function(resolve){
+var loaded=document.readyState==="complete";
+var resolved=false;
+var observer;
+function readTailwindCss(){var styles=document.querySelectorAll("style");for(var i=styles.length-1;i>=0;i--){var text=styles[i].textContent||"";if(text.indexOf("tailwindcss v")!==-1)return text;}return "";}
+function finish(){if(resolved||!loaded||!readTailwindCss())return;resolved=true;if(observer)observer.disconnect();resolve(true);}
+observer=new MutationObserver(finish);
+observer.observe(document.documentElement,{childList:true,subtree:true,characterData:true});
+if(loaded){finish();}else{window.addEventListener("load",function(){loaded=true;finish();},{once:true});}
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.2.4/dist/index.global.js" integrity="sha384-v5YF9xS+gLRWdvrQ0u/WRbCkjSIH0NjHIPe8tBL1ZRrmI7PiSH6LLdzs0aAIMCuh" crossorigin="anonymous"></script>
+
+    <script>
+      // Single source of truth for all customizable template values
+      window.__vars = {
+        // Colors
+        bg_primary: "#111827", // gray-900
+        bg_secondary: "#1F2937", // gray-800
+        accent_color: "#3B82F6", // blue-500
+        text_primary: "#F9FAFB", // gray-50
+        text_secondary: "#9CA3AF", // gray-400
+
+        // Typography
+        font_main: "Helvetica Neue, sans-serif",
+
+        // Timings (total duration: 15s)
+        t_intro: 3,
+        t_tip_duration: 3,
+        t_outro: 3,
+
+        // Content
+        title_top: "3 PRO TIPS",
+        title_main: "TO CODE FASTER",
+
+        tip1_number: "01",
+        tip1_title: "Master Shortcuts",
+        tip1_desc: "Learn keyboard shortcuts to navigate code like a pro.",
+
+        tip2_number: "02",
+        tip2_title: "Use Snippets",
+        tip2_desc: "Automate boilerplate with custom code snippets.",
+
+        tip3_number: "03",
+        tip3_title: "Read The Docs",
+        tip3_desc: "Always consult the official documentation first.",
+
+        outro_text: "Subscribe for more tips",
+        logo_url: "https://upload.wikimedia.org/wikipedia/commons/e/ef/Youtube_logo.png"
+      };
+    </script>
+  </head>
+  <body style="background-color: var(--bg-primary); font-family: var(--font-main);" data-init-theme>
+    <!-- Dynamic theme script -->
+    <script>
+      document.body.style.setProperty('--bg-primary', window.__vars.bg_primary);
+      document.body.style.setProperty('--font-main', window.__vars.font_main);
+    </script>
+
+    <style type="text/tailwindcss">
+      @theme {
+        --color-brand: var(--accent-color);
+      }
+
+      :root {
+        --accent-color: #3B82F6; /* Default fallback */
+      }
+    </style>
+
+    <script>
+      document.documentElement.style.setProperty('--accent-color', window.__vars.accent_color);
+    </script>
+
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="15"
+      data-width="1080"
+      data-height="1920"
+      class="relative w-full h-full"
+    >
+      <!-- Safe zone overlay for debugging (optional/hidden in production) -->
+      <!-- <div class="absolute inset-0 border-4 border-red-500 z-50 pointer-events-none opacity-20" style="margin: 250px 0 600px 0; height: 1070px; top: 0; position: absolute; width: 100%;"></div> -->
+
+      <!-- Intro Sub-composition -->
+      <div
+        id="comp-intro"
+        class="clip absolute inset-0 w-full h-full"
+        data-start="0"
+        data-duration="3"
+        data-track-index="1"
+        data-composition-id="intro"
+        data-composition-src="./compositions/intro.html">
+      </div>
+
+      <!-- Tip 1 Sub-composition -->
+      <div
+        id="comp-tip1"
+        class="clip absolute inset-0 w-full h-full"
+        data-start="3"
+        data-duration="3"
+        data-track-index="1"
+        data-composition-id="tip1"
+        data-composition-src="./compositions/tip1.html">
+      </div>
+
+      <!-- Tip 2 Sub-composition -->
+      <div
+        id="comp-tip2"
+        class="clip absolute inset-0 w-full h-full"
+        data-start="6"
+        data-duration="3"
+        data-track-index="1"
+        data-composition-id="tip2"
+        data-composition-src="./compositions/tip2.html">
+      </div>
+
+      <!-- Tip 3 Sub-composition -->
+      <div
+        id="comp-tip3"
+        class="clip absolute inset-0 w-full h-full"
+        data-start="9"
+        data-duration="3"
+        data-track-index="1"
+        data-composition-id="tip3"
+        data-composition-src="./compositions/tip3.html">
+      </div>
+
+      <!-- Outro Sub-composition -->
+      <div
+        id="comp-outro"
+        class="clip absolute inset-0 w-full h-full"
+        data-start="12"
+        data-duration="3"
+        data-track-index="1"
+        data-composition-id="outro"
+        data-composition-src="./compositions/outro.html">
+      </div>
+
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

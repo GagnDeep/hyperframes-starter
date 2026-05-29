@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <div
+      id="outro-root"
+      data-composition-id="outro"
+      data-start="0"
+      data-duration="3"
+      data-width="1080"
+      data-height="1920"
+      class="w-full h-full flex flex-col items-center justify-center relative overflow-hidden"
+    >
+      <div class="absolute inset-0 z-0" style="background-color: var(--bg-primary);" id="outro-bg"></div>
+
+      <!-- Safe zone container -->
+      <div class="z-10 flex flex-col items-center justify-center w-[850px] h-[1070px] mx-auto my-[250px] text-center">
+        <img id="outro-logo" src="" alt="Logo" class="w-48 h-48 mb-12 object-contain" />
+        <h2 id="outro-text" class="text-[80px] font-bold leading-[1.2]" style="color: var(--text-primary);"></h2>
+      </div>
+    </div>
+
+    <script>
+      // Apply variables
+      const v = window.parent.__vars || window.__vars;
+      if (v) {
+        document.getElementById('outro-logo').src = v.logo_url;
+        document.getElementById('outro-text').innerText = v.outro_text;
+        document.getElementById('outro-root').style.setProperty('--bg-primary', v.bg_primary);
+        document.getElementById('outro-root').style.setProperty('--text-primary', v.text_primary);
+      }
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // Entry Animation
+      tl.from("#outro-bg", { opacity: 0, duration: 1, ease: "power2.inOut" }, 0)
+        .from("#outro-logo", { scale: 0.8, opacity: 0, duration: 1, ease: "back.out(1.5)" }, 0.3)
+        .from("#outro-text", { y: 30, opacity: 0, duration: 1, ease: "power3.out" }, 0.6);
+
+      // Keep visible until end, hard kill at the boundary
+      tl.set("#outro-root", { opacity: 0 }, 3);
+
+      window.__timelines["outro"] = tl;
+    </script>
+  </body>
+</html>

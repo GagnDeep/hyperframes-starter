@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <div
+      id="tip3-root"
+      data-composition-id="tip3"
+      data-start="0"
+      data-duration="3"
+      data-width="1080"
+      data-height="1920"
+      class="w-full h-full flex flex-col items-center justify-center relative overflow-hidden"
+    >
+      <div class="absolute inset-0 z-0 bg-gradient-to-br from-[var(--bg-secondary)] to-[var(--bg-primary)]" id="tip3-bg" data-layout-allow-overflow></div>
+
+      <!-- Safe zone container -->
+      <div class="z-10 flex flex-col items-center justify-center w-[850px] h-[1070px] mx-auto my-[250px] text-center">
+        <div id="tip3-number-container" class="flex flex-col items-center mb-6">
+          <span id="tip3-number" class="text-[180px] font-black leading-none" style="color: var(--accent-color);"></span>
+          <div id="tip3-line" class="h-2 w-48 rounded-full mt-4" style="background-color: var(--text-primary);"></div>
+        </div>
+        <h2 id="tip3-title" class="text-[96px] font-bold leading-[1.1] mb-8" style="color: var(--text-primary);"></h2>
+        <p id="tip3-desc" class="text-[54px] font-medium leading-[1.4]" style="color: var(--text-secondary);"></p>
+      </div>
+    </div>
+
+    <script>
+      // Apply variables
+      const v = window.parent.__vars || window.__vars;
+      if (v) {
+        document.getElementById('tip3-number').innerText = v.tip3_number;
+        document.getElementById('tip3-title').innerText = v.tip3_title;
+        document.getElementById('tip3-desc').innerText = v.tip3_desc;
+        document.getElementById('tip3-root').style.setProperty('--bg-primary', v.bg_primary);
+        document.getElementById('tip3-root').style.setProperty('--bg-secondary', v.bg_secondary);
+        document.getElementById('tip3-root').style.setProperty('--accent-color', v.accent_color);
+        document.getElementById('tip3-root').style.setProperty('--text-primary', v.text_primary);
+        document.getElementById('tip3-root').style.setProperty('--text-secondary', v.text_secondary);
+      }
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // Entry Animation - varied from tip1 and tip2 (zooming/scaling focus)
+      tl.from("#tip3-bg", { scale: 1.1, duration: 3, ease: "power1.out" }, 0)
+        .from("#tip3-number", { scale: 0.5, opacity: 0, duration: 0.8, ease: "back.out(1.7)" }, 0.2)
+        .from("#tip3-line", { scaleX: 0, opacity: 0, duration: 0.6, ease: "power2.out" }, 0.5)
+        .from("#tip3-title", { y: 50, opacity: 0, duration: 0.8, ease: "power3.out" }, 0.6)
+        .from("#tip3-desc", { y: 50, opacity: 0, duration: 0.8, ease: "power2.out" }, 0.8);
+
+      // Exit Animation (hard kill)
+      tl.to(["#tip3-number-container", "#tip3-title", "#tip3-desc"], { scale: 1.1, opacity: 0, duration: 0.4, ease: "power1.inOut" }, 2.6);
+      tl.set("#tip3-root", { opacity: 0 }, 3);
+
+      window.__timelines["tip3"] = tl;
+    </script>
+  </body>
+</html>

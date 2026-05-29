@@ -5,24 +5,91 @@
     <meta name="viewport" content="width=1920, height=1080" />
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      html,
-      body {
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
         margin: 0;
         width: 1920px;
         height: 1080px;
         overflow: hidden;
-        background: #000;
+      }
+    </style>
+
+    <script>
+      window.__tailwindReady=new Promise(function(resolve){
+      var loaded=document.readyState==="complete";
+      var resolved=false;
+      var observer;
+      function readTailwindCss(){var styles=document.querySelectorAll("style");for(var i=styles.length-1;i>=0;i--){var text=styles[i].textContent||"";if(text.indexOf("tailwindcss v")!==-1)return text;}return "";}
+      function finish(){if(resolved||!loaded||!readTailwindCss())return;resolved=true;if(observer)observer.disconnect();resolve(true);}
+      observer=new MutationObserver(finish);
+      observer.observe(document.documentElement,{childList:true,subtree:true,characterData:true});
+      if(loaded){finish();}else{window.addEventListener("load",function(){loaded=true;finish();},{once:true});}
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.2.4/dist/index.global.js" crossorigin="anonymous"></script>
+
+    <script>
+      // Single configuration object holding all editable values
+      window.__vars = {
+        // Text
+        headline: "What Our Customers Say",
+        reviewText: "This product completely transformed our workflow. The attention to detail and seamless integration is unlike anything we've seen before. Highly recommended to anyone looking to level up their business.",
+        authorName: "Sarah Jenkins",
+        authorRole: "Director of Operations at TechFlow",
+
+        // Rating out of 5
+        rating: 5,
+        starStyle: "default", // "default" or "rounded"
+
+        // Author details
+        authorAvatarUrl: "https://placehold.co/200x200/png?text=Avatar",
+
+        // Brand Colors
+        bgColor: "#0f172a", // slate-900
+        cardColor: "#1e293b", // slate-800
+        textColor: "#ffffff", // white
+        accentColor: "#38bdf8", // sky-400
+        starColor: "#fbbf24", // amber-400
+
+        // Logo URL (using a placeholder for demo)
+        logoUrl: "https://placehold.co/400x100/transparent/white?text=LOGO",
+
+        // Timing settings
+        duration: 10, // total duration
+
+        // Font
+        fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif'
+      };
+    </script>
+
+    <style type="text/tailwindcss">
+      @theme {
+        --color-brand-bg: var(--brand-bg);
+        --color-brand-card: var(--brand-card);
+        --color-brand-text: var(--brand-text);
+        --color-brand-accent: var(--brand-accent);
+        --color-brand-star: var(--brand-star);
+        --font-sans: var(--font-sans);
       }
     </style>
   </head>
-  <body>
+  <body class="font-sans" id="body-bg">
+    <script>
+      // Apply CSS variables from __vars before rendering
+      document.documentElement.style.setProperty('--brand-bg', window.__vars.bgColor);
+      document.documentElement.style.setProperty('--brand-card', window.__vars.cardColor);
+      document.documentElement.style.setProperty('--brand-text', window.__vars.textColor);
+      document.documentElement.style.setProperty('--brand-accent', window.__vars.accentColor);
+      document.documentElement.style.setProperty('--brand-star', window.__vars.starColor);
+      document.documentElement.style.setProperty('--font-sans', window.__vars.fontFamily);
+
+      // We will set background early on the body
+      document.getElementById('body-bg').style.backgroundColor = window.__vars.bgColor;
+    </script>
+
     <div
       id="root"
+      class="bg-brand-bg text-brand-text absolute inset-0"
       data-composition-id="main"
       data-start="0"
       data-duration="10"
@@ -30,21 +97,60 @@
       data-height="1080"
     >
       
-      
+      <!-- Background / Structure Sub-composition -->
+      <div id="bg-layer-mount" class="clip absolute inset-0 w-full h-full" data-start="0" data-duration="10" data-track-index="0" data-composition-id="bg-layer" data-composition-src="compositions/bg-layer.html"></div>
 
-      <!--
-        Add your clips here. Example:
-        <div id="title" class="clip" data-start="0" data-duration="5" data-track-index="1"
-             style="font-size: 64px; color: #fff; padding: 40px">
-          Hello World
-        </div>
-      -->
+      <!-- Header -->
+      <div id="header-clip" class="clip absolute top-[100px] left-0 w-full flex justify-between items-center px-[120px] max-w-[1920px]" data-start="0" data-duration="10" data-track-index="1" data-layout-allow-overflow>
+        <img id="logo" src="" alt="Brand Logo" class="h-[60px] object-contain opacity-0 shrink-0" />
+        <h2 id="headline" class="text-3xl font-medium tracking-wide text-brand-accent opacity-0 text-right truncate pl-8"></h2>
+      </div>
+
+      <!-- Review Card Sub-composition -->
+      <div
+        id="review-container"
+        class="clip absolute inset-0 grid place-items-center"
+        data-start="0"
+        data-duration="10"
+        data-track-index="2"
+      >
+        <div id="review-card-mount" data-composition-id="review-card" data-composition-src="compositions/review-card.html"></div>
+      </div>
+
     </div>
 
     <script>
+      // Populate text/image fields
+      document.getElementById('root').setAttribute('data-duration', window.__vars.duration);
+      document.getElementById('bg-layer-mount').setAttribute('data-duration', window.__vars.duration);
+      document.getElementById('header-clip').setAttribute('data-duration', window.__vars.duration);
+      document.getElementById('review-container').setAttribute('data-duration', window.__vars.duration);
+
+      document.getElementById('logo').src = window.__vars.logoUrl;
+      document.getElementById('headline').textContent = window.__vars.headline;
+
+      // GSAP Timelines
       window.__timelines = window.__timelines || {};
       const tl = gsap.timeline({ paused: true });
-      // Example: tl.from("#title", { opacity: 0, y: -50, duration: 1 }, 0);
+
+      // Header entrance
+      tl.fromTo("#logo",
+        { opacity: 0, x: -30 },
+        { opacity: 1, x: 0, duration: 1.2, ease: "power3.out" },
+        0.5
+      );
+      tl.fromTo("#headline",
+        { opacity: 0, x: 30 },
+        { opacity: 1, x: 0, duration: 1.2, ease: "power3.out" },
+        0.6
+      );
+
+      // We'll let the review-card sub-composition handle its own entrance/exit logic,
+      // but if we needed root-level out animations, we'd add them here.
+      const outTime = window.__vars.duration - 1;
+      tl.to(["#logo", "#headline"], { opacity: 0, y: -20, duration: 0.8, ease: "power2.inOut" }, outTime);
+      tl.set(["#logo", "#headline"], { opacity: 0 }, window.__vars.duration); // hard kill per memory
+
       window.__timelines["main"] = tl;
     </script>
   </body>

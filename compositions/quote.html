@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <style type="text/css">
+      html, body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+      }
+      .word {
+        display: inline-block;
+        white-space: pre;
+      }
+      .quote-container {
+        font-family: var(--font-main, sans-serif);
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="quote-root"
+      data-composition-id="quote"
+      data-start="0"
+      data-duration="10"
+      data-width="1080"
+      data-height="1920"
+      class="w-[1080px] h-[1920px] relative flex flex-col justify-center items-center px-24 text-center quote-container"
+    >
+      <!-- Quotation marks decoration -->
+      <div
+        id="quote-marks"
+        class="clip absolute top-1/4 left-16 text-[250px] font-serif leading-none opacity-50"
+        data-start="0"
+        data-duration="10"
+        data-track-index="0"
+        style="opacity: 0;"
+      >
+        "
+      </div>
+
+      <div
+        id="quote-text-container"
+        class="clip text-[72px] font-bold leading-tight mb-16 z-10 flex flex-wrap justify-center"
+        data-start="0"
+        data-duration="10"
+        data-track-index="1"
+        data-layout-allow-overflow="true"
+      >
+        <!-- Text gets injected here -->
+      </div>
+
+      <div
+        id="author-container"
+        class="clip text-[48px] font-medium tracking-wide flex items-center z-10"
+        data-start="2"
+        data-duration="8"
+        data-track-index="2"
+        data-layout-allow-overflow="true"
+      >
+        <span id="author-line" class="w-16 h-1 mr-6 bg-current inline-block"></span>
+        <span id="author-text"></span>
+      </div>
+    </div>
+
+    <script>
+      // Wait for DOM to ensure elements are present
+      document.addEventListener("DOMContentLoaded", () => {
+        // Pull variables from window.parent or use defaults if standalone
+        const quote = window.parent?.__vars?.quote || "The only limit to our realization of tomorrow is our doubts of today.";
+        const author = window.parent?.__vars?.author || "Franklin D. Roosevelt";
+        const primaryColor = window.parent?.__vars?.primaryColor || "#ffffff";
+        const accentColor = window.parent?.__vars?.accentColor || "#fcd34d";
+        const fontFamily = window.parent?.__vars?.fontFamily || "sans-serif";
+
+        const quoteContainerEl = document.querySelector('.quote-container');
+        const quoteMarksEl = document.getElementById('quote-marks');
+        const quoteTextContainerEl = document.getElementById('quote-text-container');
+        const authorContainerEl = document.getElementById('author-container');
+        const authorTextEl = document.getElementById('author-text');
+
+        if (quoteContainerEl) quoteContainerEl.style.setProperty('--font-main', fontFamily);
+        if (quoteMarksEl) quoteMarksEl.style.color = accentColor;
+        if (quoteTextContainerEl) quoteTextContainerEl.style.color = primaryColor;
+        if (authorContainerEl) authorContainerEl.style.color = accentColor;
+
+        if (authorTextEl) authorTextEl.innerText = author;
+
+        // Split quote into words for animation
+        if (quoteTextContainerEl) {
+          const words = quote.split(' ');
+          words.forEach(word => {
+            const span = document.createElement('span');
+            span.className = 'word';
+            span.innerText = word + ' ';
+            quoteTextContainerEl.appendChild(span);
+          });
+        }
+
+        window.__timelines = window.__timelines || {};
+        const tl = gsap.timeline({ paused: true });
+
+        const wordElements = document.querySelectorAll('.word');
+        if (wordElements.length > 0) {
+          tl.fromTo(wordElements,
+            { opacity: 0, y: 30, rotationX: -45 },
+            {
+              opacity: 1,
+              y: 0,
+              rotationX: 0,
+              duration: 0.8,
+              stagger: 0.1,
+              ease: "back.out(1.7)"
+            },
+            0.5 // Start at 0.5s
+          );
+        }
+
+        // Quote marks fade in
+        if (quoteMarksEl) {
+          tl.fromTo("#quote-marks",
+            { opacity: 0, scale: 0.5 },
+            { opacity: 0.6, scale: 1, duration: 2, ease: "power2.out" },
+            0
+          );
+        }
+
+        const authorStartTime = 0.5 + ((quote.split(' ').length) * 0.1) + 0.3; // start after quote reveals
+
+        if (document.getElementById("author-line")) {
+          tl.fromTo("#author-line",
+            { scaleX: 0, transformOrigin: "left center" },
+            { scaleX: 1, duration: 0.6, ease: "power2.inOut" },
+            authorStartTime
+          );
+        }
+
+        if (authorTextEl) {
+          tl.fromTo("#author-text",
+            { opacity: 0, x: -20 },
+            { opacity: 1, x: 0, duration: 0.8, ease: "power2.out" },
+            authorStartTime + 0.2
+          );
+        }
+
+        // Add floating animation
+        tl.to(["#quote-text-container", "#author-container"], {
+          y: -10,
+          duration: 4,
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: 1
+        }, 2);
+
+        window.__timelines["quote"] = tl;
+      });
+    </script>
+  </body>
+</html>

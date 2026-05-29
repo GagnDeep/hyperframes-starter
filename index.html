@@ -23,13 +23,35 @@
     <script>
       // Global variables configuration for the template
       window.__vars = {
-        theme: {
-          backgroundColor: "#0f172a", // Background of the video
-          cardColor: "#1e293b", // Background of the fact card
-          accentColor: "#facc15", // Brighter Yellow accent color
-          textColor: "#f8fafc", // Main text color
-          mutedTextColor: "#94a3b8", // Subtitle/source text color
-          fontFamily: "system-ui, sans-serif" // Global font family
+        activeTheme: "dark", // Switch between 'dark', 'light', 'vibrant'
+        themes: {
+          dark: {
+            backgroundColor: "#0f172a",
+            cardColor: "#1e293b",
+            accentColor: "#facc15", // Yellow
+            accentTextColor: "#facc15",
+            textColor: "#f8fafc",
+            mutedTextColor: "#94a3b8",
+            fontFamily: "system-ui, sans-serif"
+          },
+          light: {
+            backgroundColor: "#f8fafc",
+            cardColor: "#ffffff",
+            accentColor: "#3b82f6", // Blue
+            accentTextColor: "#3b82f6",
+            textColor: "#0f172a",
+            mutedTextColor: "#475569",
+            fontFamily: "Georgia, serif"
+          },
+          vibrant: {
+            backgroundColor: "#ec4899", // Pink
+            cardColor: "#4f46e5", // Indigo
+            accentColor: "#34d399", // Emerald
+            accentTextColor: "#34d399",
+            textColor: "#ffffff",
+            mutedTextColor: "#c7d2fe",
+            fontFamily: "system-ui, sans-serif"
+          }
         },
         content: {
           badge: "DID YOU KNOW?",
@@ -41,7 +63,10 @@
         },
         media: {
           // Provide a dummy src string to satisfy the linter, user will override
-          audioUrl: "assets/dummy.mp3"
+          audioUrl: "assets/dummy.mp3",
+          // Toggles an image-based subcomp vs a text-only subcomp
+          useImageVariant: true,
+          imageUrl: "assets/honey.jpg"
         }
       };
     </script>
@@ -59,10 +84,10 @@
     >
       <div id="bg" class="absolute inset-0 w-full h-full"></div>
       
-      <!-- Audio Track with dummy src to satisfy linter, overridden in JS if provided -->
+      <!-- Audio Track -->
       <audio id="bg-audio" class="clip" data-start="0" data-duration="12" data-track-index="1" src="assets/dummy.mp3"></audio>
 
-      <!-- Fact Card Sub-composition -->
+      <!-- Fact Card Sub-composition dynamically wired in JS to support variant -->
       <div
         id="fact-card-subcomp"
         class="clip absolute inset-0 w-full h-full flex items-center justify-center"
@@ -75,6 +100,9 @@
     </div>
 
     <script>
+      // Make activeTheme values directly accessible as theme for sub-compositions easily without rewriting logic.
+      window.__vars.theme = window.__vars.themes[window.__vars.activeTheme] || window.__vars.themes.dark;
+
       // Apply variables to root elements before rendering
       document.body.style.fontFamily = window.__vars.theme.fontFamily;
       document.getElementById('bg').style.backgroundColor = window.__vars.theme.backgroundColor;
@@ -83,17 +111,24 @@
       const audioEl = document.getElementById('bg-audio');
       if (window.__vars.media && window.__vars.media.audioUrl) {
         audioEl.src = window.__vars.media.audioUrl;
+      } else {
+        audioEl.removeAttribute('src');
       }
 
       // Update durations dynamically based on vars
       const duration = window.__vars.timing.duration;
       const root = document.getElementById('root');
       if (root) root.setAttribute('data-duration', duration);
-
       if (audioEl) audioEl.setAttribute('data-duration', duration);
 
       const subcomp = document.getElementById('fact-card-subcomp');
-      if (subcomp) subcomp.setAttribute('data-duration', duration);
+      if (subcomp) {
+        subcomp.setAttribute('data-duration', duration);
+        // Switch sub-composition if image variant requested
+        if (window.__vars.media && window.__vars.media.useImageVariant) {
+          subcomp.setAttribute('data-composition-src', 'compositions/card-with-image.html');
+        }
+      }
 
       window.__timelines = window.__timelines || {};
       const tl = gsap.timeline({ paused: true });

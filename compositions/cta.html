@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html, body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="cta-root"
+      data-composition-id="cta"
+      data-start="0"
+      data-duration="5"
+      data-width="1080"
+      data-height="1920"
+      class="clip w-full h-full flex flex-col items-center justify-center bg-black"
+    >
+      <div id="cta-logo-container" class="w-48 h-48 mb-16 rounded-3xl bg-white flex items-center justify-center overflow-hidden">
+        <svg id="cta-logo" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+
+      <p id="cta-urgency" class="text-[60px] font-bold text-white mb-12 uppercase tracking-widest text-center">
+        Sale ends<br>Tonight
+      </p>
+
+      <div id="cta-button" class="bg-yellow-400 text-black px-16 py-6 rounded-full text-[64px] font-black uppercase tracking-tight shadow-[0_0_40px_rgba(250,204,21,0.5)]">
+        Shop Now
+      </div>
+
+      <p id="cta-website" class="text-[40px] font-medium text-gray-400 mt-16 tracking-wider">
+        yourstore.com
+      </p>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      const vars = window.parent.__vars || window.__vars || {
+        colors: { bg1: "#000000", primary: "#ffffff", accent: "#facc15", textMuted: "#9ca3af" },
+        texts: { ctaUrgency: "Sale ends\nTonight", ctaButton: "Shop Now", ctaWebsite: "yourstore.com" },
+        fonts: { family: "Inter, sans-serif" }
+      };
+
+      const rootEl = document.getElementById("cta-root");
+      if (rootEl) {
+        document.body.style.fontFamily = vars.fonts.family;
+        rootEl.style.backgroundColor = vars.colors.bg1;
+
+        const urgencyEl = document.getElementById("cta-urgency");
+        if (urgencyEl) {
+          urgencyEl.innerHTML = vars.texts.ctaUrgency.replace(/\n/g, '<br>');
+          urgencyEl.style.color = vars.colors.primary;
+        }
+
+        const btnEl = document.getElementById("cta-button");
+        if (btnEl) {
+          btnEl.textContent = vars.texts.ctaButton;
+          btnEl.style.backgroundColor = vars.colors.accent;
+          btnEl.style.color = "#000000"; // Setting text color properly for better contrast
+          btnEl.style.boxShadow = `0 0 40px ${vars.colors.accent}80`; // 50% opacity
+        }
+
+        const webEl = document.getElementById("cta-website");
+        if (webEl) {
+          webEl.textContent = vars.texts.ctaWebsite;
+          webEl.style.color = vars.colors.textMuted;
+        }
+
+        tl.from("#cta-logo-container", { opacity: 0, scale: 0.5, y: 50, duration: 0.8, ease: "back.out(1.5)" }, 0);
+        tl.from("#cta-urgency", { opacity: 0, y: 30, duration: 0.8, ease: "power2.out" }, 0.4);
+        tl.from("#cta-button", { opacity: 0, scale: 0.8, duration: 0.6, ease: "back.out(2)" }, 0.8);
+        tl.from("#cta-website", { opacity: 0, y: 20, duration: 0.6, ease: "power2.out" }, 1.2);
+
+        // Button attention effect
+        tl.to("#cta-button", { scale: 1.05, rotation: -2, duration: 0.15, yoyo: true, repeat: 3, ease: "power1.inOut" }, 2.5);
+      }
+
+      window.__timelines["cta"] = tl;
+    </script>
+  </body>
+</html>

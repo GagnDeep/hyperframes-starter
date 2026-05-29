@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html, body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="intro-root"
+      data-composition-id="intro"
+      data-start="0"
+      data-duration="5"
+      data-width="1080"
+      data-height="1920"
+      class="clip w-full h-full flex flex-col items-center justify-center bg-black"
+    >
+      <h1 id="intro-hook" class="text-[120px] font-black text-white text-center leading-tight uppercase tracking-tighter mix-blend-difference">
+        Black<br>Friday
+      </h1>
+      <p id="intro-sub" class="text-[60px] font-bold text-yellow-400 mt-8 uppercase tracking-widest">
+        Early Access
+      </p>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      const vars = window.parent.__vars || window.__vars || {
+        colors: { bg1: "#000000", primary: "#ffffff", accent: "#facc15" },
+        texts: { introHook: "Black\nFriday", introSub: "Early Access" },
+        fonts: { family: "Inter, sans-serif" }
+      };
+
+      const introRootEl = document.getElementById("intro-root");
+      if (introRootEl) {
+        document.body.style.fontFamily = vars.fonts.family;
+        introRootEl.style.backgroundColor = vars.colors.bg1;
+
+        const hookEl = document.getElementById("intro-hook");
+        if (hookEl) {
+          hookEl.innerHTML = vars.texts.introHook.replace(/\n/g, '<br>');
+          hookEl.style.color = vars.colors.primary;
+        }
+
+        const subEl = document.getElementById("intro-sub");
+        if (subEl) {
+          subEl.textContent = vars.texts.introSub;
+          subEl.style.color = vars.colors.accent;
+        }
+
+        tl.from("#intro-hook", { opacity: 0, y: 100, scale: 0.8, duration: 1, ease: "back.out(1.7)" }, 0);
+        tl.from("#intro-sub", { opacity: 0, y: 50, duration: 0.8, ease: "power3.out" }, 0.5);
+        tl.to("#intro-root", { opacity: 0, scale: 1.1, duration: 0.5, ease: "power2.inOut" }, 4.5);
+      }
+
+      window.__timelines["intro"] = tl;
+    </script>
+  </body>
+</html>

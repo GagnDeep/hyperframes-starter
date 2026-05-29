@@ -86,6 +86,7 @@ if(loaded){finish();}else{window.addEventListener("load",function(){loaded=true;
       document.documentElement.style.setProperty('--color-brand-accent', window.__vars.colors.accent);
       document.documentElement.style.setProperty('--color-brand-text', window.__vars.colors.text);
       document.documentElement.style.setProperty('--font-primary', window.__vars.fonts.primary);
+      document.documentElement.style.setProperty('--font-heading', window.__vars.fonts.heading);
       document.documentElement.style.background = window.__vars.colors.background;
       document.body.style.fontFamily = window.__vars.fonts.primary;
       document.body.style.color = window.__vars.colors.text;
@@ -109,6 +110,17 @@ if(loaded){finish();}else{window.addEventListener("load",function(){loaded=true;
 
       <!-- Background Elements -->
       <div class="clip absolute inset-0 z-0 bg-brand-primary opacity-20 blur-3xl rounded-full scale-150" data-start="0" data-duration="12" data-track-index="0" id="bg-glow"></div>
+
+      <!-- Sub-composition: Particles Background -->
+      <div
+        id="particles-comp-host"
+        class="clip absolute inset-0 z-5"
+        data-composition-id="particles-comp"
+        data-start="0"
+        data-duration="12"
+        data-track-index="4"
+        data-composition-src="compositions/particles.html"
+      ></div>
 
       <!-- We will load sub-compositions here -->
       <!-- Sub-composition: Title Sequence -->

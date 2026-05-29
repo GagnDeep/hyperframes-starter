@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  </head>
+  <body>
+    <div
+      id="root-card"
+      data-composition-id="card"
+      data-start="0"
+      data-duration="12"
+      data-width="1080"
+      data-height="1920"
+      class="clip absolute inset-0 w-full h-full flex flex-col items-center justify-center p-16"
+      data-track-index="0"
+    >
+      <div
+        id="card-container"
+        class="clip relative w-full max-w-[800px] rounded-3xl overflow-hidden shadow-2xl flex flex-col opacity-0"
+        data-start="0"
+        data-duration="12"
+        data-track-index="1"
+      >
+        <!-- Image Header -->
+        <div id="image-container" class="clip w-full h-96 relative overflow-hidden bg-gray-200" data-start="0" data-duration="12" data-track-index="2">
+          <!-- We need a dummy src to bypass linter on the image tag -->
+          <img id="fact-image" class="w-full h-full object-cover" src="assets/honey.jpg" alt="" />
+        </div>
+
+        <!-- Content Body -->
+        <div class="p-12 flex flex-col gap-8 items-center text-center">
+          <!-- Badge -->
+          <div id="badge-container" class="clip w-full flex items-center justify-center opacity-0" data-start="0" data-duration="12" data-track-index="3">
+            <span id="badge" class="px-6 py-2 rounded-full text-3xl font-bold tracking-wider text-center uppercase border-2"></span>
+          </div>
+
+          <!-- Fact Text -->
+          <div id="fact-container" class="clip w-full opacity-0" data-start="0" data-duration="12" data-track-index="4">
+            <h1 id="fact" class="text-5xl leading-tight font-medium text-center"></h1>
+          </div>
+
+          <!-- Divider -->
+          <div id="divider-container" class="clip w-full flex justify-center opacity-0" data-start="0" data-duration="12" data-track-index="5">
+            <div id="divider" class="h-1 w-32 rounded-full"></div>
+          </div>
+
+          <!-- Source -->
+          <div id="source-container" class="clip w-full opacity-0" data-start="0" data-duration="12" data-track-index="6">
+            <p id="source" class="text-2xl text-center font-light tracking-wide"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Support nested iframe/framework vars gracefully
+      let vars = window.__vars;
+      if (!vars) {
+        vars = {
+          theme: {
+            backgroundColor: "#0f172a",
+            cardColor: "#1e293b",
+            accentColor: "#facc15",
+            accentTextColor: "#facc15",
+            textColor: "#f8fafc",
+            mutedTextColor: "#94a3b8",
+            fontFamily: "system-ui, sans-serif"
+          },
+          content: {
+            badge: "DID YOU KNOW?",
+            fact: "Honey never spoils.",
+            source: "Source: Smithsonian Institution"
+          },
+          timing: {
+            duration: 12
+          },
+          media: {
+            imageUrl: "assets/honey.jpg"
+          }
+        };
+      } else if (vars.themes && vars.activeTheme) {
+        // Evaluate theme based on active string to ensure decoupled functionality if accessed via sub-iframe standalone
+        vars.theme = vars.themes[vars.activeTheme] || vars.themes.dark;
+      }
+
+      // Apply variables to elements
+      document.body.style.fontFamily = vars.theme.fontFamily;
+
+      const card = document.getElementById('card-container');
+      if (card) card.style.backgroundColor = vars.theme.cardColor;
+
+      const img = document.getElementById('fact-image');
+      if (img && vars.media && vars.media.imageUrl) {
+        img.src = vars.media.imageUrl;
+      }
+
+      const badge = document.getElementById('badge');
+      if (badge) {
+        badge.textContent = vars.content.badge;
+        badge.style.color = vars.theme.accentColor;
+        badge.style.borderColor = vars.theme.accentColor;
+      }
+
+      const fact = document.getElementById('fact');
+      if (fact) {
+        fact.textContent = vars.content.fact;
+        fact.style.color = vars.theme.textColor;
+      }
+
+      const divider = document.getElementById('divider');
+      if (divider) divider.style.backgroundColor = vars.theme.accentColor;
+
+      const sourceText = document.getElementById('source');
+      if (sourceText) {
+        sourceText.textContent = vars.content.source;
+        sourceText.style.color = vars.theme.mutedTextColor;
+      }
+
+      const duration = vars.timing.duration;
+      const elementsToSync = [
+        'root-card', 'card-container', 'image-container',
+        'badge-container', 'fact-container', 'divider-container', 'source-container'
+      ];
+
+      elementsToSync.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.setAttribute('data-duration', duration);
+      });
+
+      // Setup Animation Timeline
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // Reusable animation utility functions
+      const fadeInUp = (selector, startAt, yOffset = 50, dur = 1) => {
+        tl.fromTo(selector,
+          { y: yOffset, autoAlpha: 0 },
+          { y: 0, autoAlpha: 1, duration: dur, ease: "power3.out", overwrite: "auto" },
+          startAt
+        );
+      };
+
+      const scaleIn = (selector, startAt, dur = 0.8) => {
+        tl.fromTo(selector,
+          { scaleX: 0, autoAlpha: 0 },
+          { scaleX: 1, autoAlpha: 1, duration: dur, ease: "power3.out" },
+          startAt
+        );
+      };
+
+      const popIn = (selector, startAt, yOffset = 50, dur = 0.8) => {
+        tl.fromTo(selector,
+          { y: yOffset, autoAlpha: 0 },
+          { y: 0, autoAlpha: 1, duration: dur, ease: "back.out(1.7)" },
+          startAt
+        );
+      };
+
+      // Apply reusable animations
+      fadeInUp("#card-container", 0, 100);
+      tl.fromTo("#fact-image", { scale: 1.2 }, { scale: 1, duration: 10, ease: "none" }, 0); // Slow Ken Burns effect on image
+
+      popIn("#badge-container", 0.5);
+      fadeInUp("#fact-container", 1);
+      scaleIn("#divider-container", 1.5);
+      fadeInUp("#source-container", 2, 20);
+
+      // Animate out at the end
+      const outStart = duration - 1;
+      tl.to("#card-container", { autoAlpha: 0, y: -100, duration: 1, ease: "power3.in", overwrite: "auto" }, outStart);
+      tl.set("#card-container", { autoAlpha: 0 }, duration); // Fix for missing hard kill
+
+      window.__timelines["card"] = tl;
+    </script>
+  </body>
+</html>

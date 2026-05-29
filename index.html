@@ -2,7 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=1920, height=1080" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <style>
       * {
@@ -13,38 +14,155 @@
       html,
       body {
         margin: 0;
-        width: 1920px;
-        height: 1080px;
+        width: 1080px;
+        height: 1920px;
         overflow: hidden;
         background: #000;
       }
     </style>
+    <script>
+      // Global variables configuration for the template
+      window.__vars = {
+        activeTheme: "dark", // Switch between 'dark', 'light', 'vibrant'
+        themes: {
+          dark: {
+            backgroundColor: "#0f172a",
+            cardColor: "#1e293b",
+            accentColor: "#facc15",
+            accentTextColor: "#facc15",
+            textColor: "#f8fafc",
+            mutedTextColor: "#94a3b8",
+            fontFamily: "system-ui, sans-serif"
+          },
+          light: {
+            backgroundColor: "#f8fafc",
+            cardColor: "#ffffff",
+            accentColor: "#3b82f6",
+            accentTextColor: "#3b82f6",
+            textColor: "#0f172a",
+            mutedTextColor: "#475569",
+            fontFamily: "Georgia, serif"
+          },
+          vibrant: {
+            backgroundColor: "#ec4899",
+            cardColor: "#4f46e5",
+            accentColor: "#34d399",
+            accentTextColor: "#34d399",
+            textColor: "#ffffff",
+            mutedTextColor: "#c7d2fe",
+            fontFamily: "system-ui, sans-serif"
+          }
+        },
+        content: {
+          badge: "DID YOU KNOW?",
+          fact: "Honey never spoils. Archaeologists have found pots of honey in ancient Egyptian tombs that are over 3,000 years old and still perfectly edible.",
+          source: "Source: Smithsonian Institution"
+        },
+        timing: {
+          duration: 12 // Total duration in seconds
+        },
+        media: {
+          audioUrl: "assets/dummy.mp3",
+          ttsUrl: "assets/dummy-tts.mp3", // Narration TTS audio
+          backgroundVideoUrl: "assets/dummy-bg.mp4", // Background video logic
+          useImageVariant: true,
+          imageUrl: "assets/honey.jpg"
+        }
+      };
+    </script>
   </head>
   <body>
     <div
       id="root"
       data-composition-id="main"
       data-start="0"
-      data-duration="10"
-      data-width="1920"
-      data-height="1080"
+      data-duration="12"
+      data-width="1080"
+      data-height="1920"
+      class="clip flex items-center justify-center relative w-full h-full"
+      data-track-index="0"
     >
+      <div id="bg" class="absolute inset-0 w-full h-full"></div>
       
-      
+      <!-- Video Background -->
+      <!-- Added muted to support hyperframes requirement -->
+      <video id="bg-video" class="clip absolute inset-0 w-full h-full object-cover opacity-50" data-start="0" data-duration="12" data-track-index="1" src="assets/dummy-bg.mp4" muted loop></video>
 
-      <!--
-        Add your clips here. Example:
-        <div id="title" class="clip" data-start="0" data-duration="5" data-track-index="1"
-             style="font-size: 64px; color: #fff; padding: 40px">
-          Hello World
-        </div>
-      -->
+      <!-- Audio Track: Background Music -->
+      <audio id="bg-audio" class="clip" data-start="0" data-duration="12" data-track-index="2" src="assets/dummy.mp3"></audio>
+
+      <!-- Audio Track: Text-To-Speech -->
+      <!-- Starts slightly delayed for pacing -->
+      <audio id="tts-audio" class="clip" data-start="1" data-duration="11" data-track-index="3" src="assets/dummy-tts.mp3"></audio>
+
+      <!-- Fact Card Sub-composition dynamically wired in JS to support variant -->
+      <div
+        id="fact-card-subcomp"
+        class="clip absolute inset-0 w-full h-full flex items-center justify-center"
+        data-start="0"
+        data-duration="12"
+        data-track-index="4"
+        data-composition-id="card"
+        data-composition-src="compositions/card.html"
+      ></div>
     </div>
 
     <script>
+      // Make activeTheme values directly accessible as theme for sub-compositions easily without rewriting logic.
+      window.__vars.theme = window.__vars.themes[window.__vars.activeTheme] || window.__vars.themes.dark;
+
+      // Apply variables to root elements before rendering
+      document.body.style.fontFamily = window.__vars.theme.fontFamily;
+      document.getElementById('bg').style.backgroundColor = window.__vars.theme.backgroundColor;
+
+      // Setup audio/video if provided
+      const audioEl = document.getElementById('bg-audio');
+      const ttsEl = document.getElementById('tts-audio');
+      const videoEl = document.getElementById('bg-video');
+
+      if (window.__vars.media) {
+        if (window.__vars.media.audioUrl) {
+          audioEl.src = window.__vars.media.audioUrl;
+        } else {
+          audioEl.removeAttribute('src');
+        }
+
+        if (window.__vars.media.ttsUrl) {
+          ttsEl.src = window.__vars.media.ttsUrl;
+        } else {
+          ttsEl.removeAttribute('src');
+        }
+
+        if (window.__vars.media.backgroundVideoUrl) {
+          videoEl.src = window.__vars.media.backgroundVideoUrl;
+        } else {
+          videoEl.removeAttribute('src');
+          // Hide it completely if no video provided
+          videoEl.style.display = 'none';
+        }
+      }
+
+      // Update durations dynamically based on vars
+      const duration = window.__vars.timing.duration;
+      const root = document.getElementById('root');
+      if (root) root.setAttribute('data-duration', duration);
+      if (audioEl) audioEl.setAttribute('data-duration', duration);
+      if (videoEl) videoEl.setAttribute('data-duration', duration);
+
+      // Delay TTS slightly for effect
+      if (ttsEl) ttsEl.setAttribute('data-duration', Math.max(0, duration - 1));
+
+      const subcomp = document.getElementById('fact-card-subcomp');
+      if (subcomp) {
+        subcomp.setAttribute('data-duration', duration);
+        // Switch sub-composition if image variant requested
+        if (window.__vars.media && window.__vars.media.useImageVariant) {
+          subcomp.setAttribute('data-composition-src', 'compositions/card-with-image.html');
+        }
+      }
+
       window.__timelines = window.__timelines || {};
       const tl = gsap.timeline({ paused: true });
-      // Example: tl.from("#title", { opacity: 0, y: -50, duration: 1 }, 0);
       window.__timelines["main"] = tl;
     </script>
   </body>

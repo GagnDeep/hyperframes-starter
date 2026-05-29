@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <!--
+      Scene 3: Features & CTA
+    -->
+    <div
+      id="scene-3-root"
+      data-composition-id="scene3"
+      data-start="0"
+      data-duration="6"
+      data-width="1080"
+      data-height="1920"
+      class="absolute inset-0 w-full h-full"
+    >
+      <div
+        id="scene-3-container"
+        class="clip absolute left-0 right-0 top-[250px] bottom-[600px] flex items-center justify-center flex-col px-16"
+        data-start="0"
+        data-duration="6"
+        data-track-index="1"
+      >
+        <div id="scene-3-features" class="w-full flex flex-col gap-8 mb-16" data-layout-allow-overflow="true">
+          <div class="feature-item flex items-center gap-6" style="will-change: transform, opacity;" data-layout-allow-overflow="true">
+            <div class="w-4 h-4 rounded-full bg-[var(--accent-color)] shrink-0"></div>
+            <p id="scene-3-f1" class="text-5xl font-medium text-text-base" data-layout-allow-overflow="true"></p>
+          </div>
+          <div class="feature-item flex items-center gap-6" style="will-change: transform, opacity;" data-layout-allow-overflow="true">
+            <div class="w-4 h-4 rounded-full bg-[var(--accent-color)] shrink-0"></div>
+            <p id="scene-3-f2" class="text-5xl font-medium text-text-base" data-layout-allow-overflow="true"></p>
+          </div>
+          <div class="feature-item flex items-center gap-6" style="will-change: transform, opacity;" data-layout-allow-overflow="true">
+            <div class="w-4 h-4 rounded-full bg-[var(--accent-color)] shrink-0"></div>
+            <p id="scene-3-f3" class="text-5xl font-medium text-text-base" data-layout-allow-overflow="true"></p>
+          </div>
+        </div>
+
+        <div
+          id="scene-3-cta"
+          class="px-12 py-6 rounded-full border-4 border-[var(--accent-color)] text-text-base text-4xl font-bold uppercase tracking-wider"
+          style="will-change: transform, opacity; background-color: var(--accent-color); color: #000;"
+        ></div>
+      </div>
+    </div>
+
+    <script>
+      // Populate text from vars
+      if (window.__vars) {
+        document.getElementById('scene-3-f1').textContent = window.__vars.feature1;
+        document.getElementById('scene-3-f2').textContent = window.__vars.feature2;
+        document.getElementById('scene-3-f3').textContent = window.__vars.feature3;
+        document.getElementById('scene-3-cta').textContent = window.__vars.ctaText;
+
+        // set dynamic color for accent parts
+        const dots = document.querySelectorAll('.feature-item > div');
+        dots.forEach(dot => dot.style.backgroundColor = window.__vars.accentColor);
+        const cta = document.getElementById('scene-3-cta');
+        cta.style.borderColor = window.__vars.accentColor;
+        cta.style.backgroundColor = window.__vars.accentColor;
+      }
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // Motion: Stagger features
+      tl.from(".feature-item", { x: -100, opacity: 0, duration: 1, stagger: 0.3, ease: "power2.out" }, 0.5);
+
+      // Motion: CTA pops in
+      tl.from("#scene-3-cta", { scale: 0.5, opacity: 0, duration: 0.8, ease: "back.out(2)" }, 1.5);
+
+      // Pulse CTA
+      tl.to("#scene-3-cta", { scale: 1.05, duration: 1, repeat: 1, yoyo: true, ease: "sine.inOut" }, 2.5);
+
+      // Exit animation
+      tl.to("#scene-3-container", { y: -50, opacity: 0, duration: 0.8, ease: "power2.in" }, 5.2);
+
+      // Hard kill at the end boundary to prevent stale state
+      tl.set("#scene-3-container", { opacity: 0 }, 6);
+
+      window.__timelines["scene3"] = tl;
+    </script>
+  </body>
+</html>

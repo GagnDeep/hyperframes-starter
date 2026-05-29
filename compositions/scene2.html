@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <!--
+      Scene 2: Product Name Reveal
+    -->
+    <div
+      id="scene-2-root"
+      data-composition-id="scene2"
+      data-start="0"
+      data-duration="6"
+      data-width="1080"
+      data-height="1920"
+      class="absolute inset-0 w-full h-full"
+    >
+      <div
+        id="scene-2-container"
+        class="clip absolute left-0 right-0 top-[250px] bottom-[600px] flex items-center justify-center flex-col px-12"
+        data-start="0"
+        data-duration="6"
+        data-track-index="1"
+      >
+        <div id="scene-2-gradient" class="absolute w-[600px] h-[600px] rounded-full opacity-30 blur-3xl bg-[var(--brand-color-secondary)]" style="will-change: transform, opacity;"></div>
+
+        <h2
+          id="scene-2-product"
+          class="text-9xl font-black text-center leading-none text-balance text-text-base mb-8 z-10"
+          style="will-change: transform, opacity;"
+        ></h2>
+
+        <p
+          id="scene-2-tagline"
+          class="text-4xl text-center text-text-base/80 z-10 max-w-[800px]"
+          style="will-change: transform, opacity;"
+        ></p>
+      </div>
+    </div>
+
+    <script>
+      // Populate text from vars
+      if (window.__vars) {
+        document.getElementById('scene-2-product').textContent = window.__vars.productName;
+        document.getElementById('scene-2-tagline').textContent = window.__vars.tagline;
+        // set dynamic color for gradient
+        document.getElementById('scene-2-gradient').style.backgroundColor = window.__vars.brandColorSecondary;
+      }
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // Motion: Gradient blob scales up, text comes from left/right
+      tl.from("#scene-2-gradient", { scale: 0, opacity: 0, duration: 2, ease: "back.out(1.5)" }, 0);
+      tl.to("#scene-2-gradient", { scale: 1.2, duration: 4, ease: "none" }, 2);
+
+      tl.from("#scene-2-product", { y: 50, scale: 0.9, opacity: 0, duration: 1.2, ease: "power3.out" }, 0.4);
+      tl.from("#scene-2-tagline", { y: 30, opacity: 0, duration: 1, ease: "power2.out" }, 0.8);
+
+      // Exit animation
+      tl.to("#scene-2-container", { scale: 1.1, opacity: 0, duration: 1, ease: "power2.inOut" }, 5);
+
+      // Hard kill at the end boundary to prevent stale state
+      tl.set("#scene-2-container", { opacity: 0 }, 6);
+
+      window.__timelines["scene2"] = tl;
+    </script>
+  </body>
+</html>

@@ -1,0 +1,30 @@
+<div
+  id="audio-root"
+  data-composition-id="audio"
+  data-width="1080"
+  data-height="1920"
+  data-start="0"
+  data-duration="10"
+>
+  <div id="audio-container"></div>
+</div>
+
+<script>
+  window.__timelines = window.__timelines || {};
+  const tlAudio = gsap.timeline({ paused: true });
+
+  const container = document.getElementById("audio-container");
+
+  if (window.__vars.audioUrl) {
+    const audioEl = document.createElement("audio");
+    audioEl.id = "bg-audio";
+    audioEl.className = "clip";
+    audioEl.setAttribute("data-start", "0");
+    audioEl.setAttribute("data-duration", window.__vars.duration);
+    audioEl.setAttribute("data-track-index", "3");
+    audioEl.src = window.__vars.audioUrl;
+    container.appendChild(audioEl);
+  }
+
+  window.__timelines["audio"] = tlAudio;
+</script>

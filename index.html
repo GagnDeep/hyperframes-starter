@@ -16,36 +16,150 @@
         width: 1920px;
         height: 1080px;
         overflow: hidden;
-        background: #000;
+        background: var(--bg-color);
+        font-family: var(--font-primary), sans-serif;
+      }
+
+      @font-face {
+        font-family: 'Inter';
+        src: local('Inter'), local('Arial');
+        /* Note: If custom fonts are provided, link them here.
+           We use local Inter/Arial as fallback for missing fonts. */
       }
     </style>
+
+<script>
+window.__tailwindReady=new Promise(function(resolve){
+var loaded=document.readyState==="complete";
+var resolved=false;
+var observer;
+function readTailwindCss(){var styles=document.querySelectorAll("style");for(var i=styles.length-1;i>=0;i--){var text=styles[i].textContent||"";if(text.indexOf("tailwindcss v")!==-1)return text;}return "";}
+function finish(){if(resolved||!loaded||!readTailwindCss())return;resolved=true;if(observer)observer.disconnect();resolve(true);}
+observer=new MutationObserver(finish);
+observer.observe(document.documentElement,{childList:true,subtree:true,characterData:true});
+if(loaded){finish();}else{window.addEventListener("load",function(){loaded=true;finish();},{once:true});}
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.2.4/dist/index.global.js" integrity="sha384-v5YF9xS+gLRWdvrQ0u/WRbCkjSIH0NjHIPe8tBL1ZRrmI7PiSH6LLdzs0aAIMCuh" crossorigin="anonymous"></script>
+
+    <script>
+      // Single source of truth for customizable values
+      window.__vars = {
+        // Colors
+        bgColor: "#0f172a", // slate-900
+        accentColor: "#3b82f6", // blue-500
+        textColor: "#f8fafc", // slate-50
+
+        // Typography
+        fontPrimary: "Inter",
+
+        // Text Content
+        titleText: "The Wait Is Over",
+        subtitleText: "Something incredible drops today",
+        countdownStart: 3,
+        outroTitle: "We Are Live",
+        outroCta: "Join Now at mysite.com",
+
+        // Timing (in seconds)
+        durationIntro: 4,
+        durationCountdown: 4, // length of countdown scene
+        durationOutro: 4,
+
+        // Audio Track
+        audioUrl: "", // URL to background audio file
+        audioOffset: 0, // In seconds, trim offset into the source
+        audioVolume: 1, // 0 to 1
+
+        // Images (if any)
+        logoUrl: ""
+      };
+
+      // Set CSS vars
+      document.documentElement.style.setProperty('--bg-color', window.__vars.bgColor);
+      document.documentElement.style.setProperty('--accent-color', window.__vars.accentColor);
+      document.documentElement.style.setProperty('--text-color', window.__vars.textColor);
+      document.documentElement.style.setProperty('--font-primary', window.__vars.fontPrimary);
+    </script>
+
+    <style type="text/tailwindcss">
+      @theme {
+        --color-brand: var(--accent-color);
+        --color-bg-base: var(--bg-color);
+        --color-text-main: var(--text-color);
+        --font-display: var(--font-primary), sans-serif;
+      }
+    </style>
+
   </head>
   <body>
+    <!-- Root Composition -->
     <div
       id="root"
       data-composition-id="main"
       data-start="0"
-      data-duration="10"
+      data-duration="12"
       data-width="1920"
       data-height="1080"
     >
       
-      
+      <!-- Sub-compositions -->
+      <div id="comp-intro"
+           class="clip"
+           data-composition-id="intro"
+           data-composition-src="compositions/intro.html"
+           data-start="0"
+           data-duration="4"
+           data-track-index="1"></div>
 
-      <!--
-        Add your clips here. Example:
-        <div id="title" class="clip" data-start="0" data-duration="5" data-track-index="1"
-             style="font-size: 64px; color: #fff; padding: 40px">
-          Hello World
-        </div>
-      -->
+      <div id="comp-countdown"
+           class="clip"
+           data-composition-id="countdown"
+           data-composition-src="compositions/countdown.html"
+           data-start="4"
+           data-duration="4"
+           data-track-index="1"></div>
+
+      <div id="comp-outro"
+           class="clip"
+           data-composition-id="outro"
+           data-composition-src="compositions/outro.html"
+           data-start="8"
+           data-duration="4"
+           data-track-index="1"></div>
+
     </div>
 
     <script>
       window.__timelines = window.__timelines || {};
       const tl = gsap.timeline({ paused: true });
-      // Example: tl.from("#title", { opacity: 0, y: -50, duration: 1 }, 0);
       window.__timelines["main"] = tl;
+
+      const totalDuration = window.__vars.durationIntro + window.__vars.durationCountdown + window.__vars.durationOutro;
+
+      // Update dynamic durations based on variables
+      document.getElementById("root").setAttribute("data-duration", totalDuration);
+      document.getElementById("comp-intro").setAttribute("data-duration", window.__vars.durationIntro);
+
+      document.getElementById("comp-countdown").setAttribute("data-start", window.__vars.durationIntro);
+      document.getElementById("comp-countdown").setAttribute("data-duration", window.__vars.durationCountdown);
+
+      document.getElementById("comp-outro").setAttribute("data-start", window.__vars.durationIntro + window.__vars.durationCountdown);
+      document.getElementById("comp-outro").setAttribute("data-duration", window.__vars.durationOutro);
+
+      // Dynamically add audio tag only if url is provided (avoids static html linter src validation failing for empty src)
+      if (window.__vars.audioUrl) {
+        const audioEl = document.createElement("audio");
+        audioEl.id = "bg-audio";
+        audioEl.className = "clip";
+        audioEl.setAttribute("data-start", 0);
+        audioEl.setAttribute("data-track-index", 2);
+        audioEl.setAttribute("preload", "auto");
+        audioEl.src = window.__vars.audioUrl;
+        audioEl.setAttribute("data-media-start", window.__vars.audioOffset);
+        audioEl.setAttribute("data-volume", window.__vars.audioVolume);
+        audioEl.setAttribute("data-duration", totalDuration);
+        document.getElementById("root").appendChild(audioEl);
+      }
     </script>
   </body>
 </html>

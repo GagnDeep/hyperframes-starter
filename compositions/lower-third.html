@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <div
+      id="lower-third-root"
+      data-composition-id="lower-third"
+      data-start="0"
+      data-duration="5.5"
+      data-width="1200"
+      data-height="300"
+      class="flex items-end gap-6 w-full h-full"
+    >
+      <!-- Logo Box Wrapper -->
+      <div id="lt-logo-wrapper" class="w-32 h-32 flex-shrink-0 opacity-0" data-layout-allow-overflow="true">
+        <!-- Logo Box -->
+        <div id="lt-logo-box" class="w-full h-full bg-white rounded-2xl flex items-center justify-center shadow-2xl p-6 relative overflow-hidden" data-layout-allow-overflow="true">
+          <img id="lt-logo" src="" alt="Logo" class="w-full h-full object-contain relative z-10" />
+          <div id="lt-logo-accent" class="absolute bottom-0 left-0 right-0 h-2"></div>
+        </div>
+      </div>
+
+      <!-- Text Box Wrapper -->
+      <div id="lt-text-wrapper" class="flex-1 opacity-0" data-layout-allow-overflow="true">
+        <!-- Text Box -->
+        <div id="lt-text-box" class="bg-white/95 backdrop-blur-md rounded-2xl p-8 shadow-2xl border-l-8" data-layout-allow-overflow="true">
+          <div id="lt-badge-wrapper" class="mb-4 opacity-0">
+            <!-- Using border and solid colors to avoid contrast issues -->
+            <div id="lt-badge" class="inline-block px-4 py-1 rounded-full text-sm font-bold tracking-wider uppercase border-2 border-black text-black"></div>
+          </div>
+          <h1 id="lt-title" class="text-5xl font-bold mb-3 tracking-tight opacity-0"></h1>
+          <p id="lt-subtitle" class="text-2xl leading-relaxed opacity-0"></p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Make sure elements are available before running code
+      document.addEventListener("DOMContentLoaded", () => {
+        // Apply variables from parent window if they exist
+        const v = window.__vars || {};
+
+        // Setup Lower Third Elements
+        const logoImg = document.getElementById('lt-logo');
+        if(logoImg && v.logoImage) logoImg.src = v.logoImage;
+
+        const logoAccent = document.getElementById('lt-logo-accent');
+        if(logoAccent && v.primaryColor) logoAccent.style.backgroundColor = v.primaryColor;
+
+        const badge = document.getElementById('lt-badge');
+        if(badge && v.featureHighlight) badge.textContent = v.featureHighlight;
+        if(badge && v.titleFont) badge.style.fontFamily = v.titleFont;
+        if(badge) badge.style.color = "#000000"; // Force solid color
+
+        const title = document.getElementById('lt-title');
+        if(title && v.productTitle) title.textContent = v.productTitle;
+        if(title && v.textColor) title.style.color = v.textColor;
+        if(title && v.titleFont) title.style.fontFamily = v.titleFont;
+
+        const subtitle = document.getElementById('lt-subtitle');
+        if(subtitle && v.productSubtitle) subtitle.textContent = v.productSubtitle;
+        if(subtitle && v.subtitleColor) subtitle.style.color = v.subtitleColor;
+        if(subtitle && v.bodyFont) subtitle.style.fontFamily = v.bodyFont;
+
+        const textBox = document.getElementById('lt-text-box');
+        if(textBox && v.accentColor) textBox.style.borderColor = v.accentColor;
+
+        // Configuration variables with fallbacks
+        const durationIn = typeof v.transitionInDuration === 'number' ? v.transitionInDuration : 1.2;
+        const durationOut = typeof v.transitionOutDuration === 'number' ? v.transitionOutDuration : 0.8;
+        const motionDir = v.motionDirection || "left";
+
+        let startX = -50;
+        let startY = 0;
+        let clipPathStart = "inset(0 100% 0 0)";
+
+        if (motionDir === "bottom") {
+            startX = 0;
+            startY = 50;
+            clipPathStart = "inset(100% 0 0 0)";
+        } else if (motionDir === "right") {
+            startX = 50;
+            startY = 0;
+            clipPathStart = "inset(0 0 0 100%)";
+        }
+
+        // GSAP Animations
+        window.__timelines = window.__timelines || {};
+        const tl = gsap.timeline({ paused: true });
+
+        // Animations are now relative to the sub-composition timeline (starts at 0)
+        const entryTime = 0;
+
+        // Logo box slides up and fades in (animating wrapper to avoid overlaps)
+        tl.fromTo("#lt-logo-wrapper",
+          { y: 100, opacity: 0 },
+          { y: 0, opacity: 1, duration: Math.min(1, durationIn), ease: "back.out(1.2)", overwrite: "auto" },
+          entryTime
+        );
+
+        // Text box slides in based on motion direction
+        tl.fromTo("#lt-text-wrapper",
+          { x: startX, y: startY, opacity: 0, clipPath: clipPathStart },
+          { x: 0, y: 0, opacity: 1, clipPath: "inset(0 0% 0 0)", duration: durationIn, ease: "power3.out", overwrite: "auto" },
+          entryTime + (durationIn * 0.15)
+        );
+
+        // Text lines stagger in
+        const textElements = ["#lt-badge-wrapper", "#lt-title", "#lt-subtitle"].filter(sel => document.querySelector(sel));
+        if (textElements.length > 0) {
+          tl.fromTo(textElements,
+            { y: 20, opacity: 0 },
+            { y: 0, opacity: 1, duration: durationIn * 0.6, stagger: durationIn * 0.1, ease: "power2.out" },
+            entryTime + (durationIn * 0.4)
+          );
+        }
+
+        // --- Lower Third Exit ---
+        // We can grab the duration from the window config since we own the variables pattern
+        const totalDuration = (v && v.lowerThirdDuration) ? v.lowerThirdDuration : 5.5;
+
+        // Apply the duration to our root element for this component so framework reads it
+        const compRoot = document.getElementById('lower-third-root');
+        if(compRoot) {
+            compRoot.setAttribute('data-duration', totalDuration);
+        }
+
+        const exitTime = totalDuration - durationOut;
+
+        // Fade and slide out individual elements
+        if (document.querySelector("#lt-logo-wrapper")) {
+          tl.to("#lt-logo-wrapper", { y: 50, opacity: 0, duration: durationOut, ease: "power2.in", overwrite: "auto" }, exitTime);
+        }
+        if (document.querySelector("#lt-text-wrapper")) {
+          tl.to("#lt-text-wrapper", { y: 50, opacity: 0, duration: durationOut, ease: "power2.in", overwrite: "auto" }, exitTime + (durationOut * 0.1));
+        }
+
+        // Hard kill at the end boundary to prevent stale visibility during seeking
+        if (compRoot) {
+          tl.set("#lower-third-root", { opacity: 0 }, totalDuration);
+        }
+
+        window.__timelines["lower-third"] = tl;
+      });
+    </script>
+  </body>
+</html>

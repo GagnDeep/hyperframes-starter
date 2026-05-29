@@ -13,37 +13,50 @@
     <script>
       // Global variable configuration block for HyperFrames template
       window.__vars = {
-        // Timing
-        duration: 8,           // Total video duration in seconds
-
-        // Colors & Background
+        // Platform & Global Settings
+        platform: "tiktok",    // "tiktok" (9:16) or "youtube" (16:9)
         bgColor: "#1a1a1a",    // Dark background for meme focus
         accentColor: "#ff3b30",// Vibrant accent for highlights
 
-        // Typography
+        // Typography Settings
         fontFamily: "Impact, montserrat, sans-serif", // Deterministic fallback
-        textColor: "#ffffff",  // Primary text color
         textStroke: "2px #000000", // Outline for meme text
 
-        // Content
-        topText: "WHEN YOU FINALLY FIX", // Top caption
-        bottomText: "THAT ONE BUG",      // Bottom caption
-
-        // Media
-        // Using a generic placeholder image. Buyer should replace this with their reaction video/image
-        mediaUrl: "https://placehold.co/1080x1080/444/999?text=Reaction+Image",
-        mediaType: "image", // 'image' or 'video'
+        // Sequential Memes List
+        memes: [
+          {
+            duration: 5,
+            topText: "WHEN YOU FINALLY FIX",
+            bottomText: "THAT ONE BUG",
+            textColor: "#ffffff",
+            mediaUrl: "https://placehold.co/1920x1080/444/999?text=Reaction+1",
+            mediaType: "image",
+            animationPreset: "typewriter" // slam, fade, slide, typewriter
+          },
+          {
+            duration: 5,
+            topText: "BUT THEN YOU SEE",
+            bottomText: "5 NEW ERRORS",
+            textColor: "#ffeb3b", // Yellow text for the second meme
+            mediaUrl: "https://placehold.co/1920x1080/aa2222/ffffff?text=Reaction+2",
+            mediaType: "image",
+            animationPreset: "slam"
+          }
+        ],
 
         // Animation
         animationSpeed: 1.0, // Multiplier for animation speed
       };
+
+      // Set dimensions early based on platform
+      const isVertical = window.__vars.platform === "tiktok" || window.__vars.platform === "reels" || window.__vars.platform === "shorts";
+      window.__vars.canvasWidth = isVertical ? 1080 : 1920;
+      window.__vars.canvasHeight = isVertical ? 1920 : 1080;
     </script>
 
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       html, body {
-        width: 1080px;
-        height: 1920px;
         overflow: hidden;
         background-color: var(--bg-color, #000);
       }
@@ -68,45 +81,68 @@
     </style>
   </head>
   <body>
-    <!-- Root Composition: 9:16 aspect ratio (1080x1920) -->
+    <!-- Root Composition -->
+    <!-- Important: We MUST hardcode data-width and data-height here to pass static linting.
+         The linter does not execute the script to find dimensions, so we provide a default 9:16 fallback
+         and update dynamically at runtime. -->
     <div
       id="root"
       data-composition-id="meme-reaction"
       data-start="0"
-      data-duration="8"
       data-width="1080"
       data-height="1920"
-      class="w-full h-full relative flex flex-col items-center justify-center"
+      class="relative flex flex-col items-center justify-center"
     >
-      
-      <!-- Sub-composition for the main meme content -->
-      <div
-        id="meme-content"
-        data-composition-id="meme-content"
-        class="clip w-full h-full absolute inset-0"
-        data-start="0"
-        data-duration="8"
-        data-track-index="1"
-        data-composition-src="compositions/meme-content.html"
-      ></div>
-
+      <!-- Sub-compositions will be dynamically generated here by JS for sequential memes -->
     </div>
 
     <script>
       // Apply variables to styling and DOM
       document.body.style.setProperty('--bg-color', window.__vars.bgColor);
 
-      // Update root duration
-      document.getElementById('root').setAttribute('data-duration', window.__vars.duration);
-      document.getElementById('meme-content').setAttribute('data-duration', window.__vars.duration);
+      const root = document.getElementById('root');
 
-      // GSAP Timeline setup
+      // Update viewport meta dynamically (helpful for some studio tools)
+      const viewport = document.querySelector('meta[name="viewport"]');
+      if (viewport) {
+         viewport.setAttribute('content', `width=${window.__vars.canvasWidth}, height=${window.__vars.canvasHeight}`);
+      }
+
+      // Set precise canvas bounds for the root and the body
+      document.body.style.width = window.__vars.canvasWidth + 'px';
+      document.body.style.height = window.__vars.canvasHeight + 'px';
+      root.style.width = window.__vars.canvasWidth + 'px';
+      root.style.height = window.__vars.canvasHeight + 'px';
+      root.setAttribute('data-width', window.__vars.canvasWidth);
+      root.setAttribute('data-height', window.__vars.canvasHeight);
+
+      // Calculate total duration based on memes array
+      const totalDuration = window.__vars.memes.reduce((acc, curr) => acc + curr.duration, 0);
+      window.__vars.duration = totalDuration; // Sync global duration
+      root.setAttribute('data-duration', totalDuration);
+
+      // Generate sub-compositions dynamically for each sequential meme
+      let currentStartTime = 0;
+      window.__vars.memes.forEach((meme, index) => {
+        const subComp = document.createElement('div');
+        subComp.id = `meme-content-${index}`;
+        subComp.className = 'clip w-full h-full absolute inset-0';
+        subComp.setAttribute('data-composition-id', `meme-content-${index}`);
+        subComp.setAttribute('data-start', currentStartTime);
+        subComp.setAttribute('data-duration', meme.duration);
+        subComp.setAttribute('data-track-index', index + 1);
+        subComp.setAttribute('data-composition-src', 'compositions/meme-content.html');
+        // Store the index as a data attribute so the sub-comp knows which meme it is
+        subComp.setAttribute('data-meme-index', index);
+
+        root.appendChild(subComp);
+
+        currentStartTime += meme.duration;
+      });
+
+      // GSAP Timeline setup for root (paused)
       window.__timelines = window.__timelines || {};
       const tl = gsap.timeline({ paused: true });
-
-      // The main timeline doesn't need to do much since the sub-composition will handle its own animations,
-      // but we register it anyway.
-
       window.__timelines["meme-reaction"] = tl;
     </script>
   </body>

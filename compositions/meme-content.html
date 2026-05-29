@@ -4,11 +4,12 @@
     <meta charset="UTF-8" />
   </head>
   <body>
+    <!-- Fallback statically-lintable data-width and data-height provided -->
     <div
       id="meme-container"
       data-composition-id="meme-content"
       data-start="0"
-      data-duration="8"
+      data-duration="5"
       data-width="1080"
       data-height="1920"
       class="w-full h-full flex flex-col justify-between items-center bg-transparent py-10"
@@ -17,13 +18,13 @@
       <!-- Top Text Region -->
       <div
         id="top-text-clip"
-        class="clip w-[90%] mt-[250px] z-20 flex justify-center items-center"
+        class="clip w-[90%] z-20 flex justify-center items-center flex-shrink-0"
         data-start="0"
-        data-duration="8"
+        data-duration="5"
         data-track-index="1"
         data-layout-allow-overflow
       >
-        <h1 id="top-text" data-layout-allow-overflow class="meme-text text-white text-[80px] leading-tight break-words text-center font-bold tracking-tight px-4">
+        <h1 id="top-text" data-layout-allow-overflow class="meme-text px-4 break-words font-bold tracking-tight">
           TOP TEXT
         </h1>
       </div>
@@ -31,30 +32,29 @@
       <!-- Media Region -->
       <div
         id="media-clip"
-        class="clip w-[90%] flex-1 max-h-[900px] my-4 relative flex justify-center items-center overflow-hidden bg-black/50 border-4 border-white"
+        class="clip w-[90%] flex-1 my-4 relative flex justify-center items-center overflow-hidden bg-black/50 border-4 border-white"
         data-start="0"
-        data-duration="8"
+        data-duration="5"
         data-track-index="2"
       >
         <img
           id="meme-image"
           src=""
-          class="w-full h-full object-cover hidden"
+          class="w-full h-full object-contain hidden"
           alt="Meme visual"
         />
-        <!-- Removed video element for generic image usage unless mediaType='video', which prevents waiting for non-existent video source to load -->
       </div>
 
       <!-- Bottom Text Region -->
       <div
         id="bottom-text-clip"
-        class="clip w-[90%] mb-[450px] z-20 flex justify-center items-center"
+        class="clip w-[90%] z-20 flex justify-center items-center flex-shrink-0"
         data-start="0"
-        data-duration="8"
+        data-duration="5"
         data-track-index="3"
         data-layout-allow-overflow
       >
-        <h1 id="bottom-text" data-layout-allow-overflow class="meme-text text-white text-[80px] leading-tight break-words text-center font-bold tracking-tight px-4">
+        <h1 id="bottom-text" data-layout-allow-overflow class="meme-text px-4 break-words font-bold tracking-tight">
           BOTTOM TEXT
         </h1>
       </div>
@@ -62,105 +62,222 @@
     </div>
 
     <script>
-      const vars = window.parent.__vars || window.__vars || {
-        duration: 8,
+      // Retrieve the current frame context (meme index)
+      let memeIndex = 0;
+
+      if (window.frameElement && window.frameElement.hasAttribute('data-meme-index')) {
+          memeIndex = parseInt(window.frameElement.getAttribute('data-meme-index'), 10);
+      } else {
+          const scriptTag = document.currentScript;
+          if (scriptTag) {
+              const hostElement = scriptTag.closest('[data-composition-src]');
+              if (hostElement && hostElement.hasAttribute('data-meme-index')) {
+                  memeIndex = parseInt(hostElement.getAttribute('data-meme-index'), 10);
+              }
+          }
+      }
+
+      const globalVars = window.parent.__vars || window.__vars;
+      const memeVars = (globalVars && globalVars.memes && globalVars.memes[memeIndex]) || {
+        duration: 5,
         topText: "TOP TEXT",
         bottomText: "BOTTOM TEXT",
         textColor: "#ffffff",
         mediaUrl: "https://placehold.co/1080x1080/444/999?text=Reaction",
         mediaType: "image",
-        animationSpeed: 1.0
+        animationPreset: "slam"
+      };
+
+      const animationSpeed = (globalVars && globalVars.animationSpeed) || 1.0;
+      const isVertical = globalVars && globalVars.canvasHeight > globalVars.canvasWidth;
+      const canvasWidth = (globalVars && globalVars.canvasWidth) || 1080;
+      const canvasHeight = (globalVars && globalVars.canvasHeight) || 1920;
+
+      // Reusable Custom SplitText utility (avoids premium GSAP dependencies)
+      function createSplitText(element) {
+          const text = element.textContent.trim();
+          element.textContent = '';
+          const words = text.split(' ');
+
+          words.forEach((word, wordIndex) => {
+              const wordSpan = document.createElement('span');
+              wordSpan.style.display = 'inline-block';
+              wordSpan.style.whiteSpace = 'nowrap';
+
+              const chars = word.split('');
+              chars.forEach(char => {
+                  const charSpan = document.createElement('span');
+                  charSpan.textContent = char;
+                  charSpan.style.display = 'inline-block';
+                  charSpan.className = 'meme-char';
+                  wordSpan.appendChild(charSpan);
+              });
+
+              element.appendChild(wordSpan);
+
+              if (wordIndex < words.length - 1) {
+                  const spaceSpan = document.createElement('span');
+                  spaceSpan.innerHTML = '&nbsp;';
+                  spaceSpan.style.display = 'inline-block';
+                  element.appendChild(spaceSpan);
+              }
+          });
+
+          return element.querySelectorAll('.meme-char');
+      }
+
+      // Reusable GSAP text pop-in animations
+      const presets = {
+          slam: (tl, selector, startTime, duration) => {
+              tl.set(selector, { scale: 3, opacity: 0, rotation: -5 });
+              tl.to(selector, { scale: 1, opacity: 1, rotation: 0, duration: 0.4 * animationSpeed, ease: "power4.inOut" }, startTime);
+          },
+          fade: (tl, selector, startTime, duration) => {
+              tl.set(selector, { scale: 1, opacity: 0, y: 50 });
+              tl.to(selector, { opacity: 1, y: 0, duration: 0.6 * animationSpeed, ease: "power2.out" }, startTime);
+          },
+          slide: (tl, selector, startTime, duration) => {
+              tl.set(selector, { scale: 1, opacity: 0, x: -100 });
+              tl.to(selector, { opacity: 1, x: 0, duration: 0.5 * animationSpeed, ease: "back.out(1.5)" }, startTime);
+          },
+          typewriter: (tl, selector, startTime, duration) => {
+              const el = document.querySelector(selector);
+              if (el) {
+                  const chars = createSplitText(el);
+                  tl.set(chars, { opacity: 0, scale: 0, rotation: 10 });
+                  tl.to(chars, {
+                      opacity: 1,
+                      scale: 1,
+                      rotation: 0,
+                      duration: 0.2 * animationSpeed,
+                      stagger: 0.05 * animationSpeed,
+                      ease: "back.out(2)"
+                  }, startTime);
+              }
+          }
       };
 
       function initMemeContent() {
           const container = document.getElementById('meme-container');
           if (!container) return;
 
-          container.setAttribute('data-duration', vars.duration);
+          container.setAttribute('data-duration', memeVars.duration);
+          container.setAttribute('data-width', canvasWidth);
+          container.setAttribute('data-height', canvasHeight);
 
-          const clips = document.querySelectorAll('.clip');
-          clips.forEach(clip => clip.setAttribute('data-duration', vars.duration));
+          // Apply dimensional responsive styling
+          const topTextEl = container.querySelector('#top-text');
+          const bottomTextEl = container.querySelector('#bottom-text');
+          const topClip = container.querySelector('#top-text-clip');
+          const bottomClip = container.querySelector('#bottom-text-clip');
 
-          // Apply Text
-          const topTextEl = document.getElementById('top-text');
-          const bottomTextEl = document.getElementById('bottom-text');
+          if (isVertical) {
+             // 9:16 styles
+             if (topClip) topClip.style.marginTop = '250px';
+             if (bottomClip) bottomClip.style.marginBottom = '450px';
+             if (topTextEl) topTextEl.style.fontSize = '80px';
+             if (bottomTextEl) bottomTextEl.style.fontSize = '80px';
+          } else {
+             // 16:9 styles
+             if (topClip) topClip.style.marginTop = '50px';
+             if (bottomClip) bottomClip.style.marginBottom = '50px';
+             if (topTextEl) topTextEl.style.fontSize = '120px';
+             if (bottomTextEl) bottomTextEl.style.fontSize = '120px';
+          }
+
+          const uniqueId = `meme-content-${memeIndex}`;
+          container.setAttribute('data-composition-id', uniqueId);
+
+          const clips = container.querySelectorAll('.clip');
+          clips.forEach(clip => clip.setAttribute('data-duration', memeVars.duration));
 
           if (topTextEl) {
-              topTextEl.textContent = vars.topText;
-              topTextEl.style.color = vars.textColor;
+              topTextEl.textContent = memeVars.topText;
+              topTextEl.style.color = memeVars.textColor;
+              topTextEl.id = `top-text-${memeIndex}`;
           }
           if (bottomTextEl) {
-              bottomTextEl.textContent = vars.bottomText;
-              bottomTextEl.style.color = vars.textColor;
+              bottomTextEl.textContent = memeVars.bottomText;
+              bottomTextEl.style.color = memeVars.textColor;
+              bottomTextEl.id = `bottom-text-${memeIndex}`;
           }
 
-          // Apply Media
-          const mediaContainer = document.getElementById('media-clip');
+          const mediaClipEl = container.querySelector('#media-clip');
+          if (mediaClipEl) mediaClipEl.id = `media-clip-${memeIndex}`;
 
-          if (vars.mediaType === 'image') {
-            const imgEl = document.getElementById('meme-image');
+          const topTextClipEl = container.querySelector('#top-text-clip');
+          if (topTextClipEl) topTextClipEl.id = `top-text-clip-${memeIndex}`;
+
+          const bottomTextClipEl = container.querySelector('#bottom-text-clip');
+          if (bottomTextClipEl) bottomTextClipEl.id = `bottom-text-clip-${memeIndex}`;
+
+          // Apply Media
+          if (memeVars.mediaType === 'image') {
+            const imgEl = container.querySelector('#meme-image');
             if (imgEl) {
-              imgEl.src = vars.mediaUrl;
+              imgEl.src = memeVars.mediaUrl;
               imgEl.classList.remove('hidden');
+              imgEl.id = `meme-image-${memeIndex}`;
             }
-          } else if (vars.mediaType === 'video') {
-            // Only inject video if explicitly requested to prevent render hang on empty src
+          } else if (memeVars.mediaType === 'video') {
             const vidEl = document.createElement('video');
-            vidEl.id = 'meme-video';
-            vidEl.src = vars.mediaUrl;
-            vidEl.className = 'w-full h-full object-cover';
+            vidEl.id = `meme-video-${memeIndex}`;
+            vidEl.src = memeVars.mediaUrl;
+            vidEl.className = 'w-full h-full object-contain';
             vidEl.muted = true;
             vidEl.loop = true;
             vidEl.playsInline = true;
-            mediaContainer.appendChild(vidEl);
+            if (mediaClipEl) mediaClipEl.appendChild(vidEl);
           }
 
           // GSAP Animation setup
           window.__timelines = window.__timelines || {};
           const tl = gsap.timeline({ paused: true });
 
-          // Setup initial state
-          tl.set("#media-clip", { scale: 0.9, opacity: 0 });
-          tl.set("#top-text", { scale: 3, opacity: 0, rotation: -5 });
-          tl.set("#bottom-text", { scale: 3, opacity: 0, rotation: 5 });
-
-          // Animate media
-          tl.to("#media-clip",
-            { scale: 1, opacity: 1, duration: 0.6 * vars.animationSpeed, ease: "back.out(1.7)" },
+          // Setup initial state for media
+          tl.set(`#media-clip-${memeIndex}`, { scale: 0.9, opacity: 0 });
+          tl.to(`#media-clip-${memeIndex}`,
+            { scale: 1, opacity: 1, duration: 0.6 * animationSpeed, ease: "back.out(1.7)" },
             0
           );
 
-          // Animate text
-          tl.to("#top-text",
-            { scale: 1, opacity: 1, rotation: 0, duration: 0.4 * vars.animationSpeed, ease: "power4.inOut" },
-            0.3 * vars.animationSpeed
-          );
+          // Animate text using selected preset
+          const presetFn = presets[memeVars.animationPreset] || presets['slam'];
+          presetFn(tl, `#top-text-${memeIndex}`, 0.3 * animationSpeed, memeVars.duration);
+          presetFn(tl, `#bottom-text-${memeIndex}`, 0.5 * animationSpeed, memeVars.duration);
 
-          tl.to("#bottom-text",
-            { scale: 1, opacity: 1, rotation: 0, duration: 0.4 * vars.animationSpeed, ease: "power4.inOut" },
-            0.5 * vars.animationSpeed
-          );
+          // Breathing effect ONLY if we didn't split the text to characters (which messes with block scaling)
+          if (memeVars.animationPreset !== 'typewriter') {
+            const cycleDuration = 2 * animationSpeed;
+            const repeatCount = Math.floor(memeVars.duration / cycleDuration) - 1;
 
-          const cycleDuration = 2 * vars.animationSpeed;
-          const repeatCount = Math.floor(vars.duration / cycleDuration) - 1;
-
-          if (repeatCount > 0) {
-            tl.to(["#top-text", "#bottom-text"], {
-              scale: 1.05,
-              duration: cycleDuration,
-              ease: "sine.inOut",
-              yoyo: true,
-              repeat: repeatCount
-            }, "+=0.2");
+            if (repeatCount > 0) {
+              tl.to([`#top-text-${memeIndex}`, `#bottom-text-${memeIndex}`], {
+                scale: 1.05,
+                duration: cycleDuration,
+                ease: "sine.inOut",
+                yoyo: true,
+                repeat: repeatCount
+              }, "+=0.2");
+            }
           }
 
-          tl.set(["#top-text-clip", "#bottom-text-clip", "#media-clip"], { opacity: 0 }, vars.duration);
+          // Hard kill visibility at end
+          tl.set([
+              `#top-text-clip-${memeIndex}`,
+              `#bottom-text-clip-${memeIndex}`,
+              `#media-clip-${memeIndex}`
+          ], { opacity: 0 }, memeVars.duration);
 
-          window.__timelines["meme-content"] = tl;
+          // Register unique timeline ID for this sub-composition
+          window.__timelines[uniqueId] = tl;
       }
 
-      document.addEventListener('DOMContentLoaded', initMemeContent);
-      if (document.getElementById('meme-container')) initMemeContent();
+      if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', () => initMemeContent());
+      } else {
+          initMemeContent();
+      }
     </script>
   </body>
 </html>

@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=1920, height=1080" />
+    <meta name="viewport" content="width=1080, height=1920" />
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <style>
       * {
@@ -13,38 +13,148 @@
       html,
       body {
         margin: 0;
-        width: 1920px;
-        height: 1080px;
+        width: 1080px;
+        height: 1920px;
         overflow: hidden;
         background: #000;
       }
     </style>
-  </head>
+
+<script>
+window.__tailwindReady=new Promise(function(resolve){
+var loaded=document.readyState==="complete";
+var resolved=false;
+var observer;
+function readTailwindCss(){var styles=document.querySelectorAll("style");for(var i=styles.length-1;i>=0;i--){var text=styles[i].textContent||"";if(text.indexOf("tailwindcss v")!==-1)return text;}return "";}
+function finish(){if(resolved||!loaded||!readTailwindCss())return;resolved=true;if(observer)observer.disconnect();resolve(true);}
+observer=new MutationObserver(finish);
+observer.observe(document.documentElement,{childList:true,subtree:true,characterData:true});
+if(loaded){finish();}else{window.addEventListener("load",function(){loaded=true;finish();},{once:true});}
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.2.4/dist/index.global.js" integrity="sha384-v5YF9xS+gLRWdvrQ0u/WRbCkjSIH0NjHIPe8tBL1ZRrmI7PiSH6LLdzs0aAIMCuh" crossorigin="anonymous"></script>
+<style type="text/tailwindcss">
+  @theme {
+    --color-brand-primary: var(--color-brand-primary);
+    --color-brand-secondary: var(--color-brand-secondary);
+    --color-brand-accent: var(--color-brand-accent);
+    --color-brand-text: var(--color-brand-text);
+    --font-sans: var(--font-primary);
+  }
+</style>
+</head>
   <body>
+    <!-- Configurable Variables Block -->
+    <script>
+      // Single source of truth for all template customizations.
+      window.__vars = {
+        // Colors
+        colors: {
+          background: "#0F172A", // Slate 900
+          primary: "#3B82F6",    // Blue 500
+          accent: "#F59E0B",     // Amber 500
+          text: "#F8FAFC",       // Slate 50
+          card: "#1E293B",       // Slate 800
+        },
+        // Typography
+        fonts: {
+          primary: "'Inter', sans-serif",
+          heading: "'Montserrat', sans-serif",
+        },
+        // Content
+        text: {
+          badge: "Bestseller of the Month",
+          title: "HyperX Wireless Headphones",
+          description: "Experience crystal-clear audio with our latest noise-canceling technology.",
+          price: "$199.99",
+          cta: "Shop Now",
+        },
+        // Images (using public unpslash URLs for placeholders)
+        media: {
+          productImage: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=1080&auto=format&fit=crop",
+          logo: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=200&auto=format&fit=crop" // placeholder logo
+        },
+        // Timing settings
+        timing: {
+          duration: 12, // seconds
+        }
+      };
+
+      // Apply variables to CSS roots for Tailwind to pick up
+      document.documentElement.style.setProperty('--color-brand-primary', window.__vars.colors.primary);
+      document.documentElement.style.setProperty('--color-brand-secondary', window.__vars.colors.card);
+      document.documentElement.style.setProperty('--color-brand-accent', window.__vars.colors.accent);
+      document.documentElement.style.setProperty('--color-brand-text', window.__vars.colors.text);
+      document.documentElement.style.setProperty('--font-primary', window.__vars.fonts.primary);
+      document.documentElement.style.background = window.__vars.colors.background;
+      document.body.style.fontFamily = window.__vars.fonts.primary;
+      document.body.style.color = window.__vars.colors.text;
+    </script>
+
+    <!-- Main Composition -->
     <div
       id="root"
       data-composition-id="main"
       data-start="0"
-      data-duration="10"
-      data-width="1920"
-      data-height="1080"
+      data-duration="12"
+      data-width="1080"
+      data-height="1920"
+      class="relative w-full h-full flex flex-col items-center justify-center overflow-hidden"
     >
       
-      
+      <!-- Logo overlay -->
+      <div id="logo-container" class="clip absolute top-16 left-16 z-50 flex items-center gap-4" data-start="0" data-duration="12" data-track-index="3">
+        <img id="brand-logo" src="" class="h-12 w-auto object-contain filter invert opacity-80" alt="Logo" />
+      </div>
 
-      <!--
-        Add your clips here. Example:
-        <div id="title" class="clip" data-start="0" data-duration="5" data-track-index="1"
-             style="font-size: 64px; color: #fff; padding: 40px">
-          Hello World
-        </div>
-      -->
+      <!-- Background Elements -->
+      <div class="clip absolute inset-0 z-0 bg-brand-primary opacity-20 blur-3xl rounded-full scale-150" data-start="0" data-duration="12" data-track-index="0" id="bg-glow"></div>
+
+      <!-- We will load sub-compositions here -->
+      <!-- Sub-composition: Title Sequence -->
+      <div
+        id="title-comp"
+        class="clip absolute top-32 w-full flex justify-center z-20"
+        data-composition-id="title-comp"
+        data-start="0"
+        data-duration="12"
+        data-track-index="1"
+        data-composition-src="compositions/title.html"
+      ></div>
+
+      <!-- Sub-composition: Product Card -->
+      <div
+        id="product-comp"
+        class="clip absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full flex justify-center z-10"
+        data-composition-id="product-card"
+        data-start="1"
+        data-duration="11"
+        data-track-index="2"
+        data-composition-src="compositions/product-card.html"
+      ></div>
+
     </div>
 
     <script>
+      // Populate standard DOM elements before GSAP setup
+      document.getElementById('brand-logo').src = window.__vars.media.logo;
+
+      // Ensure timeline map exists
       window.__timelines = window.__timelines || {};
+
+      // Main timeline
       const tl = gsap.timeline({ paused: true });
-      // Example: tl.from("#title", { opacity: 0, y: -50, duration: 1 }, 0);
+
+      // Subtle background animation
+      tl.fromTo("#bg-glow",
+        { scale: 1, opacity: 0.1 },
+        { scale: 1.5, opacity: 0.3, duration: 12, ease: "sine.inOut" },
+        0
+      );
+
+      // Logo fade in
+      tl.from("#logo-container", { opacity: 0, x: -20, duration: 1, ease: "power2.out" }, 0.5);
+
       window.__timelines["main"] = tl;
     </script>
   </body>

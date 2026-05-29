@@ -1,0 +1,92 @@
+<div class="relative w-full h-full flex flex-col items-center justify-center overflow-hidden"
+     data-composition-id="intro"
+     data-width="1080"
+     data-height="1920">
+  <style>
+    #intro-brand {
+      font-family: var(--font-bold, sans-serif);
+      color: var(--theme-fg);
+      text-shadow: 4px 4px 0px var(--theme-highlight);
+      line-height: 1.2;
+    }
+    #intro-hook {
+      font-family: var(--font-bold, sans-serif);
+      color: var(--theme-accent-fg);
+      background-color: var(--theme-accent);
+      padding: 10px 40px;
+      transform: skew(-10deg);
+      border-radius: 8px;
+      line-height: 1.2;
+    }
+    #intro-subtext {
+      font-family: var(--font-main, sans-serif);
+      color: var(--theme-fg);
+      letter-spacing: 0.1em;
+      line-height: 1.2;
+    }
+  </style>
+
+  <!-- Giant Background Text (Ghost Text) -->
+  <div id="intro-ghost-text" class="absolute font-bold opacity-10 whitespace-nowrap z-0 text-center" style="font-size: 150px; color: var(--theme-fg); font-family: var(--font-bold, sans-serif);" data-layout-allow-overflow>
+    SALE SALE SALE
+  </div>
+
+  <!-- Content Container -->
+  <div id="intro-content" class="relative z-10 flex flex-col items-center justify-center gap-10 w-full" data-layout-allow-overflow>
+    <!-- Custom Logo Injection -->
+    <div id="intro-logo-container" class="opacity-0 w-32 h-32 rounded-2xl overflow-hidden shadow-lg border-4" style="border-color: var(--theme-highlight);" data-layout-allow-overflow>
+      <img id="intro-logo" class="w-full h-full object-cover bg-white p-2" alt="Brand Logo" />
+    </div>
+
+    <div class="py-10">
+      <h2 id="intro-brand" class="intro-stagger-text text-5xl tracking-widest uppercase opacity-0 text-center max-w-[900px] break-words" data-layout-allow-overflow></h2>
+    </div>
+
+    <div id="intro-hook-container" class="intro-stagger-text opacity-0 py-10" data-layout-allow-overflow>
+      <h1 id="intro-hook" class="text-7xl uppercase font-black text-center shadow-2xl max-w-[900px] break-words" data-layout-allow-overflow></h1>
+    </div>
+
+    <div id="intro-subtext-container" class="intro-stagger-text opacity-0 bg-black/40 backdrop-blur-sm rounded-full px-8 py-3 my-10" data-layout-allow-overflow>
+      <p id="intro-subtext" class="text-3xl font-bold uppercase text-center max-w-[800px] break-words" data-layout-allow-overflow></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const vars = window.__vars;
+
+    document.getElementById('intro-brand').textContent = vars.text.brand;
+    document.getElementById('intro-hook').textContent = vars.text.hook;
+    document.getElementById('intro-subtext').textContent = vars.text.subtext;
+    document.getElementById('intro-logo').src = vars.media.logoImg;
+
+    document.getElementById('intro-ghost-text').textContent = (vars.text.hook + " ").repeat(2);
+
+    const tl = gsap.timeline({ paused: true });
+
+    tl.fromTo("#intro-ghost-text", { xPercent: 10, y: -200, rotation: -5 }, { xPercent: -20, duration: vars.timing.introDuration, ease: "none" }, 0);
+
+    // Stagger in logo, then text layers
+    tl.fromTo("#intro-logo-container",
+      { y: -50, opacity: 0, rotationY: 90 },
+      { y: 0, opacity: 1, rotationY: 0, duration: 0.6, ease: "power3.out" },
+      0.1
+    );
+
+    // Group stagger for text elements
+    tl.fromTo(".intro-stagger-text",
+      { y: 30, opacity: 0, scale: 0.95 },
+      { y: 0, opacity: 1, scale: 1, duration: 0.6, stagger: 0.15, ease: "power2.out" },
+      0.3
+    );
+
+    // Exit before the end of intro duration
+    const exitTime = vars.timing.introDuration - 0.6;
+    tl.to("#intro-content", { scale: 1.2, opacity: 0, filter: "blur(20px)", duration: 0.5, ease: "power2.in" }, exitTime);
+    tl.to("#intro-ghost-text", { opacity: 0, duration: 0.4 }, exitTime);
+
+    window.__timelines = window.__timelines || {};
+    window.__timelines["intro"] = tl;
+  })();
+</script>

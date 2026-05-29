@@ -2,50 +2,169 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=1920, height=1080" />
+    <meta name="viewport" content="width=1080, height=1920" />
+
+    <!-- GSAP for animations -->
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <!-- Tailwind v4 browser-runtime for styling -->
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+
+    <script>
+      // Single configuration object for all customizable values.
+      // Every editable value must be exposed here.
+      window.__vars = {
+        // Theme Colors (using a Bold/Energetic palette)
+        // High contrast adjustment for WCAG compliance
+        colors: {
+          bg: "#073B4C",       // Deep blue background
+          accent: "#FFD166",   // Bright yellow accent
+          accentFg: "#000000", // Black text for contrast on accent
+          fg: "#FFFFFF",       // White text
+          highlight: "#EF476F" // Pink highlight
+        },
+        // Typography
+        fonts: {
+          main: "system-ui, -apple-system, sans-serif",
+          bold: "Impact, system-ui, sans-serif"
+        },
+        // Content
+        text: {
+          brand: "ACME CORP",
+          hook: "FLASH SALE",
+          discount: "50% OFF",
+          subtext: "LIMITED TIME ONLY",
+          cta: "SHOP NOW"
+        },
+        // Timings (in seconds)
+        timing: {
+          totalDuration: 12,
+          introStart: 0,
+          introDuration: 3,
+          productStart: 3,
+          productDuration: 5,
+          outroStart: 8,
+          outroDuration: 4
+        },
+        // Media assets
+        media: {
+          productImg: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1080&h=1080&auto=format&fit=crop",
+          logoImg: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" // Use tiny transparent pixel as default valid logo
+        }
+      };
+    </script>
+
     <style>
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
-      html,
-      body {
-        margin: 0;
-        width: 1920px;
-        height: 1080px;
+      html, body {
+        width: 1080px;
+        height: 1920px;
         overflow: hidden;
-        background: #000;
+      }
+      /* Apply background color from vars early to prevent flicker */
+      body {
+        background-color: var(--theme-bg, #000);
+        font-family: var(--font-main, sans-serif);
       }
     </style>
   </head>
   <body>
+    <!-- Apply vars to CSS Custom Properties for Tailwind/CSS to use -->
+    <script>
+      document.body.style.setProperty('--theme-bg', window.__vars.colors.bg);
+      document.body.style.setProperty('--theme-accent', window.__vars.colors.accent);
+      document.body.style.setProperty('--theme-accent-fg', window.__vars.colors.accentFg);
+      document.body.style.setProperty('--theme-fg', window.__vars.colors.fg);
+      document.body.style.setProperty('--theme-highlight', window.__vars.colors.highlight);
+      document.body.style.setProperty('--font-main', window.__vars.fonts.main);
+      document.body.style.setProperty('--font-bold', window.__vars.fonts.bold);
+    </script>
+
+    <!-- Main Composition Root: 9:16 aspect ratio (1080x1920) for Social -->
     <div
       id="root"
-      data-composition-id="main"
+      data-composition-id="flash-sale-main"
       data-start="0"
-      data-duration="10"
-      data-width="1920"
-      data-height="1080"
+      data-width="1080"
+      data-height="1920"
+      class="relative w-full h-full overflow-hidden flex flex-col"
+      style="background-color: var(--theme-bg);"
     >
       
-      
+      <!-- Extracted Global Ambient Background Layer -->
+      <div
+        id="comp-ambient-bg"
+        class="clip absolute inset-0 z-0 opacity-20 pointer-events-none"
+        data-composition-id="ambient-bg"
+        data-composition-src="compositions/components/ambient-bg.html"
+        data-track-index="0"
+      ></div>
 
-      <!--
-        Add your clips here. Example:
-        <div id="title" class="clip" data-start="0" data-duration="5" data-track-index="1"
-             style="font-size: 64px; color: #fff; padding: 40px">
-          Hello World
-        </div>
-      -->
+      <!-- Sub-compositions (Modular sections) -->
+      <!-- Track indices offset to avoid conflicts: Intro(1), Product(2), Outro(3) -->
+      
+      <div
+        id="comp-intro"
+        class="clip absolute inset-0 z-10"
+        data-composition-id="intro"
+        data-composition-src="compositions/intro.html"
+        data-track-index="1"
+        data-layout-allow-overflow
+      ></div>
+
+      <div
+        id="comp-product"
+        class="clip absolute inset-0 z-20"
+        data-composition-id="product"
+        data-composition-src="compositions/product.html"
+        data-track-index="2"
+        data-layout-allow-overflow
+      ></div>
+
+      <div
+        id="comp-outro"
+        class="clip absolute inset-0 z-30"
+        data-composition-id="outro"
+        data-composition-src="compositions/outro.html"
+        data-track-index="3"
+        data-layout-allow-overflow
+      ></div>
+
     </div>
 
+    <!-- Apply timing vars dynamically to the DOM elements -->
     <script>
+      const timing = window.__vars.timing;
+
+      // Root element
+      document.getElementById("root").setAttribute("data-duration", timing.totalDuration.toString());
+
+      // Ambient BG
+      document.getElementById("comp-ambient-bg").setAttribute("data-start", "0");
+      document.getElementById("comp-ambient-bg").setAttribute("data-duration", timing.totalDuration.toString());
+
+      // Intro
+      document.getElementById("comp-intro").setAttribute("data-start", timing.introStart.toString());
+      document.getElementById("comp-intro").setAttribute("data-duration", timing.introDuration.toString());
+
+      // Product
+      document.getElementById("comp-product").setAttribute("data-start", timing.productStart.toString());
+      document.getElementById("comp-product").setAttribute("data-duration", timing.productDuration.toString());
+
+      // Outro
+      document.getElementById("comp-outro").setAttribute("data-start", timing.outroStart.toString());
+      document.getElementById("comp-outro").setAttribute("data-duration", timing.outroDuration.toString());
+    </script>
+
+    <script>
+      // Register Main Timeline
       window.__timelines = window.__timelines || {};
       const tl = gsap.timeline({ paused: true });
-      // Example: tl.from("#title", { opacity: 0, y: -50, duration: 1 }, 0);
-      window.__timelines["main"] = tl;
+
+      window.__timelines["flash-sale-main"] = tl;
     </script>
   </body>
 </html>

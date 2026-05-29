@@ -3,48 +3,110 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      html,
-      body {
-        margin: 0;
-        width: 1920px;
-        height: 1080px;
-        overflow: hidden;
-        background: #000;
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #000;
       }
     </style>
+    <script>
+      // Global configuration variables for the template
+      window.__vars = {
+        // Timing
+        duration: 8, // Total duration in seconds
+        lowerThirdStart: 1.5, // When the lower third appears
+        lowerThirdDuration: 5.5, // How long the lower third stays on screen
+
+        // Colors
+        primaryColor: "#2563eb",
+        secondaryColor: "#ffffff",
+        accentColor: "#047857", // Emerald-700
+        textColor: "#000000", // Force black
+        subtitleColor: "#000000", // Force black
+
+        // Text Content
+        productTitle: "New Feature: HyperSync",
+        productSubtitle: "Seamlessly sync your compositions across devices in real-time.",
+        featureHighlight: "Available Now",
+
+        // Media
+        backgroundImage: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1920&auto=format&fit=crop",
+        logoImage: "https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?q=80&w=256&h=256&auto=format&fit=crop",
+
+        // Fonts (System fonts to avoid generic AI defaults, per rules)
+        titleFont: "Helvetica Neue, Helvetica, Arial, sans-serif",
+        bodyFont: "Georgia, serif"
+      };
+    </script>
   </head>
   <body>
     <div
       id="root"
       data-composition-id="main"
       data-start="0"
-      data-duration="10"
+      data-duration="8"
       data-width="1920"
       data-height="1080"
     >
-      
-      
+      <!-- Background Clip -->
+      <div
+        id="bg-clip"
+        class="clip absolute inset-0 bg-cover bg-center"
+        data-start="0"
+        data-duration="8"
+        data-track-index="0"
+      >
+        <div class="absolute inset-0 bg-white/60"></div>
+      </div>
 
-      <!--
-        Add your clips here. Example:
-        <div id="title" class="clip" data-start="0" data-duration="5" data-track-index="1"
-             style="font-size: 64px; color: #fff; padding: 40px">
-          Hello World
-        </div>
-      -->
+      <!-- Lower Third Sub-Composition -->
+      <!-- We load the external file and position it. The child file controls its own timeline. -->
+      <div
+        id="lower-third-clip"
+        class="clip absolute bottom-[100px] left-20 w-[1200px]"
+        data-composition-src="compositions/lower-third.html"
+        data-composition-id="lower-third"
+        data-start="1.5"
+        data-duration="5.5"
+        data-track-index="1"
+        data-layout-allow-overflow="true"
+      ></div>
     </div>
 
     <script>
+      // Apply variables to DOM
+      const v = window.__vars;
+
+      // Setup Root duration
+      document.getElementById('root').setAttribute('data-duration', v.duration);
+
+      // Setup Background
+      const bgClip = document.getElementById('bg-clip');
+      bgClip.setAttribute('data-duration', v.duration);
+      bgClip.style.backgroundImage = `url('${v.backgroundImage}')`;
+
+      // Setup Lower Third Container attributes dynamically based on vars
+      const ltClip = document.getElementById('lower-third-clip');
+      ltClip.setAttribute('data-start', v.lowerThirdStart);
+      ltClip.setAttribute('data-duration', v.lowerThirdDuration);
+
+      // GSAP Animations
       window.__timelines = window.__timelines || {};
       const tl = gsap.timeline({ paused: true });
-      // Example: tl.from("#title", { opacity: 0, y: -50, duration: 1 }, 0);
+
+      // Background subtle scale (starts at 0)
+      tl.fromTo("#bg-clip",
+        { scale: 1 },
+        { scale: 1.05, duration: v.duration, ease: "none" },
+        0
+      );
+
+      // Note: Lower Third animations are now handled within its own composition file.
+      // HyperFrames automatically hard-kills clips based on their data-duration, but
+      // the sub-composition adds an extra layer of protection internally.
+
       window.__timelines["main"] = tl;
     </script>
   </body>

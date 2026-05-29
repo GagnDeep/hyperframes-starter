@@ -1,111 +1,120 @@
 <template id="outro-template">
-  <style>
-    .outro-scene {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      width: 100%;
-      height: 100%;
-      padding: 120px;
-      box-sizing: border-box;
-      background-color: var(--color-brand);
-      color: var(--color-text-main);
-      position: relative;
-      overflow: hidden;
-    }
+  <div class="outro-scene" id="outro-bg-comp" data-composition-id="outro" data-width="1920" data-height="1080">
+    <style>
+      .outro-scene {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        padding: 120px;
+        box-sizing: border-box;
+        background-color: var(--color-brand);
+        color: var(--color-text-main);
+        position: relative;
+        overflow: hidden;
+      }
 
-    .burst {
-      position: absolute;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 60%);
-      opacity: 0;
-      z-index: 0;
-    }
+      .burst {
+        position: absolute;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 60%);
+        opacity: 0;
+        z-index: 0;
+      }
 
-    .content-wrapper {
-      position: relative;
-      z-index: 10;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 40px;
-    }
+      .content-wrapper {
+        position: relative;
+        z-index: 10;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 40px;
+      }
 
-    .outro-title {
-      font-size: 160px;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 4px;
-      line-height: 1;
-    }
+      .outro-title {
+        font-size: 160px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 4px;
+        line-height: 1;
+      }
 
-    .cta-button {
-      padding: 24px 64px;
-      background-color: var(--color-text-main);
-      color: var(--color-bg-base);
-      font-size: 40px;
-      font-weight: 700;
-      border-radius: 100px;
-    }
-  </style>
+      .cta-button {
+        padding: 24px 64px;
+        background-color: var(--color-text-main);
+        color: var(--color-bg-base);
+        font-size: 40px;
+        font-weight: 700;
+        border-radius: 100px;
+      }
+    </style>
 
-  <div class="outro-scene" id="outro-bg" data-composition-id="outro" data-width="1920" data-height="1080">
-    <div id="outro-burst" class="burst" data-layout-allow-overflow="true"></div>
-    <div class="content-wrapper">
-      <div id="outro-title" class="outro-title"></div>
-      <div id="outro-cta" class="cta-button"></div>
+    <div id="outro-burst-comp" class="burst" data-layout-allow-overflow="true"></div>
+    <div class="content-wrapper" id="outro-content-comp">
+      <div id="outro-title-comp" class="outro-title"></div>
+      <div id="outro-cta-comp" class="cta-button"></div>
     </div>
+
+    <script>
+      (() => {
+        const elTitle = document.getElementById("outro-title-comp") || document.querySelector(".outro-title");
+        const elCta = document.getElementById("outro-cta-comp") || document.querySelector(".cta-button");
+        const elBg = document.getElementById("outro-bg-comp");
+        const elBurst = document.getElementById("outro-burst-comp");
+        const elContent = document.getElementById("outro-content-comp");
+
+        if (elTitle && window.__vars) {
+          elTitle.textContent = window.__vars.outroTitle;
+        }
+        if (elCta && window.__vars) {
+          elCta.textContent = window.__vars.outroCta;
+        }
+
+        window.__timelines = window.__timelines || {};
+        const tl = gsap.timeline({ paused: true });
+
+        tl.fromTo(elBg,
+          { scale: 1.2, opacity: 0 },
+          { scale: 1, opacity: 1, duration: 0.8, ease: "power3.out" },
+        0);
+
+        tl.fromTo(elBurst,
+          { scale: 0.1, opacity: 1 },
+          { scale: 1, opacity: 0, duration: 1.5, ease: "power2.out" },
+        0.2);
+
+        tl.fromTo(elTitle,
+          { y: 100, scale: 0.9, opacity: 0 },
+          { y: 0, scale: 1, opacity: 1, duration: 1, ease: "back.out(1.2)" },
+        0.3);
+
+        tl.fromTo(elCta,
+          { y: 50, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
+        0.6);
+
+        const durationOutro = window.__vars ? window.__vars.durationOutro : 4;
+        const pulseCycleDuration = 1.6;
+        const availableTimeForPulse = durationOutro - 1.4;
+        const pulseRepeats = Math.floor(availableTimeForPulse / pulseCycleDuration) - 1;
+        const actualRepeats = Math.max(0, pulseRepeats);
+
+        tl.to(elCta,
+          { scale: 1.05, duration: 0.8, yoyo: true, repeat: actualRepeats, ease: "sine.inOut" },
+        1.4);
+
+        const exitTime = durationOutro - 0.6;
+        const safeExitTime = Math.max(exitTime, 1.4 + (actualRepeats + 1) * pulseCycleDuration);
+
+        tl.to(elContent, { y: -50, opacity: 0, duration: 0.5, ease: "power2.in" }, safeExitTime);
+        tl.to(elBg, { opacity: 0, duration: 0.4, overwrite: "auto" }, safeExitTime + 0.2);
+
+        window.__timelines["outro"] = tl;
+      })();
+    </script>
   </div>
-
-  <script>
-    document.getElementById("outro-title").textContent = window.__vars.outroTitle;
-    document.getElementById("outro-cta").textContent = window.__vars.outroCta;
-
-    window.__timelines = window.__timelines || {};
-    const tl = gsap.timeline({ paused: true });
-
-    // Background enter
-    tl.fromTo("#outro-bg",
-      { scale: 1.2, opacity: 0 },
-      { scale: 1, opacity: 1, duration: 0.8, ease: "power3.out" },
-    0);
-
-    // Burst effect
-    tl.fromTo("#outro-burst",
-      { scale: 0.1, opacity: 1 },
-      { scale: 1, opacity: 0, duration: 1.5, ease: "power2.out" },
-    0.2);
-
-    // Text enter
-    tl.fromTo("#outro-title",
-      { y: 100, scale: 0.9, opacity: 0 },
-      { y: 0, scale: 1, opacity: 1, duration: 1, ease: "back.out(1.2)" },
-    0.3);
-
-    tl.fromTo("#outro-cta",
-      { y: 50, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
-    0.6);
-
-    // Button pulse - calculated finite repeat
-    const pulseCycleDuration = 1.6; // 0.8s * 2 (yoyo)
-    const availableTimeForPulse = window.__vars.durationOutro - 1.4;
-    const pulseRepeats = Math.floor(availableTimeForPulse / pulseCycleDuration) - 1;
-    const actualRepeats = Math.max(0, pulseRepeats); // ensure no negative repeats
-
-    tl.to("#outro-cta",
-      { scale: 1.05, duration: 0.8, yoyo: true, repeat: actualRepeats, ease: "sine.inOut" },
-    1.4);
-
-    // Final exit
-    const exitTime = window.__vars.durationOutro - 0.6;
-    const safeExitTime = Math.max(exitTime, 1.4 + (actualRepeats + 1) * pulseCycleDuration);
-    tl.to(".content-wrapper", { y: -50, opacity: 0, duration: 0.5, ease: "power2.in" }, safeExitTime);
-    tl.to("#outro-bg", { opacity: 0, duration: 0.4, overwrite: "auto" }, safeExitTime + 0.2);
-
-    window.__timelines["outro"] = tl;
-  </script>
 </template>

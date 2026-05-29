@@ -24,10 +24,8 @@
         class="bg-brand-card rounded-3xl p-16 shadow-2xl flex flex-col items-center max-w-[1200px] border border-white/5 opacity-0"
         data-layout-allow-overflow
       >
-        <!-- Stars Container -->
-        <div id="stars-container" class="flex gap-4 mb-10 h-[64px]">
-          <!-- Stars injected via JS -->
-        </div>
+        <!-- Stars Sub-composition -->
+        <div id="stars-mount" class="mb-10 h-[64px]" data-composition-id="star-rating" data-composition-src="compositions/star-rating.html"></div>
 
         <!-- Review Text -->
         <h1
@@ -38,8 +36,8 @@
 
         <!-- Author Info -->
         <div id="author-info" class="flex flex-col items-center opacity-0">
-          <div class="w-20 h-20 rounded-full bg-brand-text flex items-center justify-center mb-6">
-            <!-- Author initial or icon placeholder -->
+          <div id="author-avatar-container" class="w-20 h-20 rounded-full bg-brand-text flex items-center justify-center mb-6 overflow-hidden">
+            <img id="author-avatar" src="" alt="Author Avatar" class="w-full h-full object-cover hidden" />
             <span id="author-initial" class="text-3xl font-bold text-brand-bg"></span>
           </div>
           <h3 id="author-name" class="text-2xl font-bold text-brand-text mb-2 drop-shadow-md"></h3>
@@ -56,30 +54,14 @@
       document.getElementById('review-text').textContent = `"${window.__vars.reviewText}"`;
       document.getElementById('author-name').textContent = window.__vars.authorName;
       document.getElementById('author-role').textContent = window.__vars.authorRole;
-      document.getElementById('author-initial').textContent = window.__vars.authorName.charAt(0).toUpperCase();
 
-      // Generate Stars
-      const starsContainer = document.getElementById('stars-container');
-      const rating = Math.min(Math.max(window.__vars.rating, 0), 5); // clamp 0-5
-
-      const starSVG = `
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-16 h-16 text-brand-star drop-shadow-md">
-          <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" />
-        </svg>
-      `;
-
-      for(let i=0; i<5; i++) {
-        const starEl = document.createElement('div');
-        starEl.className = 'star-icon opacity-0';
-
-        // Solid star if i < rating, otherwise faded out
-        if (i >= rating) {
-           starEl.classList.add('opacity-20');
-           starEl.classList.remove('opacity-0'); // Will stay dim
-        } else {
-           starEl.innerHTML = starSVG;
-        }
-        starsContainer.appendChild(starEl);
+      if (window.__vars.authorAvatarUrl) {
+         const img = document.getElementById('author-avatar');
+         img.src = window.__vars.authorAvatarUrl;
+         img.classList.remove('hidden');
+         document.getElementById('author-initial').classList.add('hidden');
+      } else {
+         document.getElementById('author-initial').textContent = window.__vars.authorName.charAt(0).toUpperCase();
       }
 
       // Timeline
@@ -91,14 +73,6 @@
         { opacity: 0, scale: 0.9, y: 50 },
         { opacity: 1, scale: 1, y: 0, duration: 1.2, ease: "power3.out" },
         1.0
-      );
-
-      // Stagger stars
-      const filledStars = document.querySelectorAll('.star-icon:not(.opacity-20)');
-      cardTl.fromTo(filledStars,
-        { opacity: 0, scale: 0.5, rotation: -30 },
-        { opacity: 1, scale: 1, rotation: 0, duration: 0.8, stagger: 0.1, ease: "back.out(1.7)" },
-        1.4
       );
 
       // Fade in review text

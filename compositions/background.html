@@ -7,35 +7,72 @@
   data-start="0"
   data-duration="10"
 >
-  <div id="bg-color" class="absolute inset-0 w-full h-full z-0"></div>
-
-  <div id="bg-shape-1" class="absolute w-[800px] h-[800px] rounded-full mix-blend-screen opacity-50 blur-[100px] top-[-200px] left-[-200px] z-10"></div>
-  <div id="bg-shape-2" class="absolute w-[1000px] h-[1000px] rounded-full mix-blend-screen opacity-30 blur-[120px] bottom-[-300px] right-[-200px] z-10"></div>
+  <div id="bg-container" class="absolute inset-0 w-full h-full z-0">
+    <div id="bg-color" class="absolute inset-0 w-full h-full z-0"></div>
+    <div id="bg-shape-1" class="absolute w-[800px] h-[800px] rounded-full mix-blend-screen opacity-50 blur-[100px] top-[-200px] left-[-200px] z-10"></div>
+    <div id="bg-shape-2" class="absolute w-[1000px] h-[1000px] rounded-full mix-blend-screen opacity-30 blur-[120px] bottom-[-300px] right-[-200px] z-10"></div>
+  </div>
 </div>
 
 <script>
   window.__timelines = window.__timelines || {};
   const tlBg = gsap.timeline({ paused: true });
 
-  // Use vars
-  document.getElementById("bg-color").style.backgroundColor = window.__vars.bgColor;
-  document.getElementById("bg-shape-1").style.backgroundColor = window.__vars.accentColor;
-  document.getElementById("bg-shape-2").style.backgroundColor = window.__vars.accentColor;
+  const container = document.getElementById("bg-container");
 
-  // Subtle ambient motion
-  tlBg.to("#bg-shape-1", {
-    x: 200,
-    y: 100,
-    duration: window.__vars.duration,
-    ease: "none"
-  }, 0);
+  if (window.__vars.bgVideoUrl) {
+    // If video URL provided, use video element
+    container.innerHTML = `
+      <video
+        id="bg-video"
+        class="absolute inset-0 w-full h-full object-cover z-0 clip"
+        data-start="0"
+        data-duration="${window.__vars.duration}"
+        data-track-index="0"
+        src="${window.__vars.bgVideoUrl}"
+        muted
+        playsinline
+      ></video>
+    `;
+  } else if (window.__vars.bgImageUrl) {
+    // If image URL provided, use image element
+    container.innerHTML = `
+      <img
+        id="bg-img"
+        class="absolute inset-0 w-full h-full object-cover z-0 clip"
+        data-start="0"
+        data-duration="${window.__vars.duration}"
+        data-track-index="0"
+        src="${window.__vars.bgImageUrl}"
+      />
+    `;
+    // Add slow pan to image
+    tlBg.fromTo("#bg-img",
+      { scale: 1.1, x: 0 },
+      { scale: 1.1, x: -50, duration: window.__vars.duration, ease: "none" },
+      0
+    );
+  } else {
+    // Fallback to animated shapes
+    document.getElementById("bg-color").style.backgroundColor = window.__vars.bgColor;
+    document.getElementById("bg-shape-1").style.backgroundColor = window.__vars.accentColor;
+    document.getElementById("bg-shape-2").style.backgroundColor = window.__vars.accentColor;
 
-  tlBg.to("#bg-shape-2", {
-    x: -300,
-    y: -150,
-    duration: window.__vars.duration,
-    ease: "none"
-  }, 0);
+    // Subtle ambient motion
+    tlBg.to("#bg-shape-1", {
+      x: 200,
+      y: 100,
+      duration: window.__vars.duration,
+      ease: "none"
+    }, 0);
+
+    tlBg.to("#bg-shape-2", {
+      x: -300,
+      y: -150,
+      duration: window.__vars.duration,
+      ease: "none"
+    }, 0);
+  }
 
   window.__timelines["background"] = tlBg;
 </script>

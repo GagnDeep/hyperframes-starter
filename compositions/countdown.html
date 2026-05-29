@@ -1,0 +1,116 @@
+<template id="countdown-template">
+  <style>
+    .countdown-scene {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      background-color: var(--color-bg-base);
+    }
+
+    .countdown-circle {
+      position: relative;
+      width: 400px;
+      height: 400px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .ring {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 8px solid var(--color-brand);
+      opacity: 0;
+    }
+
+    .ring-inner {
+      border: 4px solid var(--color-text-main);
+      transform: scale(0.85);
+      opacity: 0.2;
+    }
+
+    .number-container {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .count-number {
+      position: absolute;
+      font-size: 220px;
+      font-weight: 900;
+      color: var(--color-text-main);
+      opacity: 0;
+    }
+  </style>
+
+  <div class="countdown-scene" data-composition-id="countdown" data-width="1920" data-height="1080">
+    <div class="countdown-circle">
+      <div id="ring-1" class="ring"></div>
+      <div id="ring-2" class="ring ring-inner"></div>
+
+      <div class="number-container" id="numbers-wrapper">
+        <!-- Numbers generated via JS based on countdownStart -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+
+    const startNum = window.__vars.countdownStart;
+    const duration = window.__vars.durationCountdown;
+    const timePerNum = duration / startNum;
+
+    const wrapper = document.getElementById("numbers-wrapper");
+
+    // Create number elements
+    for (let i = startNum; i > 0; i--) {
+      const el = document.createElement("div");
+      el.className = "count-number";
+      el.id = `count-num-${i}`;
+      el.textContent = i;
+      wrapper.appendChild(el);
+
+      const startTime = (startNum - i) * timePerNum;
+
+      // Animate each number
+      tl.fromTo(`#count-num-${i}`,
+        { scale: 0.5, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(1.5)" },
+        startTime
+      );
+
+      tl.to(`#count-num-${i}`,
+        { scale: 1.5, opacity: 0, duration: 0.4, ease: "power2.in" },
+        startTime + timePerNum - 0.4
+      );
+
+      // Pulse rings on each beat
+      tl.fromTo("#ring-1",
+        { scale: 0.8, opacity: 0.8, borderWidth: "16px" },
+        { scale: 1.4, opacity: 0, borderWidth: "0px", duration: timePerNum, ease: "power2.out" },
+        startTime
+      );
+    }
+
+    // Background inner ring continuous rotation
+    tl.to("#ring-2", { opacity: 0.4, duration: 0.5, overwrite: "auto" }, 0);
+    tl.to("#ring-2", { rotation: 180, duration: duration, ease: "none" }, 0);
+    tl.to("#ring-2", { opacity: 0, duration: 0.5, overwrite: "auto" }, duration - 0.5);
+
+    window.__timelines["countdown"] = tl;
+  </script>
+</template>

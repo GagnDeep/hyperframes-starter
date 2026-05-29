@@ -28,7 +28,7 @@
           dark: {
             backgroundColor: "#0f172a",
             cardColor: "#1e293b",
-            accentColor: "#facc15", // Yellow
+            accentColor: "#facc15",
             accentTextColor: "#facc15",
             textColor: "#f8fafc",
             mutedTextColor: "#94a3b8",
@@ -37,16 +37,16 @@
           light: {
             backgroundColor: "#f8fafc",
             cardColor: "#ffffff",
-            accentColor: "#3b82f6", // Blue
+            accentColor: "#3b82f6",
             accentTextColor: "#3b82f6",
             textColor: "#0f172a",
             mutedTextColor: "#475569",
             fontFamily: "Georgia, serif"
           },
           vibrant: {
-            backgroundColor: "#ec4899", // Pink
-            cardColor: "#4f46e5", // Indigo
-            accentColor: "#34d399", // Emerald
+            backgroundColor: "#ec4899",
+            cardColor: "#4f46e5",
+            accentColor: "#34d399",
             accentTextColor: "#34d399",
             textColor: "#ffffff",
             mutedTextColor: "#c7d2fe",
@@ -62,9 +62,9 @@
           duration: 12 // Total duration in seconds
         },
         media: {
-          // Provide a dummy src string to satisfy the linter, user will override
           audioUrl: "assets/dummy.mp3",
-          // Toggles an image-based subcomp vs a text-only subcomp
+          ttsUrl: "assets/dummy-tts.mp3", // Narration TTS audio
+          backgroundVideoUrl: "assets/dummy-bg.mp4", // Background video logic
           useImageVariant: true,
           imageUrl: "assets/honey.jpg"
         }
@@ -84,8 +84,16 @@
     >
       <div id="bg" class="absolute inset-0 w-full h-full"></div>
       
-      <!-- Audio Track -->
-      <audio id="bg-audio" class="clip" data-start="0" data-duration="12" data-track-index="1" src="assets/dummy.mp3"></audio>
+      <!-- Video Background -->
+      <!-- Added muted to support hyperframes requirement -->
+      <video id="bg-video" class="clip absolute inset-0 w-full h-full object-cover opacity-50" data-start="0" data-duration="12" data-track-index="1" src="assets/dummy-bg.mp4" muted loop></video>
+
+      <!-- Audio Track: Background Music -->
+      <audio id="bg-audio" class="clip" data-start="0" data-duration="12" data-track-index="2" src="assets/dummy.mp3"></audio>
+
+      <!-- Audio Track: Text-To-Speech -->
+      <!-- Starts slightly delayed for pacing -->
+      <audio id="tts-audio" class="clip" data-start="1" data-duration="11" data-track-index="3" src="assets/dummy-tts.mp3"></audio>
 
       <!-- Fact Card Sub-composition dynamically wired in JS to support variant -->
       <div
@@ -93,7 +101,7 @@
         class="clip absolute inset-0 w-full h-full flex items-center justify-center"
         data-start="0"
         data-duration="12"
-        data-track-index="2"
+        data-track-index="4"
         data-composition-id="card"
         data-composition-src="compositions/card.html"
       ></div>
@@ -107,12 +115,31 @@
       document.body.style.fontFamily = window.__vars.theme.fontFamily;
       document.getElementById('bg').style.backgroundColor = window.__vars.theme.backgroundColor;
 
-      // Setup audio if provided
+      // Setup audio/video if provided
       const audioEl = document.getElementById('bg-audio');
-      if (window.__vars.media && window.__vars.media.audioUrl) {
-        audioEl.src = window.__vars.media.audioUrl;
-      } else {
-        audioEl.removeAttribute('src');
+      const ttsEl = document.getElementById('tts-audio');
+      const videoEl = document.getElementById('bg-video');
+
+      if (window.__vars.media) {
+        if (window.__vars.media.audioUrl) {
+          audioEl.src = window.__vars.media.audioUrl;
+        } else {
+          audioEl.removeAttribute('src');
+        }
+
+        if (window.__vars.media.ttsUrl) {
+          ttsEl.src = window.__vars.media.ttsUrl;
+        } else {
+          ttsEl.removeAttribute('src');
+        }
+
+        if (window.__vars.media.backgroundVideoUrl) {
+          videoEl.src = window.__vars.media.backgroundVideoUrl;
+        } else {
+          videoEl.removeAttribute('src');
+          // Hide it completely if no video provided
+          videoEl.style.display = 'none';
+        }
       }
 
       // Update durations dynamically based on vars
@@ -120,6 +147,10 @@
       const root = document.getElementById('root');
       if (root) root.setAttribute('data-duration', duration);
       if (audioEl) audioEl.setAttribute('data-duration', duration);
+      if (videoEl) videoEl.setAttribute('data-duration', duration);
+
+      // Delay TTS slightly for effect
+      if (ttsEl) ttsEl.setAttribute('data-duration', Math.max(0, duration - 1));
 
       const subcomp = document.getElementById('fact-card-subcomp');
       if (subcomp) {

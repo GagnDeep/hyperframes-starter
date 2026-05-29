@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <div
+      id="tip2-root"
+      data-composition-id="tip2"
+      data-start="0"
+      data-duration="3"
+      data-width="1080"
+      data-height="1920"
+      class="w-full h-full flex flex-col items-center justify-center relative overflow-hidden"
+    >
+      <div class="absolute inset-0 z-0 bg-gradient-to-br from-[var(--bg-primary)] to-[var(--bg-secondary)]" id="tip2-bg" data-layout-allow-overflow></div>
+
+      <!-- Safe zone container -->
+      <div class="z-10 flex flex-col items-end justify-center w-[850px] h-[1070px] mx-auto my-[250px] text-right">
+        <div id="tip2-number-container" class="flex items-center gap-6 mb-6 flex-row-reverse">
+          <span id="tip2-number" class="text-[180px] font-black leading-none" style="color: var(--accent-color);"></span>
+          <div id="tip2-line" class="h-2 w-32 rounded-full" style="background-color: var(--text-primary);"></div>
+        </div>
+        <h2 id="tip2-title" class="text-[96px] font-bold leading-[1.1] mb-8" style="color: var(--text-primary);"></h2>
+        <p id="tip2-desc" class="text-[54px] font-medium leading-[1.4]" style="color: var(--text-secondary);"></p>
+      </div>
+    </div>
+
+    <script>
+      // Apply variables
+      const v = window.parent.__vars || window.__vars;
+      if (v) {
+        document.getElementById('tip2-number').innerText = v.tip2_number;
+        document.getElementById('tip2-title').innerText = v.tip2_title;
+        document.getElementById('tip2-desc').innerText = v.tip2_desc;
+        document.getElementById('tip2-root').style.setProperty('--bg-primary', v.bg_primary);
+        document.getElementById('tip2-root').style.setProperty('--bg-secondary', v.bg_secondary);
+        document.getElementById('tip2-root').style.setProperty('--accent-color', v.accent_color);
+        document.getElementById('tip2-root').style.setProperty('--text-primary', v.text_primary);
+        document.getElementById('tip2-root').style.setProperty('--text-secondary', v.text_secondary);
+      }
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // Entry Animation - varied entry direction from Tip 1
+      tl.from("#tip2-bg", { scale: 1.1, duration: 3, ease: "power1.out" }, 0)
+        .from("#tip2-number", { x: 100, opacity: 0, duration: 0.8, ease: "power4.out" }, 0.2)
+        .from("#tip2-line", { scaleX: 0, transformOrigin: "right", duration: 0.6, ease: "power2.out" }, 0.4)
+        .from("#tip2-title", { x: -100, opacity: 0, duration: 0.8, ease: "power3.out" }, 0.5)
+        .from("#tip2-desc", { y: -50, opacity: 0, duration: 0.8, ease: "power2.out" }, 0.7);
+
+      // Exit Animation (hard kill)
+      tl.to(["#tip2-number-container", "#tip2-title", "#tip2-desc"], { opacity: 0, duration: 0.4, ease: "power1.inOut" }, 2.6);
+      tl.set("#tip2-root", { opacity: 0 }, 3);
+
+      window.__timelines["tip2"] = tl;
+    </script>
+  </body>
+</html>

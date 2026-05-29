@@ -1,0 +1,11 @@
+{
+  "name": "youtube-shorts-3-tips",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npx --yes hyperframes@0.6.58 preview",
+    "check": "npx --yes hyperframes@0.6.58 lint && npx --yes hyperframes@0.6.58 validate && npx --yes hyperframes@0.6.58 inspect",
+    "render": "npx --yes hyperframes@0.6.58 render",
+    "publish": "npx --yes hyperframes@0.6.58 publish"
+  }
+}

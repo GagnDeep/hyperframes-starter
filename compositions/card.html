@@ -66,6 +66,9 @@
         }
       };
 
+      // Apply variables to elements
+      document.body.style.fontFamily = vars.theme.fontFamily;
+
       const card = document.getElementById('card-container');
       if (card) card.style.backgroundColor = vars.theme.cardColor;
 
@@ -113,11 +116,37 @@
       window.__timelines = window.__timelines || {};
       const tl = gsap.timeline({ paused: true });
 
-      tl.fromTo("#card-container", { y: 100, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1, ease: "power3.out", overwrite: "auto" }, 0)
-        .fromTo("#badge-container", { y: 50, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.8, ease: "back.out(1.7)" }, 0.5)
-        .fromTo("#fact-container", { y: 50, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1, ease: "power3.out" }, 1)
-        .fromTo("#divider-container", { scaleX: 0, autoAlpha: 0 }, { scaleX: 1, autoAlpha: 1, duration: 0.8, ease: "power3.out" }, 1.5)
-        .fromTo("#source-container", { y: 20, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1, ease: "power3.out" }, 2);
+      // Reusable animation utility functions
+      const fadeInUp = (selector, startAt, yOffset = 50, dur = 1) => {
+        tl.fromTo(selector,
+          { y: yOffset, autoAlpha: 0 },
+          { y: 0, autoAlpha: 1, duration: dur, ease: "power3.out", overwrite: "auto" },
+          startAt
+        );
+      };
+
+      const scaleIn = (selector, startAt, dur = 0.8) => {
+        tl.fromTo(selector,
+          { scaleX: 0, autoAlpha: 0 },
+          { scaleX: 1, autoAlpha: 1, duration: dur, ease: "power3.out" },
+          startAt
+        );
+      };
+
+      const popIn = (selector, startAt, yOffset = 50, dur = 0.8) => {
+        tl.fromTo(selector,
+          { y: yOffset, autoAlpha: 0 },
+          { y: 0, autoAlpha: 1, duration: dur, ease: "back.out(1.7)" },
+          startAt
+        );
+      };
+
+      // Apply reusable animations
+      fadeInUp("#card-container", 0, 100);
+      popIn("#badge-container", 0.5);
+      fadeInUp("#fact-container", 1);
+      scaleIn("#divider-container", 1.5);
+      fadeInUp("#source-container", 2, 20);
 
       // Animate out at the end
       const outStart = duration - 1;

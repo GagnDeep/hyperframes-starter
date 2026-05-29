@@ -2,23 +2,56 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=1920, height=1080" />
+    <meta name="viewport" content="width=1080, height=1920" />
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
-    <style>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <style type="text/css">
+      @theme {
+        --color-primary: var(--primary-color);
+        --color-accent: var(--accent-color);
+        --font-main: var(--main-font, sans-serif);
+      }
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
-      html,
-      body {
+      html, body {
         margin: 0;
-        width: 1920px;
-        height: 1080px;
+        width: 1080px;
+        height: 1920px;
         overflow: hidden;
         background: #000;
+        font-family: var(--font-main);
+      }
+      /* Ensure subcompositions are positioned correctly */
+      [data-composition-src] {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 1080px;
+        height: 1920px;
       }
     </style>
+    <script>
+      // Global variables configuration
+      window.__vars = {
+        quote: "The only limit to our realization of tomorrow is our doubts of today.",
+        author: "Franklin D. Roosevelt",
+        bgUrl: "https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?q=80&w=1080&auto=format&fit=crop",
+        primaryColor: "#ffffff",
+        accentColor: "#fcd34d",
+        fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
+        duration: 10 // Overall duration
+      };
+
+      // Apply CSS variables to root based on __vars
+      document.addEventListener("DOMContentLoaded", () => {
+        document.documentElement.style.setProperty('--primary-color', window.__vars.primaryColor);
+        document.documentElement.style.setProperty('--accent-color', window.__vars.accentColor);
+        document.documentElement.style.setProperty('--main-font', window.__vars.fontFamily);
+      });
+    </script>
   </head>
   <body>
     <div
@@ -26,25 +59,36 @@
       data-composition-id="main"
       data-start="0"
       data-duration="10"
-      data-width="1920"
-      data-height="1080"
+      data-width="1080"
+      data-height="1920"
+      class="relative w-[1080px] h-[1920px] overflow-hidden"
     >
-      
-      
+      <!-- Background composition -->
+      <div
+        id="bg-host"
+        class="clip"
+        data-start="0"
+        data-duration="10"
+        data-track-index="0"
+        data-composition-src="compositions/background.html"
+        data-composition-id="background"
+      ></div>
 
-      <!--
-        Add your clips here. Example:
-        <div id="title" class="clip" data-start="0" data-duration="5" data-track-index="1"
-             style="font-size: 64px; color: #fff; padding: 40px">
-          Hello World
-        </div>
-      -->
+      <!-- Quote composition -->
+      <div
+        id="quote-host"
+        class="clip"
+        data-start="0"
+        data-duration="10"
+        data-track-index="1"
+        data-composition-src="compositions/quote.html"
+        data-composition-id="quote"
+      ></div>
     </div>
 
     <script>
       window.__timelines = window.__timelines || {};
       const tl = gsap.timeline({ paused: true });
-      // Example: tl.from("#title", { opacity: 0, y: -50, duration: 1 }, 0);
       window.__timelines["main"] = tl;
     </script>
   </body>

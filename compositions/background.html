@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <style type="text/css">
+      html, body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="bg-root"
+      data-composition-id="background"
+      data-start="0"
+      data-duration="10"
+      data-width="1080"
+      data-height="1920"
+      class="w-[1080px] h-[1920px] relative overflow-hidden bg-black"
+    >
+      <img
+        id="bg-image"
+        class="clip absolute inset-0 w-full h-full object-cover opacity-70"
+        data-start="0"
+        data-duration="10"
+        data-track-index="0"
+        alt="Background"
+      />
+      <!-- Dark overlay for better text readability -->
+      <div
+        id="bg-overlay"
+        class="clip absolute inset-0 bg-black/40"
+        data-start="0"
+        data-duration="10"
+        data-track-index="1"
+      ></div>
+    </div>
+
+    <script>
+      // Pull variables from window.parent or use defaults if standalone
+      const bgUrl = window.parent?.__vars?.bgUrl || "https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?q=80&w=1080&auto=format&fit=crop";
+
+      const img = document.getElementById("bg-image");
+      img.src = bgUrl;
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // Slow pan and zoom effect
+      tl.fromTo(img,
+        { scale: 1.1, x: -20, y: -20 },
+        { scale: 1.2, x: 20, y: 20, duration: 10, ease: "power1.inOut" },
+        0
+      );
+
+      window.__timelines["background"] = tl;
+    </script>
+  </body>
+</html>

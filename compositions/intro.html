@@ -1,80 +1,74 @@
 <template id="intro-template">
+  <style>
+    .intro-scene {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      padding: 120px;
+      box-sizing: border-box;
+      background-color: var(--color-bg-base);
+      color: var(--color-text-main);
+    }
+
+    .title-wrapper {
+      overflow: hidden;
+      margin-bottom: 24px;
+      padding: 10px 0; /* Add padding to prevent overflow clipping */
+    }
+
+    .intro-title {
+      font-size: 130px; /* slightly smaller to fit */
+      font-weight: 800;
+      line-height: 1.1;
+      text-transform: uppercase;
+      letter-spacing: -2px;
+    }
+
+    .intro-subtitle {
+      font-size: 48px;
+      font-weight: 400;
+      color: var(--color-brand);
+      opacity: 0.9;
+    }
+  </style>
+
   <div class="intro-scene" data-composition-id="intro" data-width="1920" data-height="1080">
-    <style>
-      .intro-scene {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        height: 100%;
-        padding: 120px;
-        box-sizing: border-box;
-        background-color: var(--color-bg-base);
-        color: var(--color-text-main);
-      }
-
-      .title-wrapper {
-        overflow: hidden;
-        margin-bottom: 24px;
-        padding: 10px 0;
-      }
-
-      .intro-title {
-        font-size: 130px;
-        font-weight: 800;
-        line-height: 1.1;
-        text-transform: uppercase;
-        letter-spacing: -2px;
-      }
-
-      .intro-subtitle {
-        font-size: 48px;
-        font-weight: 400;
-        color: var(--color-brand);
-        opacity: 0.9;
-      }
-    </style>
-
     <div class="title-wrapper">
-      <div class="intro-title" id="intro-title-comp"></div>
+      <div id="intro-title" class="intro-title"></div>
     </div>
-    <div class="intro-subtitle" id="intro-subtitle-comp"></div>
-
-    <script>
-      (() => {
-        // Find elements within the stamped DOM (using querySelector via document to find the currently active ones since ID might conflict if reused or template parsing issues exist, but standard ID is fine after stamping). We use IDs that are more unique.
-        const elTitle = document.getElementById("intro-title-comp") || document.querySelector(".intro-title");
-        const elSubtitle = document.getElementById("intro-subtitle-comp") || document.querySelector(".intro-subtitle");
-
-        if (elTitle && window.__vars) {
-          elTitle.textContent = window.__vars.titleText;
-        }
-        if (elSubtitle && window.__vars) {
-          elSubtitle.textContent = window.__vars.subtitleText;
-        }
-
-        window.__timelines = window.__timelines || {};
-        const tl = gsap.timeline({ paused: true });
-
-        tl.fromTo(elTitle,
-          { y: 150, opacity: 0 },
-          { y: 0, opacity: 1, duration: 1.2, ease: "power4.out" },
-        0);
-
-        tl.fromTo(elSubtitle,
-          { y: 30, opacity: 0 },
-          { y: 0, opacity: 1, duration: 1, ease: "power3.out" },
-        0.4);
-
-        const exitTime = window.__vars ? (window.__vars.durationIntro - 0.8) : 3.2;
-        const safeExitTime = Math.max(exitTime, 1.4);
-
-        tl.to(elTitle, { y: -50, opacity: 0, duration: 0.6, ease: "power2.in", overwrite: "auto" }, safeExitTime);
-        tl.to(elSubtitle, { y: -30, opacity: 0, duration: 0.5, ease: "power2.in", overwrite: "auto" }, safeExitTime + 0.1);
-
-        window.__timelines["intro"] = tl;
-      })();
-    </script>
+    <div id="intro-subtitle" class="intro-subtitle"></div>
   </div>
+
+  <script>
+    // Bind variables
+    document.getElementById("intro-title").textContent = window.__vars.titleText;
+    document.getElementById("intro-subtitle").textContent = window.__vars.subtitleText;
+
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+
+    // Animation
+    // Enter
+    tl.fromTo("#intro-title",
+      { y: 150, opacity: 0 },
+      { y: 0, opacity: 1, duration: 1.2, ease: "power4.out" },
+    0);
+
+    tl.fromTo("#intro-subtitle",
+      { y: 30, opacity: 0 },
+      { y: 0, opacity: 1, duration: 1, ease: "power3.out" },
+    0.4);
+
+    // Exit (Starts relative to duration - 0.8s)
+    const exitTime = window.__vars.durationIntro - 0.8;
+    // ensure exit does not start before entrance ends
+    const safeExitTime = Math.max(exitTime, 1.4);
+    tl.to("#intro-title", { y: -50, opacity: 0, duration: 0.6, ease: "power2.in", overwrite: "auto" }, safeExitTime);
+    tl.to("#intro-subtitle", { y: -30, opacity: 0, duration: 0.5, ease: "power2.in", overwrite: "auto" }, safeExitTime + 0.1);
+
+    window.__timelines["intro"] = tl;
+  </script>
 </template>

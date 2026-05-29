@@ -65,6 +65,11 @@ if(loaded){finish();}else{window.addEventListener("load",function(){loaded=true;
         durationCountdown: 4, // length of countdown scene
         durationOutro: 4,
 
+        // Audio Track
+        audioUrl: "", // URL to background audio file
+        audioOffset: 0, // In seconds, trim offset into the source
+        audioVolume: 1, // 0 to 1
+
         // Images (if any)
         logoUrl: ""
       };
@@ -129,8 +134,10 @@ if(loaded){finish();}else{window.addEventListener("load",function(){loaded=true;
       const tl = gsap.timeline({ paused: true });
       window.__timelines["main"] = tl;
 
+      const totalDuration = window.__vars.durationIntro + window.__vars.durationCountdown + window.__vars.durationOutro;
+
       // Update dynamic durations based on variables
-      document.getElementById("root").setAttribute("data-duration", window.__vars.durationIntro + window.__vars.durationCountdown + window.__vars.durationOutro);
+      document.getElementById("root").setAttribute("data-duration", totalDuration);
       document.getElementById("comp-intro").setAttribute("data-duration", window.__vars.durationIntro);
 
       document.getElementById("comp-countdown").setAttribute("data-start", window.__vars.durationIntro);
@@ -138,6 +145,21 @@ if(loaded){finish();}else{window.addEventListener("load",function(){loaded=true;
 
       document.getElementById("comp-outro").setAttribute("data-start", window.__vars.durationIntro + window.__vars.durationCountdown);
       document.getElementById("comp-outro").setAttribute("data-duration", window.__vars.durationOutro);
+
+      // Dynamically add audio tag only if url is provided (avoids static html linter src validation failing for empty src)
+      if (window.__vars.audioUrl) {
+        const audioEl = document.createElement("audio");
+        audioEl.id = "bg-audio";
+        audioEl.className = "clip";
+        audioEl.setAttribute("data-start", 0);
+        audioEl.setAttribute("data-track-index", 2);
+        audioEl.setAttribute("preload", "auto");
+        audioEl.src = window.__vars.audioUrl;
+        audioEl.setAttribute("data-media-start", window.__vars.audioOffset);
+        audioEl.setAttribute("data-volume", window.__vars.audioVolume);
+        audioEl.setAttribute("data-duration", totalDuration);
+        document.getElementById("root").appendChild(audioEl);
+      }
     </script>
   </body>
 </html>

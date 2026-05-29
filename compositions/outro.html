@@ -61,6 +61,21 @@
 
     <script>
       (() => {
+        // Reusable CTA button pulse animation logic inlined for scope safety
+        function createCtaPulseAnimation(tl, el, startTime, durationOutro) {
+          const pulseCycleDuration = 1.6; // 0.8s * 2 (yoyo)
+          const availableTimeForPulse = durationOutro - startTime;
+          const pulseRepeats = Math.floor(availableTimeForPulse / pulseCycleDuration) - 1;
+          const actualRepeats = Math.max(0, pulseRepeats); // ensure no negative repeats
+
+          tl.to(el,
+            { scale: 1.05, duration: 0.8, yoyo: true, repeat: actualRepeats, ease: "sine.inOut" },
+            startTime
+          );
+
+          return { actualRepeats, pulseCycleDuration };
+        }
+
         const elTitle = document.getElementById("outro-title-comp") || document.querySelector(".outro-title");
         const elCta = document.getElementById("outro-cta-comp") || document.querySelector(".cta-button");
         const elBg = document.getElementById("outro-bg-comp");
@@ -98,17 +113,11 @@
         0.6);
 
         const durationOutro = window.__vars ? window.__vars.durationOutro : 4;
-        const pulseCycleDuration = 1.6;
-        const availableTimeForPulse = durationOutro - 1.4;
-        const pulseRepeats = Math.floor(availableTimeForPulse / pulseCycleDuration) - 1;
-        const actualRepeats = Math.max(0, pulseRepeats);
 
-        tl.to(elCta,
-          { scale: 1.05, duration: 0.8, yoyo: true, repeat: actualRepeats, ease: "sine.inOut" },
-        1.4);
+        const pulseAnim = createCtaPulseAnimation(tl, elCta, 1.4, durationOutro);
 
         const exitTime = durationOutro - 0.6;
-        const safeExitTime = Math.max(exitTime, 1.4 + (actualRepeats + 1) * pulseCycleDuration);
+        const safeExitTime = Math.max(exitTime, 1.4 + (pulseAnim.actualRepeats + 1) * pulseAnim.pulseCycleDuration);
 
         tl.to(elContent, { y: -50, opacity: 0, duration: 0.5, ease: "power2.in" }, safeExitTime);
         tl.to(elBg, { opacity: 0, duration: 0.4, overwrite: "auto" }, safeExitTime + 0.2);

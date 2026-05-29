@@ -74,6 +74,7 @@
       </div>
 
       <!-- Main scenes track -->
+      <!-- To perform crossfades, scenes need different track-index so they coexist during transition -->
       <div
         id="scene-intro"
         class="clip absolute inset-0 z-10"
@@ -85,18 +86,18 @@
 
       <div
         id="scene-reveal"
-        class="clip absolute inset-0 z-10"
+        class="clip absolute inset-0 z-11"
         data-composition-id="reveal"
         data-composition-src="compositions/reveal.html"
-        data-track-index="1"
+        data-track-index="2"
       ></div>
 
       <div
         id="scene-outro"
-        class="clip absolute inset-0 z-10"
+        class="clip absolute inset-0 z-12"
         data-composition-id="outro"
         data-composition-src="compositions/outro.html"
-        data-track-index="1"
+        data-track-index="3"
       ></div>
     </div>
 
@@ -112,22 +113,25 @@
 
       document.getElementById('bg-layer').setAttribute('data-duration', totalTime);
 
+      // 0.5s overlap for transitions
+      const tOverlap = 0.5;
+
       const elIntro = document.getElementById('scene-intro');
       elIntro.setAttribute('data-start', 0);
-      elIntro.setAttribute('data-duration', tIntro);
-      
+      elIntro.setAttribute('data-duration', tIntro + tOverlap); // extra time for exit
+
       const elReveal = document.getElementById('scene-reveal');
       elReveal.setAttribute('data-start', tIntro);
-      elReveal.setAttribute('data-duration', tReveal);
-      
+      elReveal.setAttribute('data-duration', tReveal + tOverlap); // extra time for exit
+
       const elOutro = document.getElementById('scene-outro');
       elOutro.setAttribute('data-start', tIntro + tReveal);
       elOutro.setAttribute('data-duration', tOutro);
 
-      // Force background colors for tests evaluating contrast too early
-      document.getElementById('scene-intro').style.backgroundColor = "#000000";
-      document.getElementById('scene-reveal').style.backgroundColor = "#000000";
-      document.getElementById('scene-outro').style.backgroundColor = "#000000";
+      // Ensure solid backgrounds on scenes for contrast auditing, using the customizable variable
+      document.getElementById('scene-intro').style.backgroundColor = window.__vars.theme.bg;
+      document.getElementById('scene-reveal').style.backgroundColor = window.__vars.theme.bg;
+      document.getElementById('scene-outro').style.backgroundColor = window.__vars.theme.bg;
     </script>
 
     <script>
@@ -137,6 +141,21 @@
       // Set initial bg color
       tl.set("#bg-fill", { backgroundColor: window.__vars.theme.bg }, 0);
       tl.to("#bg-fill", { opacity: 1, duration: 0.1 }, 0);
+
+      // Transitions: Blur crossfade
+
+      // Intro -> Reveal
+      tl.to("#scene-intro", { filter: "blur(10px)", scale: 1.05, opacity: 0, duration: 0.5, ease: "power2.inOut" }, window.__vars.timing.introDuration);
+      tl.fromTo("#scene-reveal",
+        { filter: "blur(10px)", scale: 0.95, opacity: 0 },
+        { filter: "blur(0px)", scale: 1, opacity: 1, duration: 0.5, ease: "power2.inOut" }, window.__vars.timing.introDuration);
+
+      // Reveal -> Outro
+      const tOutroStart = window.__vars.timing.introDuration + window.__vars.timing.revealDuration;
+      tl.to("#scene-reveal", { filter: "blur(10px)", scale: 1.05, opacity: 0, duration: 0.5, ease: "power2.inOut" }, tOutroStart);
+      tl.fromTo("#scene-outro",
+        { filter: "blur(10px)", scale: 0.95, opacity: 0 },
+        { filter: "blur(0px)", scale: 1, opacity: 1, duration: 0.5, ease: "power2.inOut" }, tOutroStart);
 
       window.__timelines["main"] = tl;
     </script>

@@ -1,6 +1,5 @@
-<template id="outro-template">
-  <div data-composition-id="outro" data-width="1080" data-height="1920">
-    <div class="flex flex-col justify-center items-center w-full h-full px-[80px] py-[120px] box-border text-center scene-wrapper bg-[#111111]">
+<div data-composition-id="outro" data-start="0" data-width="1080" data-height="1920">
+  <div class="flex flex-col justify-center items-center w-full h-full px-[80px] py-[120px] box-border text-center scene-wrapper">
       <div class="text-[80px] font-[800] mb-[60px]" id="o-text"></div>
       <div class="px-[100px] py-[40px] rounded-[100px] text-[64px] font-[800] tracking-[2px]" id="o-cta"></div>
     </div>
@@ -47,7 +46,6 @@
         ease: "power2.inOut"
       }, v.timing.outroDuration - 0.5);
 
-      window.__timelines["outro"] = tl;
-    </script>
-  </div>
-</template>
+    window.__timelines["outro"] = tl;
+  </script>
+</div>

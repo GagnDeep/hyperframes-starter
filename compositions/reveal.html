@@ -1,6 +1,5 @@
-<template id="reveal-template">
-  <div data-composition-id="reveal" data-width="1080" data-height="1920">
-    <div class="flex flex-col justify-center items-center w-full h-full px-[80px] py-[120px] box-border text-center">
+<div data-composition-id="reveal" data-start="0" data-width="1080" data-height="1920">
+  <div class="flex flex-col justify-center items-center w-full h-full px-[80px] py-[120px] box-border text-center">
       <div class="text-[52px] font-semibold tracking-[2px] mb-[40px]" id="r-text"></div>
       <div class="px-[80px] py-[160px] rounded-[24px] mb-[40px] border-[4px] border-dashed" id="r-container">
         <div class="text-[60px] tracking-[8px] leading-[1] font-display" id="r-code"></div>
@@ -20,8 +19,12 @@
 
       const rContainer = document.getElementById('r-container');
 
-      document.getElementById('r-code').textContent = v.content.discountCode;
-      document.getElementById('r-code').style.color = v.theme.textMain; // Use solid color
+      const codeEl = document.getElementById('r-code');
+      const codeText = v.content.discountCode;
+
+      // Set empty first for typing effect
+      codeEl.textContent = "";
+      codeEl.style.color = v.theme.textMain; // Use solid color
       rContainer.style.backgroundColor = "transparent"; // transparent bg
       rContainer.style.borderColor = v.theme.accent;
 
@@ -46,15 +49,45 @@
         ease: "back.out(1.7)"
       }, 0.5);
 
-      // Amount slides up
+      // Typing effect for the discount code
+      const scrambleChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+      // Deterministic PRNG
+      function hash(n) {
+        n = Math.sin(n) * 10000;
+        return n - Math.floor(n);
+      }
+
+      for (let i = 0; i < codeText.length; i++) {
+        const charIndex = i;
+        const char = codeText[i];
+
+        // Typing duration phase (scrambling)
+        for(let s = 0; s < 5; s++) {
+          const scrambleTime = 0.8 + (i * 0.1) + (s * 0.05);
+          tl.call(function() {
+            let currentText = codeText.substring(0, charIndex);
+            // Add a scrambled character
+            const randomChar = scrambleChars[Math.floor(hash(charIndex * 100 + s) * scrambleChars.length)];
+            codeEl.textContent = currentText + randomChar;
+          }, null, scrambleTime);
+        }
+
+        // Final correct character
+        const finalTime = 0.8 + (i * 0.1) + (5 * 0.05);
+        tl.call(function() {
+          codeEl.textContent = codeText.substring(0, charIndex + 1);
+        }, null, finalTime);
+      }
+
+      // Amount slides up after typing is mostly done
+      const amountTime = 0.8 + (codeText.length * 0.1) + 0.3;
       tl.from("#r-amount", {
         y: 40,
         opacity: 0,
         duration: 0.6,
         ease: "power3.out"
-      }, 0.8);
+      }, amountTime);
 
-      window.__timelines["reveal"] = tl;
-    </script>
-  </div>
-</template>
+    window.__timelines["reveal"] = tl;
+  </script>
+</div>

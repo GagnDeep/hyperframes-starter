@@ -1,9 +1,32 @@
 <!doctype html>
-<html lang="en">
+<html
+  lang="en"
+  data-composition-variables='[
+    {"id":"bgColor","type":"color","label":"Background Color","default":"#0f172a"},
+    {"id":"titleText","type":"string","label":"Title","default":"Meet the new App"},
+    {"id":"titleColor","type":"color","label":"Title Color","default":"#f8fafc"},
+    {"id":"deviceBezelColor","type":"color","label":"Device Bezel","default":"#000000"},
+    {"id":"appName","type":"string","label":"App Name","default":"HyperApp"},
+    {"id":"accentColor","type":"color","label":"App Accent Color","default":"#3b82f6"}
+  ]'
+>
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=1920, height=1080" />
+    <meta name="viewport" content="width=1080, height=1920" />
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__tailwindReady=new Promise(function(resolve){
+      var loaded=document.readyState==="complete";
+      var resolved=false;
+      var observer;
+      function readTailwindCss(){var styles=document.querySelectorAll("style");for(var i=styles.length-1;i>=0;i--){var text=styles[i].textContent||"";if(text.indexOf("tailwindcss v")!==-1)return text;}return "";}
+      function finish(){if(resolved||!loaded||!readTailwindCss())return;resolved=true;if(observer)observer.disconnect();resolve(true);}
+      observer=new MutationObserver(finish);
+      observer.observe(document.documentElement,{childList:true,subtree:true,characterData:true});
+      if(loaded){finish();}else{window.addEventListener("load",function(){loaded=true;finish();},{once:true});}
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.2.4/dist/index.global.js"></script>
     <style>
       * {
         margin: 0;
@@ -13,10 +36,31 @@
       html,
       body {
         margin: 0;
-        width: 1920px;
-        height: 1080px;
+        width: 1080px;
+        height: 1920px;
         overflow: hidden;
-        background: #000;
+      }
+      .title-container {
+        position: absolute;
+        top: 150px;
+        width: 100%;
+        text-align: center;
+        z-index: 10;
+        font-family: sans-serif;
+      }
+      .bg-blur-circle {
+        position: absolute;
+        width: 800px;
+        height: 800px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(56,189,248,0.3) 0%, rgba(15,23,42,0) 70%);
+        top: 50%;
+        left: 50%;
+        filter: blur(40px);
+        z-index: 0;
+      }
+      #iphone-wrapper {
+        pointer-events: none;
       }
     </style>
   </head>
@@ -25,27 +69,95 @@
       id="root"
       data-composition-id="main"
       data-start="0"
-      data-duration="10"
-      data-width="1920"
-      data-height="1080"
+      data-duration="15"
+      data-width="1080"
+      data-height="1920"
+      class="relative"
     >
+      <!-- Background Elements -->
+      <div id="bg" class="clip absolute inset-0" data-start="0" data-duration="15" data-track-index="0"></div>
+      <div id="blur-circle" class="clip bg-blur-circle" data-start="0" data-duration="15" data-track-index="1"></div>
       
-      
+      <!-- Title -->
+      <div id="title-clip" class="clip title-container" data-start="0" data-duration="15" data-track-index="2">
+        <h1 id="title" class="text-7xl font-bold tracking-tight"></h1>
+      </div>
 
-      <!--
-        Add your clips here. Example:
-        <div id="title" class="clip" data-start="0" data-duration="5" data-track-index="1"
-             style="font-size: 64px; color: #fff; padding: 40px">
-          Hello World
-        </div>
-      -->
+      <!-- Device Mockup Subcomposition -->
+      <div
+        id="iphone-wrapper"
+        class="clip absolute inset-0 z-20"
+        data-start="0"
+        data-duration="15"
+        data-track-index="3"
+      >
+        <div
+          id="iphone-subcomp"
+          data-composition-id="iphone-frame"
+          data-composition-src="compositions/iphone-frame.html"
+          data-variable-values='{"appName":"HyperApp"}'
+        ></div>
+      </div>
     </div>
 
     <script>
-      window.__timelines = window.__timelines || {};
-      const tl = gsap.timeline({ paused: true });
-      // Example: tl.from("#title", { opacity: 0, y: -50, duration: 1 }, 0);
-      window.__timelines["main"] = tl;
+      (() => {
+        const vars = window.__hyperframes.getVariables();
+
+        document.getElementById("bg").style.backgroundColor = vars.bgColor;
+
+        const titleEl = document.getElementById("title");
+        titleEl.textContent = vars.titleText;
+        titleEl.style.color = vars.titleColor;
+
+        // Pass variables to sub-composition
+        document.getElementById("iphone-subcomp").setAttribute(
+          "data-variable-values",
+          JSON.stringify({
+            bezelColor: vars.deviceBezelColor,
+            appName: vars.appName,
+            accentColor: vars.accentColor
+          })
+        );
+
+        window.__timelines = window.__timelines || {};
+        const tl = gsap.timeline({ paused: true });
+
+        // Set initial state
+        gsap.set("#blur-circle", { xPercent: -50, yPercent: -50 });
+
+        // Animate background elements
+        tl.fromTo("#blur-circle", {
+          scale: 0,
+          opacity: 0
+        }, {
+          scale: 1,
+          opacity: 1,
+          duration: 2,
+          ease: "power2.out"
+        }, 0);
+
+        tl.to("#blur-circle", {
+          y: "-=100",
+          duration: 8,
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: 1
+        }, 0);
+
+        // Animate title
+        tl.fromTo(titleEl, {
+          y: 50,
+          opacity: 0
+        }, {
+          y: 0,
+          opacity: 1,
+          duration: 1,
+          ease: "power3.out"
+        }, 0.5);
+
+        window.__timelines["main"] = tl;
+      })();
     </script>
   </body>
 </html>

@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <div
+      id="meme-container"
+      data-composition-id="meme-content"
+      data-start="0"
+      data-duration="8"
+      data-width="1080"
+      data-height="1920"
+      class="w-full h-full flex flex-col justify-between items-center bg-transparent py-10"
+    >
+
+      <!-- Top Text Region -->
+      <div
+        id="top-text-clip"
+        class="clip w-[90%] mt-[250px] z-20 flex justify-center items-center"
+        data-start="0"
+        data-duration="8"
+        data-track-index="1"
+        data-layout-allow-overflow
+      >
+        <h1 id="top-text" data-layout-allow-overflow class="meme-text text-white text-[80px] leading-tight break-words text-center font-bold tracking-tight px-4">
+          TOP TEXT
+        </h1>
+      </div>
+
+      <!-- Media Region -->
+      <div
+        id="media-clip"
+        class="clip w-[90%] flex-1 max-h-[900px] my-4 relative flex justify-center items-center overflow-hidden bg-black/50 border-4 border-white"
+        data-start="0"
+        data-duration="8"
+        data-track-index="2"
+      >
+        <img
+          id="meme-image"
+          src=""
+          class="w-full h-full object-cover hidden"
+          alt="Meme visual"
+        />
+        <!-- Removed video element for generic image usage unless mediaType='video', which prevents waiting for non-existent video source to load -->
+      </div>
+
+      <!-- Bottom Text Region -->
+      <div
+        id="bottom-text-clip"
+        class="clip w-[90%] mb-[450px] z-20 flex justify-center items-center"
+        data-start="0"
+        data-duration="8"
+        data-track-index="3"
+        data-layout-allow-overflow
+      >
+        <h1 id="bottom-text" data-layout-allow-overflow class="meme-text text-white text-[80px] leading-tight break-words text-center font-bold tracking-tight px-4">
+          BOTTOM TEXT
+        </h1>
+      </div>
+
+    </div>
+
+    <script>
+      const vars = window.parent.__vars || window.__vars || {
+        duration: 8,
+        topText: "TOP TEXT",
+        bottomText: "BOTTOM TEXT",
+        textColor: "#ffffff",
+        mediaUrl: "https://placehold.co/1080x1080/444/999?text=Reaction",
+        mediaType: "image",
+        animationSpeed: 1.0
+      };
+
+      function initMemeContent() {
+          const container = document.getElementById('meme-container');
+          if (!container) return;
+
+          container.setAttribute('data-duration', vars.duration);
+
+          const clips = document.querySelectorAll('.clip');
+          clips.forEach(clip => clip.setAttribute('data-duration', vars.duration));
+
+          // Apply Text
+          const topTextEl = document.getElementById('top-text');
+          const bottomTextEl = document.getElementById('bottom-text');
+
+          if (topTextEl) {
+              topTextEl.textContent = vars.topText;
+              topTextEl.style.color = vars.textColor;
+          }
+          if (bottomTextEl) {
+              bottomTextEl.textContent = vars.bottomText;
+              bottomTextEl.style.color = vars.textColor;
+          }
+
+          // Apply Media
+          const mediaContainer = document.getElementById('media-clip');
+
+          if (vars.mediaType === 'image') {
+            const imgEl = document.getElementById('meme-image');
+            if (imgEl) {
+              imgEl.src = vars.mediaUrl;
+              imgEl.classList.remove('hidden');
+            }
+          } else if (vars.mediaType === 'video') {
+            // Only inject video if explicitly requested to prevent render hang on empty src
+            const vidEl = document.createElement('video');
+            vidEl.id = 'meme-video';
+            vidEl.src = vars.mediaUrl;
+            vidEl.className = 'w-full h-full object-cover';
+            vidEl.muted = true;
+            vidEl.loop = true;
+            vidEl.playsInline = true;
+            mediaContainer.appendChild(vidEl);
+          }
+
+          // GSAP Animation setup
+          window.__timelines = window.__timelines || {};
+          const tl = gsap.timeline({ paused: true });
+
+          // Setup initial state
+          tl.set("#media-clip", { scale: 0.9, opacity: 0 });
+          tl.set("#top-text", { scale: 3, opacity: 0, rotation: -5 });
+          tl.set("#bottom-text", { scale: 3, opacity: 0, rotation: 5 });
+
+          // Animate media
+          tl.to("#media-clip",
+            { scale: 1, opacity: 1, duration: 0.6 * vars.animationSpeed, ease: "back.out(1.7)" },
+            0
+          );
+
+          // Animate text
+          tl.to("#top-text",
+            { scale: 1, opacity: 1, rotation: 0, duration: 0.4 * vars.animationSpeed, ease: "power4.inOut" },
+            0.3 * vars.animationSpeed
+          );
+
+          tl.to("#bottom-text",
+            { scale: 1, opacity: 1, rotation: 0, duration: 0.4 * vars.animationSpeed, ease: "power4.inOut" },
+            0.5 * vars.animationSpeed
+          );
+
+          const cycleDuration = 2 * vars.animationSpeed;
+          const repeatCount = Math.floor(vars.duration / cycleDuration) - 1;
+
+          if (repeatCount > 0) {
+            tl.to(["#top-text", "#bottom-text"], {
+              scale: 1.05,
+              duration: cycleDuration,
+              ease: "sine.inOut",
+              yoyo: true,
+              repeat: repeatCount
+            }, "+=0.2");
+          }
+
+          tl.set(["#top-text-clip", "#bottom-text-clip", "#media-clip"], { opacity: 0 }, vars.duration);
+
+          window.__timelines["meme-content"] = tl;
+      }
+
+      document.addEventListener('DOMContentLoaded', initMemeContent);
+      if (document.getElementById('meme-container')) initMemeContent();
+    </script>
+  </body>
+</html>

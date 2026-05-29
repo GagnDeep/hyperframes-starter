@@ -67,6 +67,25 @@
         const textBox = document.getElementById('lt-text-box');
         if(textBox && v.accentColor) textBox.style.borderColor = v.accentColor;
 
+        // Configuration variables with fallbacks
+        const durationIn = typeof v.transitionInDuration === 'number' ? v.transitionInDuration : 1.2;
+        const durationOut = typeof v.transitionOutDuration === 'number' ? v.transitionOutDuration : 0.8;
+        const motionDir = v.motionDirection || "left";
+
+        let startX = -50;
+        let startY = 0;
+        let clipPathStart = "inset(0 100% 0 0)";
+
+        if (motionDir === "bottom") {
+            startX = 0;
+            startY = 50;
+            clipPathStart = "inset(100% 0 0 0)";
+        } else if (motionDir === "right") {
+            startX = 50;
+            startY = 0;
+            clipPathStart = "inset(0 0 0 100%)";
+        }
+
         // GSAP Animations
         window.__timelines = window.__timelines || {};
         const tl = gsap.timeline({ paused: true });
@@ -77,25 +96,24 @@
         // Logo box slides up and fades in (animating wrapper to avoid overlaps)
         tl.fromTo("#lt-logo-wrapper",
           { y: 100, opacity: 0 },
-          { y: 0, opacity: 1, duration: 1, ease: "back.out(1.2)", overwrite: "auto" },
+          { y: 0, opacity: 1, duration: Math.min(1, durationIn), ease: "back.out(1.2)", overwrite: "auto" },
           entryTime
         );
 
-        // Text box slides in from left (animating wrapper)
+        // Text box slides in based on motion direction
         tl.fromTo("#lt-text-wrapper",
-          { x: -50, opacity: 0, clipPath: "inset(0 100% 0 0)" },
-          { x: 0, opacity: 1, clipPath: "inset(0 0% 0 0)", duration: 1.2, ease: "power3.out", overwrite: "auto" },
-          entryTime + 0.2
+          { x: startX, y: startY, opacity: 0, clipPath: clipPathStart },
+          { x: 0, y: 0, opacity: 1, clipPath: "inset(0 0% 0 0)", duration: durationIn, ease: "power3.out", overwrite: "auto" },
+          entryTime + (durationIn * 0.15)
         );
 
-        // Text lines stagger in (animating badge wrapper instead of badge to preserve inner opacity)
-        // explicitly checking targets exist for GSAP since hyperframes can mount headless
+        // Text lines stagger in
         const textElements = ["#lt-badge-wrapper", "#lt-title", "#lt-subtitle"].filter(sel => document.querySelector(sel));
         if (textElements.length > 0) {
           tl.fromTo(textElements,
             { y: 20, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.8, stagger: 0.15, ease: "power2.out" },
-            entryTime + 0.5
+            { y: 0, opacity: 1, duration: durationIn * 0.6, stagger: durationIn * 0.1, ease: "power2.out" },
+            entryTime + (durationIn * 0.4)
           );
         }
 
@@ -109,18 +127,17 @@
             compRoot.setAttribute('data-duration', totalDuration);
         }
 
-        const exitTime = totalDuration - 1; // 1 second exit animation
+        const exitTime = totalDuration - durationOut;
 
-        // Fade and slide down out individual elements
+        // Fade and slide out individual elements
         if (document.querySelector("#lt-logo-wrapper")) {
-          tl.to("#lt-logo-wrapper", { y: 50, opacity: 0, duration: 0.8, ease: "power2.in", overwrite: "auto" }, exitTime);
+          tl.to("#lt-logo-wrapper", { y: 50, opacity: 0, duration: durationOut, ease: "power2.in", overwrite: "auto" }, exitTime);
         }
         if (document.querySelector("#lt-text-wrapper")) {
-          tl.to("#lt-text-wrapper", { y: 50, opacity: 0, duration: 0.8, ease: "power2.in", overwrite: "auto" }, exitTime + 0.1);
+          tl.to("#lt-text-wrapper", { y: 50, opacity: 0, duration: durationOut, ease: "power2.in", overwrite: "auto" }, exitTime + (durationOut * 0.1));
         }
 
         // Hard kill at the end boundary to prevent stale visibility during seeking
-        // Hard kill needs to be on the container to prevent any flicker of the inner elements
         if (compRoot) {
           tl.set("#lower-third-root", { opacity: 0 }, totalDuration);
         }

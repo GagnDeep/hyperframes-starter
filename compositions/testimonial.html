@@ -1,25 +1,29 @@
 <!doctype html>
-<html>
+<!-- Testimonial sub-composition declares its own variables schema for modular reusability, but we rely on top-level window.__vars if not rendering this standalone -->
+<html data-composition-variables='[
+  {"id":"primaryColor","type":"color","label":"Primary Color","default":"#3b82f6"},
+  {"id":"backgroundColor","type":"color","label":"Background Color","default":"#f3f4f6"},
+  {"id":"textColor","type":"color","label":"Text Color","default":"#1f2937"},
+  {"id":"quoteText","type":"string","label":"Quote Text","default":"\"This product completely transformed how we work. The intuitive interface and powerful features saved us hours every week.\""},
+  {"id":"customerName","type":"string","label":"Customer Name","default":"Jane Doe"},
+  {"id":"customerTitle","type":"string","label":"Customer Title","default":"Product Manager, TechCorp"},
+  {"id":"rating","type":"number","label":"Rating (1-5)","default":5}
+]'>
   <body>
     <div data-composition-id="testimonial-sub" data-start="0" data-duration="10" data-width="1920" data-height="1080" class="flex items-center justify-center h-full w-full">
-      <!-- Dynamic variables applied in script -->
       <div id="bg" class="absolute inset-0 z-0"></div>
 
       <div id="card" class="relative z-10 w-[1200px] bg-white rounded-3xl shadow-2xl p-16 flex flex-col justify-between opacity-0 translate-y-12">
-        <!-- Quote icon -->
         <div class="mb-8">
           <svg id="quote-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M10 11H6C6 8.23858 8.23858 6 11 6V4C7.13401 4 4 7.13401 4 11V19H10V11ZM20 11H16C16 8.23858 18.238 6 21 6V4C17.134 4 14 7.13401 14 11V19H20V11Z" fill="currentColor"/>
           </svg>
         </div>
 
-        <!-- Quote Text -->
         <p id="quote-text" class="text-5xl font-medium leading-tight mb-12 text-balance"></p>
 
-        <!-- Stars Rating -->
         <div id="stars-container" class="flex gap-2 mb-8 h-10"></div>
 
-        <!-- Customer Info -->
         <div class="flex items-center gap-6 mt-auto pt-8 border-t border-gray-100">
           <div id="customer-avatar" class="w-24 h-24 rounded-full shadow-sm opacity-0 scale-75 bg-gray-200 flex items-center justify-center text-gray-900 text-3xl font-bold"></div>
           <div class="flex flex-col opacity-0 translate-x-4" id="customer-details">
@@ -30,9 +34,10 @@
       </div>
 
       <script>
-        const vars = window.__vars || (window.__hyperframes ? window.__hyperframes.getVariables() : {});
+        // Use top-level window.__vars if injected, otherwise fallback to modular framework variables resolution
+        const modularVars = window.__hyperframes ? window.__hyperframes.getVariables() : {};
+        const vars = window.__vars || modularVars;
 
-        // Apply variables
         document.getElementById("bg").style.backgroundColor = vars.backgroundColor || "#f3f4f6";
         document.getElementById("card").style.color = vars.textColor || "#1f2937";
         document.getElementById("quote-icon").style.color = vars.primaryColor || "#3b82f6";
@@ -42,16 +47,13 @@
         document.getElementById("customer-name").textContent = cName;
         document.getElementById("customer-title").textContent = vars.customerTitle || "Product Manager, TechCorp";
 
-        // Use initials for avatar since external network calls are forbidden
         const initials = cName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
         document.getElementById("customer-avatar").textContent = initials;
         document.getElementById("customer-avatar").style.backgroundColor = vars.primaryColor || "#3b82f6";
-        // To ensure good contrast for the initials, we'll force the text to be a deep dark color.
         document.getElementById("customer-avatar").style.color = "#111827";
 
-        // Generate stars
         const starsContainer = document.getElementById("stars-container");
-        const rating = vars.rating || 5;
+        const rating = vars.rating !== undefined ? vars.rating : 5;
         for (let i = 0; i < 5; i++) {
           const star = document.createElement("div");
           star.className = "star opacity-0 scale-50";
@@ -61,7 +63,6 @@
           starsContainer.appendChild(star);
         }
 
-        // Timeline
         window.__timelines = window.__timelines || {};
         const tl = gsap.timeline({ paused: true });
 

@@ -2,49 +2,161 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=1920, height=1080" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <!-- GSAP for animations -->
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <!-- Tailwind v4 -->
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      html,
-      body {
-        margin: 0;
-        width: 1920px;
-        height: 1080px;
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1080px;
+        height: 1920px;
         overflow: hidden;
-        background: #000;
       }
     </style>
+    <script>
+      // Exposed variables for the template
+      window.__vars = {
+        theme: {
+          bg: "#000000", // Background color
+          accent: "#FF3366", // Accent color for highlights/code
+          textMain: "#FFFFFF", // Main text color
+          textMuted: "#CCCCCC" // Subtitle/muted text color
+        },
+        fonts: {
+          main: "Inter, sans-serif",
+          display: "'Bebas Neue', sans-serif"
+        },
+        content: {
+          introTop: "WAIT FOR IT...",
+          introMain: "WE HAVE A SURPRISE FOR YOU",
+          revealText: "YOUR EXCLUSIVE CODE:",
+          discountCode: "SAVE20NOW",
+          discountAmount: "20% OFF ALL ITEMS",
+          outroText: "LINK IN BIO",
+          outroCta: "SHOP NOW"
+        },
+        timing: {
+          introDuration: 3.5,
+          revealDuration: 4.5,
+          outroDuration: 4.0,
+        }
+      };
+
+      document.write(`
+        <style>
+          @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;800&display=swap');
+          body { background-color: ${window.__vars.theme.bg}; font-family: ${window.__vars.fonts.main}; color: ${window.__vars.theme.textMain}; }
+          .font-display { font-family: ${window.__vars.fonts.display}; }
+        </style>
+      `);
+    </script>
   </head>
   <body>
+    <!-- Root composition -->
     <div
       id="root"
       data-composition-id="main"
       data-start="0"
-      data-duration="10"
-      data-width="1920"
-      data-height="1080"
+      data-width="1080"
+      data-height="1920"
+      class="relative w-full h-full"
     >
-      
-      
+      <!-- Background track -->
+      <div
+        id="bg-layer"
+        class="clip absolute inset-0 z-0"
+        data-start="0"
+        data-track-index="0"
+      >
+        <div id="bg-fill" class="w-full h-full opacity-0"></div>
+      </div>
 
-      <!--
-        Add your clips here. Example:
-        <div id="title" class="clip" data-start="0" data-duration="5" data-track-index="1"
-             style="font-size: 64px; color: #fff; padding: 40px">
-          Hello World
-        </div>
-      -->
+      <!-- Main scenes track -->
+      <!-- To perform crossfades, scenes need different track-index so they coexist during transition -->
+      <div
+        id="scene-intro"
+        class="clip absolute inset-0 z-10"
+        data-composition-id="intro"
+        data-composition-src="compositions/intro.html"
+        data-start="0"
+        data-track-index="1"
+      ></div>
+
+      <div
+        id="scene-reveal"
+        class="clip absolute inset-0 z-11"
+        data-composition-id="reveal"
+        data-composition-src="compositions/reveal.html"
+        data-track-index="2"
+      ></div>
+
+      <div
+        id="scene-outro"
+        class="clip absolute inset-0 z-12"
+        data-composition-id="outro"
+        data-composition-src="compositions/outro.html"
+        data-track-index="3"
+      ></div>
     </div>
+
+    <script>
+      // Apply timings dynamically
+      const tv = window.__vars.timing;
+      const tIntro = tv.introDuration;
+      const tReveal = tv.revealDuration;
+      const tOutro = tv.outroDuration;
+      const totalTime = tIntro + tReveal + tOutro;
+
+      document.getElementById('root').setAttribute('data-duration', totalTime);
+
+      document.getElementById('bg-layer').setAttribute('data-duration', totalTime);
+
+      // 0.5s overlap for transitions
+      const tOverlap = 0.5;
+
+      const elIntro = document.getElementById('scene-intro');
+      elIntro.setAttribute('data-start', 0);
+      elIntro.setAttribute('data-duration', tIntro + tOverlap); // extra time for exit
+
+      const elReveal = document.getElementById('scene-reveal');
+      elReveal.setAttribute('data-start', tIntro);
+      elReveal.setAttribute('data-duration', tReveal + tOverlap); // extra time for exit
+
+      const elOutro = document.getElementById('scene-outro');
+      elOutro.setAttribute('data-start', tIntro + tReveal);
+      elOutro.setAttribute('data-duration', tOutro);
+
+      // Ensure solid backgrounds on scenes for contrast auditing, using the customizable variable
+      document.getElementById('scene-intro').style.backgroundColor = window.__vars.theme.bg;
+      document.getElementById('scene-reveal').style.backgroundColor = window.__vars.theme.bg;
+      document.getElementById('scene-outro').style.backgroundColor = window.__vars.theme.bg;
+    </script>
 
     <script>
       window.__timelines = window.__timelines || {};
       const tl = gsap.timeline({ paused: true });
-      // Example: tl.from("#title", { opacity: 0, y: -50, duration: 1 }, 0);
+
+      // Set initial bg color
+      tl.set("#bg-fill", { backgroundColor: window.__vars.theme.bg }, 0);
+      tl.to("#bg-fill", { opacity: 1, duration: 0.1 }, 0);
+
+      // Transitions: Blur crossfade
+
+      // Intro -> Reveal
+      tl.to("#scene-intro", { filter: "blur(10px)", scale: 1.05, opacity: 0, duration: 0.5, ease: "power2.inOut" }, window.__vars.timing.introDuration);
+      tl.fromTo("#scene-reveal",
+        { filter: "blur(10px)", scale: 0.95, opacity: 0 },
+        { filter: "blur(0px)", scale: 1, opacity: 1, duration: 0.5, ease: "power2.inOut" }, window.__vars.timing.introDuration);
+
+      // Reveal -> Outro
+      const tOutroStart = window.__vars.timing.introDuration + window.__vars.timing.revealDuration;
+      tl.to("#scene-reveal", { filter: "blur(10px)", scale: 1.05, opacity: 0, duration: 0.5, ease: "power2.inOut" }, tOutroStart);
+      tl.fromTo("#scene-outro",
+        { filter: "blur(10px)", scale: 0.95, opacity: 0 },
+        { filter: "blur(0px)", scale: 1, opacity: 1, duration: 0.5, ease: "power2.inOut" }, tOutroStart);
+
       window.__timelines["main"] = tl;
     </script>
   </body>

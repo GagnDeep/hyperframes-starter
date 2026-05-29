@@ -1,5 +1,14 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-composition-variables='[
+  {"id":"primaryColor","type":"color","label":"Primary Color","default":"#3b82f6"},
+  {"id":"backgroundColor","type":"color","label":"Background Color","default":"#f3f4f6"},
+  {"id":"textColor","type":"color","label":"Text Color","default":"#1f2937"},
+  {"id":"quoteText","type":"string","label":"Quote Text","default":"\"This product completely transformed how we work. The intuitive interface and powerful features saved us hours every week.\""},
+  {"id":"customerName","type":"string","label":"Customer Name","default":"Jane Doe"},
+  {"id":"customerTitle","type":"string","label":"Customer Title","default":"Product Manager, TechCorp"},
+  {"id":"rating","type":"number","label":"Rating (1-5)","default":5},
+  {"id":"duration","type":"number","label":"Duration","default":10}
+]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -19,6 +28,27 @@
         background: #000;
       }
     </style>
+
+<script>
+window.__tailwindReady=new Promise(function(resolve){
+var loaded=document.readyState==="complete";
+var resolved=false;
+var observer;
+function readTailwindCss(){var styles=document.querySelectorAll("style");for(var i=styles.length-1;i>=0;i--){var text=styles[i].textContent||"";if(text.indexOf("tailwindcss v")!==-1)return text;}return "";}
+function finish(){if(resolved||!loaded||!readTailwindCss())return;resolved=true;if(observer)observer.disconnect();resolve(true);}
+observer=new MutationObserver(finish);
+observer.observe(document.documentElement,{childList:true,subtree:true,characterData:true});
+if(loaded){finish();}else{window.addEventListener("load",function(){loaded=true;finish();},{once:true});}
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.2.4/dist/index.global.js" integrity="sha384-v5YF9xS+gLRWdvrQ0u/WRbCkjSIH0NjHIPe8tBL1ZRrmI7PiSH6LLdzs0aAIMCuh" crossorigin="anonymous"></script>
+
+<style type="text/tailwindcss">
+  @theme {
+    /* Define base theme settings */
+  }
+</style>
+
   </head>
   <body>
     <div
@@ -28,23 +58,37 @@
       data-duration="10"
       data-width="1920"
       data-height="1080"
+      class="flex items-center justify-center h-full w-full relative"
     >
       
-      
+      <!-- Sub-composition for the testimonial card -->
+      <div
+        class="clip absolute inset-0"
+        data-composition-id="testimonial-sub"
+        data-composition-src="compositions/testimonial.html"
+        data-start="0"
+        data-duration="10"
+        data-track-index="1"
+      ></div>
 
-      <!--
-        Add your clips here. Example:
-        <div id="title" class="clip" data-start="0" data-duration="5" data-track-index="1"
-             style="font-size: 64px; color: #fff; padding: 40px">
-          Hello World
-        </div>
-      -->
     </div>
 
     <script>
+      // Load variables
+      window.__vars = window.__hyperframes ? window.__hyperframes.getVariables() : {
+        primaryColor: "#3b82f6",
+        backgroundColor: "#f3f4f6",
+        textColor: "#1f2937",
+        quoteText: "\"This product completely transformed how we work. The intuitive interface and powerful features saved us hours every week.\"",
+        customerName: "Jane Doe",
+        customerTitle: "Product Manager, TechCorp",
+        rating: 5,
+        duration: 10
+      };
+
+      // Set the root timeline
       window.__timelines = window.__timelines || {};
       const tl = gsap.timeline({ paused: true });
-      // Example: tl.from("#title", { opacity: 0, y: -50, duration: 1 }, 0);
       window.__timelines["main"] = tl;
     </script>
   </body>

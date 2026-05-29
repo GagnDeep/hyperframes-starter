@@ -2,50 +2,148 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=1920, height=1080" />
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <meta name="viewport" content="width=1080, height=1920" />
+
+    <!-- Load Tailwind v4 from CDN for runtime styling (required for HyperFrames) -->
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+
+    <!-- GSAP for animations -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+    <script>
+      // Global variable configuration block for HyperFrames template
+      window.__vars = {
+        // Platform & Global Settings
+        platform: "tiktok",    // "tiktok" (9:16) or "youtube" (16:9)
+        bgColor: "#1a1a1a",    // Dark background for meme focus
+        accentColor: "#ff3b30",// Vibrant accent for highlights
+
+        // Typography Settings
+        fontFamily: "Impact, montserrat, sans-serif", // Deterministic fallback
+        textStroke: "2px #000000", // Outline for meme text
+
+        // Sequential Memes List
+        memes: [
+          {
+            duration: 5,
+            topText: "WHEN YOU FINALLY FIX",
+            bottomText: "THAT ONE BUG",
+            textColor: "#ffffff",
+            mediaUrl: "https://placehold.co/1920x1080/444/999?text=Reaction+1",
+            mediaType: "image",
+            animationPreset: "typewriter" // slam, fade, slide, typewriter
+          },
+          {
+            duration: 5,
+            topText: "BUT THEN YOU SEE",
+            bottomText: "5 NEW ERRORS",
+            textColor: "#ffeb3b", // Yellow text for the second meme
+            mediaUrl: "https://placehold.co/1920x1080/aa2222/ffffff?text=Reaction+2",
+            mediaType: "image",
+            animationPreset: "slam"
+          }
+        ],
+
+        // Animation
+        animationSpeed: 1.0, // Multiplier for animation speed
+      };
+
+      // Set dimensions early based on platform
+      const isVertical = window.__vars.platform === "tiktok" || window.__vars.platform === "reels" || window.__vars.platform === "shorts";
+      window.__vars.canvasWidth = isVertical ? 1080 : 1920;
+      window.__vars.canvasHeight = isVertical ? 1920 : 1080;
+    </script>
+
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      html,
-      body {
-        margin: 0;
-        width: 1920px;
-        height: 1080px;
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
         overflow: hidden;
-        background: #000;
+        background-color: var(--bg-color, #000);
+      }
+
+      /* Dynamic theme application from __vars */
+      :root {
+        --meme-font: Impact, montserrat, sans-serif;
+      }
+
+      .meme-text {
+        font-family: var(--meme-font);
+        text-transform: uppercase;
+        text-align: center;
+        line-height: 1.1;
+        text-shadow:
+          -2px -2px 0 #000,
+           2px -2px 0 #000,
+          -2px  2px 0 #000,
+           2px  2px 0 #000,
+           4px  4px 0 rgba(0,0,0,0.5); /* extra drop shadow */
       }
     </style>
   </head>
   <body>
+    <!-- Root Composition -->
+    <!-- Important: We MUST hardcode data-width and data-height here to pass static linting.
+         The linter does not execute the script to find dimensions, so we provide a default 9:16 fallback
+         and update dynamically at runtime. -->
     <div
       id="root"
-      data-composition-id="main"
+      data-composition-id="meme-reaction"
       data-start="0"
-      data-duration="10"
-      data-width="1920"
-      data-height="1080"
+      data-width="1080"
+      data-height="1920"
+      class="relative flex flex-col items-center justify-center"
     >
-      
-      
-
-      <!--
-        Add your clips here. Example:
-        <div id="title" class="clip" data-start="0" data-duration="5" data-track-index="1"
-             style="font-size: 64px; color: #fff; padding: 40px">
-          Hello World
-        </div>
-      -->
+      <!-- Sub-compositions will be dynamically generated here by JS for sequential memes -->
     </div>
 
     <script>
+      // Apply variables to styling and DOM
+      document.body.style.setProperty('--bg-color', window.__vars.bgColor);
+
+      const root = document.getElementById('root');
+
+      // Update viewport meta dynamically (helpful for some studio tools)
+      const viewport = document.querySelector('meta[name="viewport"]');
+      if (viewport) {
+         viewport.setAttribute('content', `width=${window.__vars.canvasWidth}, height=${window.__vars.canvasHeight}`);
+      }
+
+      // Set precise canvas bounds for the root and the body
+      document.body.style.width = window.__vars.canvasWidth + 'px';
+      document.body.style.height = window.__vars.canvasHeight + 'px';
+      root.style.width = window.__vars.canvasWidth + 'px';
+      root.style.height = window.__vars.canvasHeight + 'px';
+      root.setAttribute('data-width', window.__vars.canvasWidth);
+      root.setAttribute('data-height', window.__vars.canvasHeight);
+
+      // Calculate total duration based on memes array
+      const totalDuration = window.__vars.memes.reduce((acc, curr) => acc + curr.duration, 0);
+      window.__vars.duration = totalDuration; // Sync global duration
+      root.setAttribute('data-duration', totalDuration);
+
+      // Generate sub-compositions dynamically for each sequential meme
+      let currentStartTime = 0;
+      window.__vars.memes.forEach((meme, index) => {
+        const subComp = document.createElement('div');
+        subComp.id = `meme-content-${index}`;
+        subComp.className = 'clip w-full h-full absolute inset-0';
+        subComp.setAttribute('data-composition-id', `meme-content-${index}`);
+        subComp.setAttribute('data-start', currentStartTime);
+        subComp.setAttribute('data-duration', meme.duration);
+        subComp.setAttribute('data-track-index', index + 1);
+        subComp.setAttribute('data-composition-src', 'compositions/meme-content.html');
+        // Store the index as a data attribute so the sub-comp knows which meme it is
+        subComp.setAttribute('data-meme-index', index);
+
+        root.appendChild(subComp);
+
+        currentStartTime += meme.duration;
+      });
+
+      // GSAP Timeline setup for root (paused)
       window.__timelines = window.__timelines || {};
       const tl = gsap.timeline({ paused: true });
-      // Example: tl.from("#title", { opacity: 0, y: -50, duration: 1 }, 0);
-      window.__timelines["main"] = tl;
+      window.__timelines["meme-reaction"] = tl;
     </script>
   </body>
 </html>

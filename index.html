@@ -6,8 +6,8 @@
     {"id":"titleText","type":"string","label":"Title","default":"Meet the new App"},
     {"id":"titleColor","type":"color","label":"Title Color","default":"#f8fafc"},
     {"id":"deviceBezelColor","type":"color","label":"Device Bezel","default":"#000000"},
-    {"id":"deviceScreenColor","type":"color","label":"Screen Background","default":"#ffffff"},
-    {"id":"appName","type":"string","label":"App Name","default":"HyperApp"}
+    {"id":"appName","type":"string","label":"App Name","default":"HyperApp"},
+    {"id":"accentColor","type":"color","label":"App Accent Color","default":"#3b82f6"}
   ]'
 >
   <head>
@@ -101,61 +101,63 @@
     </div>
 
     <script>
-      const vars = window.__hyperframes.getVariables();
+      (() => {
+        const vars = window.__hyperframes.getVariables();
 
-      document.getElementById("bg").style.backgroundColor = vars.bgColor;
+        document.getElementById("bg").style.backgroundColor = vars.bgColor;
 
-      const titleEl = document.getElementById("title");
-      titleEl.textContent = vars.titleText;
-      titleEl.style.color = vars.titleColor;
+        const titleEl = document.getElementById("title");
+        titleEl.textContent = vars.titleText;
+        titleEl.style.color = vars.titleColor;
 
-      // Pass variables to sub-composition
-      document.getElementById("iphone-subcomp").setAttribute(
-        "data-variable-values",
-        JSON.stringify({
-          bezelColor: vars.deviceBezelColor,
-          screenColor: vars.deviceScreenColor,
-          appName: vars.appName
-        })
-      );
+        // Pass variables to sub-composition
+        document.getElementById("iphone-subcomp").setAttribute(
+          "data-variable-values",
+          JSON.stringify({
+            bezelColor: vars.deviceBezelColor,
+            appName: vars.appName,
+            accentColor: vars.accentColor
+          })
+        );
 
-      window.__timelines = window.__timelines || {};
-      const tl = gsap.timeline({ paused: true });
+        window.__timelines = window.__timelines || {};
+        const tl = gsap.timeline({ paused: true });
 
-      // Set initial state
-      gsap.set("#blur-circle", { xPercent: -50, yPercent: -50 });
+        // Set initial state
+        gsap.set("#blur-circle", { xPercent: -50, yPercent: -50 });
 
-      // Animate background elements
-      tl.fromTo("#blur-circle", {
-        scale: 0,
-        opacity: 0
-      }, {
-        scale: 1,
-        opacity: 1,
-        duration: 2,
-        ease: "power2.out"
-      }, 0);
+        // Animate background elements
+        tl.fromTo("#blur-circle", {
+          scale: 0,
+          opacity: 0
+        }, {
+          scale: 1,
+          opacity: 1,
+          duration: 2,
+          ease: "power2.out"
+        }, 0);
 
-      tl.to("#blur-circle", {
-        y: "-=100",
-        duration: 8,
-        ease: "sine.inOut",
-        yoyo: true,
-        repeat: 1
-      }, 0);
+        tl.to("#blur-circle", {
+          y: "-=100",
+          duration: 8,
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: 1
+        }, 0);
 
-      // Animate title
-      tl.fromTo(titleEl, {
-        y: 50,
-        opacity: 0
-      }, {
-        y: 0,
-        opacity: 1,
-        duration: 1,
-        ease: "power3.out"
-      }, 0.5);
+        // Animate title
+        tl.fromTo(titleEl, {
+          y: 50,
+          opacity: 0
+        }, {
+          y: 0,
+          opacity: 1,
+          duration: 1,
+          ease: "power3.out"
+        }, 0.5);
 
-      window.__timelines["main"] = tl;
+        window.__timelines["main"] = tl;
+      })();
     </script>
   </body>
 </html>

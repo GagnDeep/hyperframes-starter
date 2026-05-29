@@ -3,7 +3,8 @@
   lang="en"
   data-composition-variables='[
     {"id":"bezelColor","type":"color","label":"Bezel Color","default":"#000000"},
-    {"id":"appName","type":"string","label":"App Name","default":"My App"}
+    {"id":"appName","type":"string","label":"App Name","default":"My App"},
+    {"id":"accentColor","type":"color","label":"Accent Color","default":"#3b82f6"}
   ]'
 >
   <head>
@@ -35,6 +36,7 @@
         background-color: #ffffff;
         display: flex;
         flex-direction: column;
+        opacity: 1 !important;
       }
       .dynamic-island {
         position: absolute;
@@ -61,26 +63,14 @@
         background-color: #0f172a;
         z-index: 10;
         position: relative;
+        opacity: 1 !important;
       }
       .app-body {
         flex: 1;
-        padding: 40px;
-        display: flex;
-        flex-direction: column;
-        gap: 32px;
         background-color: #ffffff;
         position: relative;
+        opacity: 1 !important;
       }
-      .skeleton-block {
-        width: 100%;
-        border-radius: 24px;
-        background: #94a3b8;
-      }
-      .skeleton-title { height: 48px; width: 60%; }
-      .skeleton-hero { height: 400px; }
-      .skeleton-text { height: 32px; width: 100%; }
-      .skeleton-text-short { height: 32px; width: 80%; }
-      .skeleton-text-xs { height: 32px; width: 40%; }
     </style>
   </head>
   <body>
@@ -94,66 +84,71 @@
       <div id="device" class="clip" data-start="0" data-duration="15" data-track-index="1">
         <div class="dynamic-island"></div>
         <div class="app-header" id="app-title">My App</div>
+
+        <!-- App Screen Subcomposition inside Body -->
         <div class="app-body">
-          <div class="skeleton-block skeleton-title" id="skel-1"></div>
-          <div class="skeleton-block skeleton-hero" id="skel-2"></div>
-          <div class="skeleton-block skeleton-text" id="skel-3"></div>
-          <div class="skeleton-block skeleton-text-short" id="skel-4"></div>
-          <div class="skeleton-block skeleton-text-xs" id="skel-5"></div>
+          <div
+            id="app-screen-subcomp"
+            class="clip"
+            data-composition-id="app-screen-content"
+            data-composition-src="compositions/app-screen.html"
+            data-variable-values='{}'
+            data-start="0"
+            data-duration="15"
+            data-track-index="2"
+          ></div>
         </div>
       </div>
     </div>
 
     <script>
-      const { bezelColor, appName } = window.__hyperframes.getVariables();
+      (() => {
+        const { bezelColor, appName, accentColor } = window.__hyperframes.getVariables();
 
-      const device = document.getElementById("device");
-      device.style.borderColor = bezelColor;
+        const device = document.getElementById("device");
+        device.style.borderColor = bezelColor;
 
-      const title = document.getElementById("app-title");
-      title.textContent = appName;
-      // Force inline style
-      title.style.color = "#ffffff";
-      title.style.backgroundColor = "#0f172a";
+        const title = document.getElementById("app-title");
+        title.textContent = appName;
+        // High contrast inline
+        title.style.color = "#ffffff";
+        title.style.backgroundColor = "#0f172a";
 
-      window.__timelines = window.__timelines || {};
-      const tl = gsap.timeline({ paused: true });
+        // Pass variables to sub-composition
+        document.getElementById("app-screen-subcomp").setAttribute(
+          "data-variable-values",
+          JSON.stringify({
+            accentColor: accentColor
+          })
+        );
 
-      gsap.set("#device", { xPercent: -50, yPercent: -50 });
+        window.__timelines = window.__timelines || {};
+        const tl = gsap.timeline({ paused: true });
 
-      // In animation
-      tl.fromTo("#device", {
-        y: 1000,
-        scale: 0.8,
-        rotateX: -15
-      }, {
-        y: 0,
-        scale: 1,
-        rotateX: 0,
-        duration: 1.5,
-        ease: "power3.out"
-      }, 0);
+        gsap.set("#device", { xPercent: -50, yPercent: -50 });
 
-      // Stagger UI elements inside
-      tl.fromTo(".skeleton-block", {
-        y: 40,
-        opacity: 0
-      }, {
-        y: 0,
-        opacity: 1,
-        duration: 0.8,
-        stagger: 0.1,
-        ease: "power2.out"
-      }, 0.5);
+        // In animation
+        tl.fromTo("#device", {
+          y: 1000,
+          scale: 0.8,
+          rotateX: -15
+        }, {
+          y: 0,
+          scale: 1,
+          rotateX: 0,
+          duration: 1.5,
+          ease: "power3.out"
+        }, 0);
 
-      // Scroll effect
-      tl.to(".app-body", {
-        y: -150,
-        duration: 2,
-        ease: "power2.inOut"
-      }, 3);
+        // Scroll effect on the app content
+        tl.to(".app-body", {
+          y: -150,
+          duration: 2,
+          ease: "power2.inOut"
+        }, 3);
 
-      window.__timelines["iphone-frame"] = tl;
+        window.__timelines["iphone-frame"] = tl;
+      })();
     </script>
   </body>
 </html>

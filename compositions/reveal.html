@@ -1,0 +1,60 @@
+<template id="reveal-template">
+  <div data-composition-id="reveal" data-width="1080" data-height="1920">
+    <div class="flex flex-col justify-center items-center w-full h-full px-[80px] py-[120px] box-border text-center">
+      <div class="text-[52px] font-semibold tracking-[2px] mb-[40px]" id="r-text"></div>
+      <div class="px-[80px] py-[160px] rounded-[24px] mb-[40px] border-[4px] border-dashed" id="r-container">
+        <div class="text-[60px] tracking-[8px] leading-[1] font-display" id="r-code"></div>
+      </div>
+      <div class="text-[80px] font-[800]" id="r-amount"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      const v = window.__vars;
+
+      // Populate elements
+      document.getElementById('r-text').textContent = v.content.revealText;
+      document.getElementById('r-text').style.color = v.theme.textMuted;
+
+      const rContainer = document.getElementById('r-container');
+
+      document.getElementById('r-code').textContent = v.content.discountCode;
+      document.getElementById('r-code').style.color = v.theme.textMain; // Use solid color
+      rContainer.style.backgroundColor = "transparent"; // transparent bg
+      rContainer.style.borderColor = v.theme.accent;
+
+      document.getElementById('r-amount').textContent = v.content.discountAmount;
+      document.getElementById('r-amount').style.color = v.theme.textMain;
+
+      // Animation
+      // Reveal text fades up
+      tl.from("#r-text", {
+        y: 30,
+        opacity: 0,
+        duration: 0.6,
+        ease: "power2.out"
+      }, 0.2);
+
+      // Container pops in
+      tl.from("#r-container", {
+        scale: 0.8,
+        opacity: 0,
+        rotation: -5,
+        duration: 0.8,
+        ease: "back.out(1.7)"
+      }, 0.5);
+
+      // Amount slides up
+      tl.from("#r-amount", {
+        y: 40,
+        opacity: 0,
+        duration: 0.6,
+        ease: "power3.out"
+      }, 0.8);
+
+      window.__timelines["reveal"] = tl;
+    </script>
+  </div>
+</template>

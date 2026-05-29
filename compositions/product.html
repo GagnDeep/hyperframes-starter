@@ -18,13 +18,11 @@
   <div id="prod-bg-top" class="absolute top-0 left-0 w-full h-1/2 origin-top" style="background: var(--theme-highlight);"></div>
   <div id="prod-bg-bottom" class="absolute bottom-0 left-0 w-full h-1/2 origin-bottom" style="background: var(--theme-highlight);"></div>
 
-  <!-- Reduced size to 600x600 and added data-layout-allow-overflow to ignore slight bounding box issues on transforms -->
   <div id="product-wrapper" class="relative z-10 w-[600px] h-[600px] rounded-3xl overflow-hidden shadow-2xl border-8" style="border-color: var(--theme-fg);" data-layout-allow-overflow>
     <img id="product-img" class="w-full h-full object-cover origin-center" alt="Product" data-layout-allow-overflow />
   </div>
 
   <div id="discount-badge" class="absolute z-20 top-1/3 right-10 rotate-12 opacity-0" data-layout-allow-overflow>
-    <!-- reduced padding and font size, allow overflow flag -->
     <div id="product-discount" class="text-5xl font-black px-6 py-4 rounded-2xl transform skew-x-[-10deg] max-w-[300px] break-words text-center" data-layout-allow-overflow></div>
   </div>
 </div>
@@ -47,8 +45,7 @@
       0.3
     );
 
-    // Reduced scale slightly
-    tl.fromTo("#product-img", { scale: 1.2 }, { scale: 1, duration: 4, ease: "power1.out" }, 0);
+    tl.fromTo("#product-img", { scale: 1.2 }, { scale: 1, duration: vars.timing.productDuration, ease: "power1.out" }, 0);
 
     tl.fromTo("#discount-badge",
       { scale: 0, rotation: -45, opacity: 0 },
@@ -56,7 +53,7 @@
       1.0
     );
 
-    const exitTime = 3.4;
+    const exitTime = vars.timing.productDuration - 0.6;
     tl.to("#product-wrapper", { y: -1000, rotationZ: 15, duration: 0.6, ease: "power3.in" }, exitTime);
     tl.to("#discount-badge", { scale: 0, duration: 0.3, ease: "back.in(2)" }, exitTime);
     tl.to("#prod-bg-top", { scaleY: 0, duration: 0.4, ease: "power3.inOut", overwrite: "auto" }, exitTime + 0.2);

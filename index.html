@@ -17,7 +17,8 @@
         // High contrast adjustment for WCAG compliance
         colors: {
           bg: "#073B4C",       // Deep blue background
-          accent: "#000000",   // Black accent for high contrast on bright colors
+          accent: "#FFD166",   // Bright yellow accent
+          accentFg: "#000000", // Black text for contrast on accent
           fg: "#FFFFFF",       // White text
           highlight: "#EF476F" // Pink highlight
         },
@@ -36,17 +37,18 @@
         },
         // Timings (in seconds)
         timing: {
-          totalDuration: 10,
+          totalDuration: 12,
           introStart: 0,
           introDuration: 3,
           productStart: 3,
-          productDuration: 4,
-          outroStart: 7,
-          outroDuration: 3
+          productDuration: 5,
+          outroStart: 8,
+          outroDuration: 4
         },
-        // Images (placeholders for now)
+        // Media assets
         media: {
-          productImg: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1080&h=1080&auto=format&fit=crop"
+          productImg: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1080&h=1080&auto=format&fit=crop",
+          logoImg: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" // Use tiny transparent pixel as default valid logo
         }
       };
     </script>
@@ -73,9 +75,8 @@
     <!-- Apply vars to CSS Custom Properties for Tailwind/CSS to use -->
     <script>
       document.body.style.setProperty('--theme-bg', window.__vars.colors.bg);
-      // Swapping accent back to yellow, but using it as bg and black text for contrast
-      document.body.style.setProperty('--theme-accent', '#FFD166');
-      document.body.style.setProperty('--theme-accent-fg', '#000000');
+      document.body.style.setProperty('--theme-accent', window.__vars.colors.accent);
+      document.body.style.setProperty('--theme-accent-fg', window.__vars.colors.accentFg);
       document.body.style.setProperty('--theme-fg', window.__vars.colors.fg);
       document.body.style.setProperty('--theme-highlight', window.__vars.colors.highlight);
       document.body.style.setProperty('--font-main', window.__vars.fonts.main);
@@ -87,22 +88,20 @@
       id="root"
       data-composition-id="flash-sale-main"
       data-start="0"
-      data-duration="10"
       data-width="1080"
       data-height="1920"
       class="relative w-full h-full overflow-hidden flex flex-col"
       style="background-color: var(--theme-bg);"
     >
       
-      <!-- Global Ambient Background Layer -->
-      <div id="ambient-bg" class="clip absolute inset-0 z-0 opacity-20 pointer-events-none" data-start="0" data-duration="10" data-track-index="0">
-        <!-- Accent Glows -->
-        <div id="glow-1" class="absolute w-[800px] h-[800px] rounded-full blur-[100px] -top-40 -left-40" style="background: var(--theme-highlight);"></div>
-        <div id="glow-2" class="absolute w-[1000px] h-[1000px] rounded-full blur-[150px] -bottom-60 -right-20" style="background: var(--theme-accent);"></div>
-
-        <!-- Grid Pattern (Data/Tech feel) -->
-        <div class="absolute inset-0" style="background-image: linear-gradient(rgba(255,255,255,0.05) 2px, transparent 2px), linear-gradient(90deg, rgba(255,255,255,0.05) 2px, transparent 2px); background-size: 100px 100px;"></div>
-      </div>
+      <!-- Extracted Global Ambient Background Layer -->
+      <div
+        id="comp-ambient-bg"
+        class="clip absolute inset-0 z-0 opacity-20 pointer-events-none"
+        data-composition-id="ambient-bg"
+        data-composition-src="compositions/components/ambient-bg.html"
+        data-track-index="0"
+      ></div>
 
       <!-- Sub-compositions (Modular sections) -->
       <!-- Track indices offset to avoid conflicts: Intro(1), Product(2), Outro(3) -->
@@ -112,8 +111,6 @@
         class="clip absolute inset-0 z-10"
         data-composition-id="intro"
         data-composition-src="compositions/intro.html"
-        data-start="0"
-        data-duration="3"
         data-track-index="1"
         data-layout-allow-overflow
       ></div>
@@ -123,8 +120,6 @@
         class="clip absolute inset-0 z-20"
         data-composition-id="product"
         data-composition-src="compositions/product.html"
-        data-start="3"
-        data-duration="4"
         data-track-index="2"
         data-layout-allow-overflow
       ></div>
@@ -134,22 +129,40 @@
         class="clip absolute inset-0 z-30"
         data-composition-id="outro"
         data-composition-src="compositions/outro.html"
-        data-start="7"
-        data-duration="3"
         data-track-index="3"
         data-layout-allow-overflow
       ></div>
 
     </div>
 
+    <!-- Apply timing vars dynamically to the DOM elements -->
+    <script>
+      const timing = window.__vars.timing;
+
+      // Root element
+      document.getElementById("root").setAttribute("data-duration", timing.totalDuration.toString());
+
+      // Ambient BG
+      document.getElementById("comp-ambient-bg").setAttribute("data-start", "0");
+      document.getElementById("comp-ambient-bg").setAttribute("data-duration", timing.totalDuration.toString());
+
+      // Intro
+      document.getElementById("comp-intro").setAttribute("data-start", timing.introStart.toString());
+      document.getElementById("comp-intro").setAttribute("data-duration", timing.introDuration.toString());
+
+      // Product
+      document.getElementById("comp-product").setAttribute("data-start", timing.productStart.toString());
+      document.getElementById("comp-product").setAttribute("data-duration", timing.productDuration.toString());
+
+      // Outro
+      document.getElementById("comp-outro").setAttribute("data-start", timing.outroStart.toString());
+      document.getElementById("comp-outro").setAttribute("data-duration", timing.outroDuration.toString());
+    </script>
+
     <script>
       // Register Main Timeline
       window.__timelines = window.__timelines || {};
       const tl = gsap.timeline({ paused: true });
-
-      // Global Ambient Motion
-      tl.to("#glow-1", { scale: 1.2, x: 50, y: 50, duration: 5, ease: "sine.inOut", repeat: 1, yoyo: true }, 0);
-      tl.to("#glow-2", { scale: 1.3, x: -80, y: -40, duration: 6, ease: "sine.inOut", repeat: 1, yoyo: true }, 0);
 
       window.__timelines["flash-sale-main"] = tl;
     </script>

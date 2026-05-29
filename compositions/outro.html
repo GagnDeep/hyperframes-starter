@@ -52,28 +52,24 @@
       0.5
     );
 
-    // Reduced pop overshoot slightly
     tl.fromTo("#cta-container",
       { scale: 0.8, opacity: 0 },
       { scale: 1, opacity: 1, duration: 0.7, ease: "back.out(1.2)" },
       0.8
     );
 
-    tl.to("#cta-container", {
-      scale: 1.05,
-      duration: 0.2,
-      yoyo: true,
-      repeat: 3,
-      ease: "sine.inOut"
-    }, 1.5);
+    // Dynamic pulse timing based on duration
+    const pulseCount = Math.floor((vars.timing.outroDuration - 1.5) / 1);
 
-    tl.to("#cta-container", {
-      scale: 1.05,
-      duration: 0.2,
-      yoyo: true,
-      repeat: 3,
-      ease: "sine.inOut"
-    }, 2.5);
+    for(let i = 0; i < pulseCount; i++) {
+        tl.to("#cta-container", {
+          scale: 1.05,
+          duration: 0.2,
+          yoyo: true,
+          repeat: 3,
+          ease: "sine.inOut"
+        }, 1.5 + i);
+    }
 
     window.__timelines = window.__timelines || {};
     window.__timelines["outro"] = tl;

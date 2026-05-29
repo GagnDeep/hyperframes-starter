@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <!--
+      Scene 1: Teaser
+      For 9:16, avoid top 250px and bottom 600px.
+    -->
+    <div
+      id="scene-1-root"
+      data-composition-id="scene1"
+      data-start="0"
+      data-duration="5"
+      data-width="1080"
+      data-height="1920"
+      class="absolute inset-0 w-full h-full"
+    >
+      <div
+        id="scene-1-container"
+        class="clip absolute left-0 right-0 top-[250px] bottom-[600px] flex items-center justify-center flex-col"
+        data-start="0"
+        data-duration="5"
+        data-track-index="1"
+      >
+        <div id="scene-1-bg-ring" class="absolute w-[800px] h-[800px] rounded-full border-[2px] border-brand-primary opacity-20" style="will-change: transform, opacity;"></div>
+
+        <h1
+          id="scene-1-teaser"
+          class="text-6xl font-bold tracking-widest text-brand-primary uppercase text-center max-w-[800px]"
+          style="will-change: transform, opacity;"
+        ></h1>
+      </div>
+    </div>
+
+    <script>
+      // Populate text from vars
+      if (window.__vars) {
+        document.getElementById('scene-1-teaser').textContent = window.__vars.teaserText;
+      }
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // Motion: Ring expands, text fades up
+      tl.from("#scene-1-bg-ring", { scale: 0.1, opacity: 0, duration: 2, ease: "power3.out" }, 0);
+      tl.to("#scene-1-bg-ring", { scale: 1.5, opacity: 0, duration: 3, ease: "power1.inOut" }, 2);
+
+      tl.from("#scene-1-teaser", { y: 100, opacity: 0, duration: 1.5, ease: "power4.out" }, 0.5);
+
+      // Exit animation
+      tl.to("#scene-1-container", { opacity: 0, duration: 0.8, ease: "power2.inOut" }, 4.2);
+
+      // Hard kill at the end boundary to prevent stale state
+      tl.set("#scene-1-container", { opacity: 0 }, 5);
+
+      window.__timelines["scene1"] = tl;
+    </script>
+  </body>
+</html>

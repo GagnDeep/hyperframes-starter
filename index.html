@@ -55,7 +55,10 @@
         logoUrl: "https://placehold.co/400x100/transparent/white?text=LOGO",
 
         // Timing settings
-        duration: 10 // total duration
+        duration: 10, // total duration
+
+        // Font
+        fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif'
       };
     </script>
 
@@ -66,8 +69,7 @@
         --color-brand-text: var(--brand-text);
         --color-brand-accent: var(--brand-accent);
         --color-brand-star: var(--brand-star);
-        /* Font choices to avoid visual monoculture (using a nice sans) */
-        --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        --font-sans: var(--font-sans);
       }
     </style>
   </head>
@@ -79,6 +81,7 @@
       document.documentElement.style.setProperty('--brand-text', window.__vars.textColor);
       document.documentElement.style.setProperty('--brand-accent', window.__vars.accentColor);
       document.documentElement.style.setProperty('--brand-star', window.__vars.starColor);
+      document.documentElement.style.setProperty('--font-sans', window.__vars.fontFamily);
 
       // We will set background early on the body
       document.getElementById('body-bg').style.backgroundColor = window.__vars.bgColor;
@@ -94,12 +97,8 @@
       data-height="1080"
     >
       
-      <!-- Background / Structure -->
-      <div id="bg-layer" class="clip absolute inset-0 w-full h-full" data-start="0" data-duration="10" data-track-index="0">
-        <!-- Optional decorative elements in bg -->
-        <div class="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-brand-accent/10 rounded-full blur-[120px]"></div>
-        <div class="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-brand-accent/5 rounded-full blur-[150px]"></div>
-      </div>
+      <!-- Background / Structure Sub-composition -->
+      <div id="bg-layer-mount" class="clip absolute inset-0 w-full h-full" data-start="0" data-duration="10" data-track-index="0" data-composition-id="bg-layer" data-composition-src="compositions/bg-layer.html"></div>
 
       <!-- Header -->
       <div id="header-clip" class="clip absolute top-[100px] left-0 w-full flex justify-between items-center px-[120px] max-w-[1920px]" data-start="0" data-duration="10" data-track-index="1" data-layout-allow-overflow>
@@ -123,7 +122,7 @@
     <script>
       // Populate text/image fields
       document.getElementById('root').setAttribute('data-duration', window.__vars.duration);
-      document.getElementById('bg-layer').setAttribute('data-duration', window.__vars.duration);
+      document.getElementById('bg-layer-mount').setAttribute('data-duration', window.__vars.duration);
       document.getElementById('header-clip').setAttribute('data-duration', window.__vars.duration);
       document.getElementById('review-container').setAttribute('data-duration', window.__vars.duration);
 

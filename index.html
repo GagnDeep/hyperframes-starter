@@ -74,7 +74,7 @@ if(loaded){finish();}else{window.addEventListener("load",function(){loaded=true;
     </div>
 
     <script>
-      // Load variables globally so sub-components can access them if needed (single source of truth for fallback behavior per instructions, though Hyperframes runtime `getVariables()` is the correct framework way)
+      // Load variables
       window.__vars = window.__hyperframes ? window.__hyperframes.getVariables() : {
         primaryColor: "#3b82f6",
         backgroundColor: "#f3f4f6",

@@ -1,0 +1,81 @@
+<div class="relative w-full h-full flex flex-col items-center justify-center overflow-hidden"
+     data-composition-id="outro"
+     data-width="1080"
+     data-height="1920">
+  <style>
+    #outro-cta {
+      font-family: var(--font-bold, sans-serif);
+      color: var(--theme-accent-fg);
+      background-color: var(--theme-accent);
+      border: 8px solid var(--theme-fg);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      line-height: 1.2;
+    }
+    #outro-brand {
+      font-family: var(--font-bold, sans-serif);
+      color: var(--theme-fg);
+      line-height: 1.2;
+    }
+  </style>
+
+  <div id="outro-bg" class="absolute inset-0 z-0 rounded-full scale-0 origin-center" style="background: var(--theme-highlight);"></div>
+
+  <div class="relative z-10 flex flex-col items-center gap-16 py-20" data-layout-allow-overflow>
+    <div class="py-10">
+      <h2 id="outro-brand" class="text-6xl tracking-widest uppercase opacity-0 text-center max-w-[900px] break-words" data-layout-allow-overflow></h2>
+    </div>
+
+    <div id="cta-container" class="opacity-0 py-10" data-layout-allow-overflow>
+      <a id="outro-cta" class="inline-block text-4xl uppercase font-black px-12 py-8 rounded-full text-center max-w-[900px] break-words" data-layout-allow-overflow></a>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const vars = window.__vars;
+
+    document.getElementById('outro-brand').textContent = vars.text.brand;
+    document.getElementById('outro-cta').textContent = vars.text.cta;
+
+    const tl = gsap.timeline({ paused: true });
+
+    tl.fromTo("#outro-bg",
+      { scale: 0 },
+      { scale: 4, duration: 1, ease: "power2.inOut" },
+      0
+    );
+
+    tl.fromTo("#outro-brand",
+      { y: 50, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" },
+      0.5
+    );
+
+    // Reduced pop overshoot slightly
+    tl.fromTo("#cta-container",
+      { scale: 0.8, opacity: 0 },
+      { scale: 1, opacity: 1, duration: 0.7, ease: "back.out(1.2)" },
+      0.8
+    );
+
+    tl.to("#cta-container", {
+      scale: 1.05,
+      duration: 0.2,
+      yoyo: true,
+      repeat: 3,
+      ease: "sine.inOut"
+    }, 1.5);
+
+    tl.to("#cta-container", {
+      scale: 1.05,
+      duration: 0.2,
+      yoyo: true,
+      repeat: 3,
+      ease: "sine.inOut"
+    }, 2.5);
+
+    window.__timelines = window.__timelines || {};
+    window.__timelines["outro"] = tl;
+  })();
+</script>

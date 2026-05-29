@@ -39,6 +39,7 @@
 
     container.appendChild(el);
 
+    const bounceIntensity = window.__vars.bounceIntensity !== undefined ? window.__vars.bounceIntensity : 1.7;
     // Animation: Bouncy entrance for each word
     tlCaps.fromTo(
       `.${id}-word`,
@@ -49,7 +50,7 @@
         y: 0,
         duration: 0.4,
         stagger: 0.1,
-        ease: "back.out(1.7)"
+        ease: `back.out(${bounceIntensity})`
       },
       cap.start
     );

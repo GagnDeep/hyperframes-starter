@@ -2,49 +2,86 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=1920, height=1080" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      html,
-      body {
-        margin: 0;
-        width: 1920px;
-        height: 1080px;
-        overflow: hidden;
-        background: #000;
-      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; }
+      /* Hide standard scrollbars for clean rendering */
+      ::-webkit-scrollbar { display: none; }
     </style>
+    <script>
+      // Global Template Variables
+      window.__vars = {
+        theme: {
+          backgroundColor: "#111827", // gray-900
+          accentColor: "#f59e0b",     // amber-500
+          textColorPrimary: "#ffffff",
+          textColorSecondary: "#d1d5db" // gray-300
+        },
+        typography: {
+          fontFamily: "Inter, sans-serif",
+        },
+        content: {
+          headline: "FREE SHIPPING",
+          subheadline: "On all orders over $50",
+          badgeText: "LIMITED TIME ONLY",
+          ctaText: "SHOP NOW",
+          logoText: "BRAND",
+          promoCode: "USE CODE: FREESHIP"
+        },
+        timing: {
+          duration: 10 // total duration in seconds
+        }
+      };
+    </script>
   </head>
   <body>
+    <!-- Root Composition -->
     <div
       id="root"
       data-composition-id="main"
       data-start="0"
       data-duration="10"
-      data-width="1920"
-      data-height="1080"
+      data-width="1080"
+      data-height="1920"
+      class="clip relative flex flex-col items-center justify-center"
     >
-      
-      
+      <!-- Background (track 0) -->
+      <div id="bg" class="clip absolute inset-0 w-full h-full" data-start="0" data-duration="10" data-track-index="0"></div>
 
-      <!--
-        Add your clips here. Example:
-        <div id="title" class="clip" data-start="0" data-duration="5" data-track-index="1"
-             style="font-size: 64px; color: #fff; padding: 40px">
-          Hello World
-        </div>
-      -->
+      <!-- Main Announcement Sub-composition (track 1) -->
+      <div
+        id="comp-announcement"
+        class="clip absolute inset-0 w-full h-full z-10"
+        data-composition-id="announcement"
+        data-composition-src="compositions/announcement.html"
+        data-start="0"
+        data-track-index="1"
+      ></div>
+
+      <!-- Branding / CTA Sub-composition (track 2) -->
+      <div
+        id="comp-branding"
+        class="clip absolute inset-0 w-full h-full z-20"
+        data-composition-id="branding"
+        data-composition-src="compositions/branding.html"
+        data-start="0"
+        data-track-index="2"
+      ></div>
+
     </div>
 
     <script>
+      // Apply base styling
+      document.body.style.fontFamily = window.__vars.typography.fontFamily;
+      document.body.style.backgroundColor = window.__vars.theme.backgroundColor;
+      document.getElementById('bg').style.backgroundColor = window.__vars.theme.backgroundColor;
+
+      // GSAP Root Timeline
       window.__timelines = window.__timelines || {};
       const tl = gsap.timeline({ paused: true });
-      // Example: tl.from("#title", { opacity: 0, y: -50, duration: 1 }, 0);
       window.__timelines["main"] = tl;
     </script>
   </body>

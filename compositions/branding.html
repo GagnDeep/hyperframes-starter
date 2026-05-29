@@ -1,0 +1,67 @@
+<div
+  id="comp-branding-root" data-composition-id="branding" data-width="1080" data-height="1920"
+  class="flex flex-col justify-between items-center h-full w-full absolute inset-0 pointer-events-none p-16"
+>
+  <!-- Top: Logo -->
+  <div id="logo-wrapper" class="clip w-full flex justify-center" data-layout-allow-overflow data-start="0.2" data-duration="9.8" data-track-index="5">
+    <div id="logo-container" class="bg-white/10 backdrop-blur-md px-8 py-4 rounded-2xl border border-white/20">
+      <h3 id="logo-text" class="text-4xl font-bold tracking-widest uppercase"></h3>
+    </div>
+  </div>
+
+  <!-- Bottom: CTA -->
+  <div id="cta-wrapper" class="clip w-full flex justify-center pb-8" data-start="0.2" data-duration="9.8" data-track-index="6">
+    <div id="cta-button" class="px-12 py-6 rounded-full shadow-2xl">
+      <p id="cta-text" class="text-3xl font-black uppercase tracking-widest"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Apply variables
+  const logoText = document.getElementById('logo-text');
+  logoText.style.color = window.__vars.theme.textColorPrimary;
+  logoText.innerText = window.__vars.content.logoText;
+
+  const ctaButton = document.getElementById('cta-button');
+  ctaButton.style.backgroundColor = window.__vars.theme.accentColor;
+  const ctaText = document.getElementById('cta-text');
+  // Text color handled by tailwind classes for proper contrast reading
+  ctaText.innerText = window.__vars.content.ctaText;
+  ctaText.style.color = window.__vars.theme.backgroundColor; // the button is accentColor, so its text should be the background color for maximum contrast (usually black/dark)
+
+  // GSAP Animation
+  const tl = gsap.timeline({ paused: true });
+
+  // Logo Entry
+  tl.fromTo("#logo-container",
+    { y: -50, opacity: 0 },
+    { y: 0, opacity: 1, duration: 1, ease: "power3.out" }, 0.2
+  );
+
+  // CTA Entry
+  tl.set("#cta-button", { opacity: 0 });
+  tl.fromTo("#cta-button",
+    { y: 50, opacity: 0, scale: 0.9 },
+    { y: 0, opacity: 1, scale: 1, duration: 1, ease: "power4.out" }, 2.5
+  );
+
+  // Pulse effect on CTA
+  tl.to("#cta-button", {
+    scale: 1.05,
+    duration: 0.8,
+    yoyo: true,
+    repeat: 3,
+    ease: "sine.inOut"
+  }, 3.5);
+
+  // Exit animations
+  tl.to("#logo-container", { y: -50, opacity: 0, duration: 0.5, ease: "power2.in" }, 9);
+  tl.to("#cta-button", { y: 50, opacity: 0, scale: 0.9, duration: 0.5, ease: "power2.in" }, 9);
+
+  // Deterministic cleanup
+  tl.set(["#logo-container", "#cta-button"], { opacity: 0, visibility: 'hidden' }, 9.5);
+
+  window.__timelines = window.__timelines || {};
+  window.__timelines["branding"] = tl;
+</script>

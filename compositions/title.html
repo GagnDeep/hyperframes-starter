@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <div
+      id="title-root"
+      data-composition-id="title-comp"
+      data-start="0"
+      data-duration="12"
+      data-width="1080"
+      data-height="400"
+      class="w-full flex flex-col items-center justify-center text-center px-12"
+    >
+      <div id="badge-container" class="clip bg-brand-accent text-brand-secondary px-6 py-2 rounded-full font-bold text-xl uppercase tracking-widest mb-6 shadow-lg shadow-brand-accent/30" data-start="0.5" data-duration="11.5" data-track-index="1">
+        <span id="badge-text"></span>
+      </div>
+
+      <h1 id="title-text" class="clip text-7xl font-extrabold text-brand-text leading-tight mb-4 drop-shadow-2xl" data-start="0.8" data-duration="11.2" data-track-index="2" style="font-family: var(--font-heading, 'Montserrat', sans-serif);">
+        <!-- Injected via JS -->
+      </h1>
+
+      <p id="desc-text" class="clip text-2xl text-brand-text/80 max-w-2xl mx-auto font-light leading-relaxed" data-start="1.2" data-duration="10.8" data-track-index="3">
+        <!-- Injected via JS -->
+      </p>
+    </div>
+
+    <script>
+      // Load content from variables
+      if (window.__vars) {
+        document.getElementById('badge-text').textContent = window.__vars.text.badge;
+        document.getElementById('title-text').textContent = window.__vars.text.title;
+        document.getElementById('desc-text').textContent = window.__vars.text.description;
+      }
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // Animations
+      tl.from("#badge-container", { y: -30, opacity: 0, scale: 0.8, duration: 1, ease: "back.out(1.7)" }, 0.5);
+
+      // Split text effect approximation (using whole lines for simplicity without external plugins, but staggered)
+      tl.from("#title-text", { y: 40, opacity: 0, duration: 1, ease: "power3.out" }, 0.8);
+
+      tl.from("#desc-text", { y: 20, opacity: 0, duration: 1, ease: "power2.out" }, 1.2);
+
+      // Add a slow continuous float
+      tl.to("#title-text", { y: -10, duration: 4, ease: "sine.inOut", yoyo: true, repeat: Math.floor(12 / 4) - 1 }, 1.8);
+
+      window.__timelines["title-comp"] = tl;
+    </script>
+  </body>
+</html>

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <div
+      id="particles-root"
+      data-composition-id="particles-comp"
+      data-start="0"
+      data-duration="12"
+      data-width="1080"
+      data-height="1920"
+      class="w-full h-full absolute inset-0 overflow-hidden pointer-events-none"
+    >
+      <!-- We will dynamically create a set of predefined particles to ensure determinism -->
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tlp = gsap.timeline({ paused: true });
+
+      const pRoot = document.getElementById('particles-root');
+
+      // Deterministic pseudo-random generation to replace Math.random
+      // A simple linear congruential generator (LCG)
+      let seed = 12345;
+      function random() {
+        seed = (seed * 1664525 + 1013904223) % 4294967296;
+        return seed / 4294967296;
+      }
+
+      // Generate particles deterministically
+      const numParticles = 20;
+
+      for (let i = 0; i < numParticles; i++) {
+        const particle = document.createElement('div');
+        const id = `particle-${i}`;
+
+        // Tailwind styling for particle: absolute positioned, small circle, white with opacity
+        particle.id = id;
+        particle.className = `clip absolute bg-white rounded-full opacity-30 shadow-[0_0_10px_rgba(255,255,255,0.8)]`;
+
+        // Random deterministic properties
+        const size = 5 + random() * 15; // 5 to 20px
+        const xPos = random() * 1080;
+        const yPos = 1920 + size; // Start below screen
+        const duration = 5 + random() * 5; // 5 to 10 seconds
+        const delay = random() * 3; // 0 to 3 seconds delay
+
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.left = `${xPos}px`;
+        particle.style.top = `${yPos}px`;
+
+        // Required for clips
+        particle.setAttribute('data-start', delay.toFixed(2));
+        particle.setAttribute('data-duration', (12 - delay).toFixed(2));
+        particle.setAttribute('data-track-index', '5'); // Background track
+
+        if (pRoot) pRoot.appendChild(particle);
+
+        // Animate floating up with some horizontal drift
+        const horizontalDrift = -50 + random() * 100; // -50px to +50px
+
+        // We calculate repeats based on duration to avoid infinite loops
+        const repeatCount = Math.floor(12 / duration);
+
+        tlp.to(`#${id}`, {
+          y: -1920 - size * 2, // Move up off screen
+          x: `+=${horizontalDrift}`,
+          rotation: random() * 360,
+          opacity: 0,
+          duration: duration,
+          ease: "power1.inOut",
+          repeat: repeatCount,
+        }, delay);
+      }
+
+      window.__timelines["particles-comp"] = tlp;
+    </script>
+  </body>
+</html>

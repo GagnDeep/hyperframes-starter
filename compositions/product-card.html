@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <div
+      id="product-card-root"
+      data-composition-id="product-card"
+      data-start="0"
+      data-duration="11"
+      data-width="900"
+      data-height="900"
+      class="w-[800px] bg-brand-secondary/80 backdrop-blur-xl rounded-[40px] p-8 border border-white/10 shadow-2xl flex flex-col items-center relative overflow-hidden"
+    >
+      <!-- Glossy shine overlay -->
+      <div id="shine" class="clip absolute top-0 left-[-100%] w-1/2 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-[-20deg]" data-start="0" data-duration="11" data-track-index="0"></div>
+
+      <!-- Image container -->
+      <div id="image-wrapper" class="clip w-full h-[500px] rounded-[24px] overflow-hidden relative mb-8 shadow-inner" data-start="0.2" data-duration="10.8" data-track-index="1" data-layout-allow-overflow>
+        <img id="product-img" src="" class="w-full h-full object-cover" alt="Product" data-layout-allow-overflow />
+        <!-- Price Tag overlay -->
+        <div id="price-tag" class="clip absolute bottom-6 right-6 bg-black text-white text-4xl font-black px-8 py-4 rounded-2xl shadow-xl shadow-black/50 transform rotate-[-5deg]" data-start="1.5" data-duration="9.5" data-track-index="2">
+          <span id="price-text" class="drop-shadow-md text-white font-black" style="color: #FFFFFF !important; text-shadow: 0 2px 4px rgba(0,0,0,0.5);"></span>
+        </div>
+      </div>
+
+      <!-- CTA Button -->
+      <div id="cta-button" class="clip w-full max-w-md bg-brand-text text-brand-secondary text-center text-3xl font-bold py-6 rounded-full cursor-pointer hover:scale-105 transition-transform shadow-[0_0_40px_rgba(255,255,255,0.3)] mt-auto" data-start="2" data-duration="9" data-track-index="3">
+        <span id="cta-text"></span>
+      </div>
+
+    </div>
+
+    <script>
+      // Load content from variables
+      if (window.__vars) {
+        document.getElementById('product-img').src = window.__vars.media.productImage;
+        document.getElementById('price-text').textContent = window.__vars.text.price;
+        document.getElementById('cta-text').textContent = window.__vars.text.cta;
+      }
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // Card entry
+      tl.from("#product-card-root", { y: 100, opacity: 0, scale: 0.9, duration: 1.2, ease: "power4.out" }, 0);
+
+      // Image scale in
+      tl.from("#image-wrapper", { scale: 0.9, opacity: 0, duration: 1.5, ease: "expo.out" }, 0.2);
+
+      // Slight continuous zoom on image
+      tl.to("#product-img", { scale: 1.05, duration: 10, ease: "none" }, 0);
+
+      // Price tag pop
+      tl.from("#price-tag", { scale: 0, rotation: 15, duration: 0.8, ease: "elastic.out(1, 0.5)" }, 1.5);
+
+      // CTA entry and pulse
+      tl.from("#cta-button", { y: 50, opacity: 0, duration: 0.8, ease: "back.out(1.5)" }, 2);
+      tl.to("#cta-button", { scale: 1.05, duration: 1.5, repeat: Math.floor(11 / 1.5) - 1, yoyo: true, ease: "sine.inOut" }, 3);
+
+      // Shine effect sweep
+      tl.to("#shine", { left: "200%", duration: 2, ease: "power2.inOut", repeat: Math.floor(11 / 5) - 1, repeatDelay: 3 }, 1);
+
+      window.__timelines["product-card"] = tl;
+    </script>
+  </body>
+</html>

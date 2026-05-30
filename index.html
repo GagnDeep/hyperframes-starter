@@ -1,50 +1,130 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=1920, height=1080" />
+    <meta name="viewport" content="width=1080, height=1920" />
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__tailwindReady = new Promise(function(resolve) {
+        var loaded = document.readyState === "complete";
+        var resolved = false;
+        var observer;
+        function readTailwindCss() {
+          var styles = document.querySelectorAll("style");
+          for (var i = styles.length - 1; i >= 0; i--) {
+            var text = styles[i].textContent || "";
+            if (text.indexOf("tailwindcss v") !== -1) return text;
+          }
+          return "";
+        }
+        function finish() {
+          if (resolved || !loaded || !readTailwindCss()) return;
+          resolved = true;
+          if (observer) observer.disconnect();
+          resolve(true);
+        }
+        observer = new MutationObserver(finish);
+        observer.observe(document.documentElement, { childList: true, subtree: true, characterData: true });
+        if (loaded) { finish(); } else { window.addEventListener("load", function() { loaded = true; finish(); }, { once: true }); }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.2.4/dist/index.global.js" integrity="sha384-v5YF9xS+gLRWdvrQ0u/WRbCkjSIH0NjHIPe8tBL1ZRrmI7PiSH6LLdzs0aAIMCuh" crossorigin="anonymous"></script>
     <style>
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
-      html,
-      body {
+      html, body {
         margin: 0;
-        width: 1920px;
-        height: 1080px;
+        width: 1080px;
+        height: 1920px;
         overflow: hidden;
         background: #000;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      }
+      .safe-zone {
+        /* Instagram Reels safe zone avoidance */
+        padding-top: 250px;
+        padding-bottom: 600px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
       }
     </style>
   </head>
   <body>
+    <script>
+      // Single config object for all editable values
+      window.__vars = {
+        theme: {
+          bgColors: ["#1e1b4b", "#312e81"], // Indigo dark gradient
+          accentColor: "#facc15", // Yellow-400
+          textColor: "#ffffff",
+          fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif"
+        },
+        content: {
+          title: "STOP PAYING FULL PRICE",
+          subtitle: "Get the Ultimate Bundle Deal",
+          duration: 10
+        },
+        planA: {
+          name: "Individual Items",
+          price: "$150",
+          features: ["Item 1: $50", "Item 2: $50", "Item 3: $50"],
+          color: "#ef4444", // red-500
+          strikethrough: true
+        },
+        planB: {
+          name: "The Bundle",
+          price: "$75",
+          features: ["All 3 Items", "Bonus Guide", "Lifetime Access"],
+          color: "#22c55e", // green-500
+          badge: "SAVE 50%"
+        }
+      };
+    </script>
+
     <div
       id="root"
       data-composition-id="main"
       data-start="0"
       data-duration="10"
-      data-width="1920"
-      data-height="1080"
+      data-width="1080"
+      data-height="1920"
+      class="relative w-full h-full"
     >
-      
-      
+      <!-- Background Clip -->
+      <div id="bg-clip" class="clip absolute inset-0 w-full h-full flex flex-col justify-between" data-start="0" data-duration="10" data-track-index="0">
+        <div id="bg-grad" class="absolute inset-0 w-full h-full opacity-100"></div>
+      </div>
 
-      <!--
-        Add your clips here. Example:
-        <div id="title" class="clip" data-start="0" data-duration="5" data-track-index="1"
-             style="font-size: 64px; color: #fff; padding: 40px">
-          Hello World
-        </div>
-      -->
+      <!-- Main Content Safe Zone Wrapper -->
+      <div class="safe-zone relative z-10 w-full">
+        <!-- Header Sub-composition -->
+        <div id="header-container" data-composition-id="header-container" class="w-full" data-composition-src="compositions/header.html" data-start="0" data-duration="10" data-track-index="1"></div>
+
+        <!-- Cards Sub-composition -->
+        <div id="cards-container" data-composition-id="cards-container" class="w-full flex flex-row items-center justify-center gap-8 mt-12 px-8" data-composition-src="compositions/cards.html" data-start="1" data-duration="9" data-track-index="2"></div>
+      </div>
     </div>
 
     <script>
       window.__timelines = window.__timelines || {};
       const tl = gsap.timeline({ paused: true });
-      // Example: tl.from("#title", { opacity: 0, y: -50, duration: 1 }, 0);
+
+      // Apply variables
+      document.getElementById('bg-grad').style.background = `linear-gradient(135deg, ${window.__vars.theme.bgColors[0]}, ${window.__vars.theme.bgColors[1]})`;
+      document.body.style.fontFamily = window.__vars.theme.fontFamily;
+
+      // Background entry
+      tl.from("#bg-grad", { opacity: 0, duration: 1, ease: "power2.inOut" }, 0);
+
+      // Hard kill at end of composition duration
+      tl.set("#bg-clip", { opacity: 0 }, window.__vars.content.duration);
+
       window.__timelines["main"] = tl;
     </script>
   </body>

@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+
+    <script>
+      // 1. ALL CUSTOMIZABLE VALUES AS VARIABLES
+      window.__vars = {
+        // Theme Colors
+        theme: {
+          bg: "#0f172a",       // Slate 900
+          primary: "#f43f5e",  // Rose 500
+          accent: "#38bdf8",   // Sky 400
+          text: "#f8fafc",     // Slate 50
+          textMuted: "#94a3b8" // Slate 400
+        },
+        // Typography
+        fonts: {
+          family: "Arial, sans-serif"
+        },
+        // Brand details
+        brand: {
+          name: "HYPER GEAR",
+          logoText: "HG"
+        },
+        // Intro section
+        intro: {
+          headline: "BACK IN STOCK",
+          subheadline: "You asked. We listened."
+        },
+        // Product section
+        product: {
+          image: "assets/product.jpg",
+          name: "Pro-Series Noise Cancelling Headphones",
+          price: "$299",
+          highlight: "Limited Quantities Available",
+          cta: "SHOP NOW"
+        }
+      };
+    </script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html, body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background-color: var(--theme-bg, #0f172a);
+        font-family: var(--font-family, 'Arial', sans-serif);
+        color: var(--theme-text, #f8fafc);
+      }
+
+      /* Base variable mapping for Tailwind arbitrary properties */
+      :root {
+        --theme-bg: #0f172a;
+        --theme-primary: #f43f5e;
+        --theme-accent: #38bdf8;
+        --theme-text: #f8fafc;
+        --theme-text-muted: #94a3b8;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Apply JS vars to CSS Custom Properties -->
+    <script>
+      document.documentElement.style.setProperty('--theme-bg', window.__vars.theme.bg);
+      document.documentElement.style.setProperty('--theme-primary', window.__vars.theme.primary);
+      document.documentElement.style.setProperty('--theme-accent', window.__vars.theme.accent);
+      document.documentElement.style.setProperty('--theme-text', window.__vars.theme.text);
+      document.documentElement.style.setProperty('--theme-text-muted', window.__vars.theme.textMuted);
+      document.documentElement.style.setProperty('--font-family', window.__vars.fonts.family);
+    </script>
+
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="8"
+      data-width="1080"
+      data-height="1920"
+      class="bg-[var(--theme-bg)] w-full h-full relative"
+    >
+
+      <!-- Sub-compositions -->
+      <!-- Intro Section (0s to 3s) -->
+      <div
+        id="comp-intro"
+        class="clip absolute inset-0 z-10"
+        data-start="0"
+        data-duration="3"
+        data-track-index="1"
+        data-composition-id="intro"
+        data-composition-src="compositions/intro.html"
+      ></div>
+
+      <!-- Product Section (3s to 8s) -->
+      <div
+        id="comp-product"
+        class="clip absolute inset-0 z-20"
+        data-start="3"
+        data-duration="5"
+        data-track-index="2"
+        data-composition-id="product"
+        data-composition-src="compositions/product.html"
+      ></div>
+
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

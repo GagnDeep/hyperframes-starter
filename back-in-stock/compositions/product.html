@@ -1,0 +1,151 @@
+<div
+  id="product-root"
+  data-composition-id="product"
+  data-start="0"
+  data-duration="5"
+  data-width="1080"
+  data-height="1920"
+  class="w-full h-full relative flex flex-col overflow-hidden"
+>
+  <!-- Background Image with Overlay -->
+  <div class="absolute inset-0 z-0">
+    <img
+      id="product-image"
+      src=""
+      class="w-full h-full object-cover transform scale-110 origin-center"
+      alt="Product"
+    />
+    <!-- Gradient overlay to ensure text is readable -->
+    <div class="absolute inset-0 bg-gradient-to-t from-[var(--theme-bg)] via-[var(--theme-bg)]/80 to-transparent"></div>
+  </div>
+
+  <!-- Content -->
+  <div class="relative z-10 flex-1 flex flex-col justify-end p-16 pb-[500px]">
+    <!-- Highlight Badge -->
+    <div
+      id="product-highlight"
+      class="self-start mb-4 px-6 py-2 rounded-full bg-[var(--theme-accent)] text-[var(--theme-bg)] font-bold text-2xl uppercase tracking-widest shadow-lg shadow-[var(--theme-accent)]/30"
+    >
+      HIGHLIGHT
+    </div>
+
+    <!-- Product Name -->
+    <div class="overflow-visible mb-4 p-4">
+      <h2
+        id="product-name"
+        class="text-5xl font-black leading-tight text-[var(--theme-text)] drop-shadow-xl"
+      >
+        PRODUCT NAME
+      </h2>
+    </div>
+
+    <!-- Price -->
+    <div class="overflow-visible mb-8 p-4" data-layout-allow-overflow>
+      <div
+        id="product-price"
+        class="text-5xl font-black text-[var(--theme-primary)] drop-shadow-xl"
+      >
+        PRICE
+      </div>
+    </div>
+
+    <!-- CTA Button -->
+    <div
+      id="product-cta-container"
+      class="w-full flex justify-center p-4"
+    >
+      <div
+        id="product-cta"
+        class="w-full py-6 rounded-2xl bg-white text-[var(--theme-bg)] text-center text-3xl font-black uppercase tracking-widest cursor-pointer shadow-2xl flex items-center justify-center"
+      >
+        SHOP NOW
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Bind variables
+    if (window.__vars) {
+      document.getElementById('product-image').src = window.__vars.product.image;
+      document.getElementById('product-highlight').textContent = window.__vars.product.highlight;
+      document.getElementById('product-name').textContent = window.__vars.product.name;
+      document.getElementById('product-price').textContent = window.__vars.product.price;
+      document.getElementById('product-cta').textContent = window.__vars.product.cta;
+    }
+
+    // Animation
+    window.__timelines = window.__timelines || {};
+    const productTl = gsap.timeline({ paused: true });
+
+    // Initial states
+    gsap.set("#product-root", { opacity: 0 });
+    gsap.set("#product-image", { scale: 1.2, opacity: 0 });
+    gsap.set("#product-highlight", { x: -50, opacity: 0 });
+    gsap.set("#product-name", { y: 50, opacity: 0 });
+    gsap.set("#product-price", { y: 50, opacity: 0 });
+    gsap.set("#product-cta", { scale: 0.9, opacity: 0 });
+
+    productTl
+      // Entrance
+      .to("#product-root", { opacity: 1, duration: 0.1 }, 0)
+      .to("#product-image", {
+        scale: 1,
+        opacity: 1,
+        duration: 1.5,
+        ease: "power2.out"
+      }, 0)
+      // Slow pan effect
+      .to("#product-image", {
+        y: -30,
+        duration: 4.5,
+        ease: "none"
+      }, 0)
+
+      // Text Elements
+      .to("#product-highlight", {
+        x: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "back.out(1.5)"
+      }, 0.4)
+      .to("#product-name", {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power3.out"
+      }, 0.6)
+      .to("#product-price", {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power3.out"
+      }, 0.8)
+
+      // CTA
+      .to("#product-cta", {
+        scale: 1,
+        opacity: 1,
+        duration: 0.8,
+        ease: "elastic.out(1, 0.5)"
+      }, 1.2)
+
+      // CTA Pulse Effect
+      .to("#product-cta", {
+        scale: 1.05,
+        boxShadow: "0 25px 50px -12px rgba(255, 255, 255, 0.5)",
+        duration: 0.6,
+        yoyo: true,
+        repeat: Math.floor(3.0 / 1.2) - 1,
+        ease: "sine.inOut"
+      }, 2.0)
+
+      // Outro
+      .to("#product-root", {
+        opacity: 0,
+        duration: 0.5,
+        ease: "power2.inOut"
+      }, 4.5);
+
+    window.__timelines["product"] = productTl;
+  </script>
+</div>

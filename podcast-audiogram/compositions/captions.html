@@ -1,0 +1,69 @@
+<div
+  id="captions"
+  data-composition-id="captions"
+  data-start="0"
+  data-duration="8.6"
+  data-width="1080"
+  data-height="400"
+  style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; align-content: center; gap: 16px; padding: 0 80px;"
+>
+  <script>
+    (function () {
+      const compId = "captions";
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines = window.__timelines || {};
+      window.__timelines[compId] = tl;
+
+      const container = document.getElementById("captions");
+      const transcript = window.TRANSCRIPT_DATA || [];
+      const colorInactive = window.__vars?.captionColorInactive || "rgba(255,255,255,0.4)";
+      const colorActive = window.__vars?.captionColorActive || "#ffffff";
+
+      // Build DOM nodes for each word
+      transcript.forEach((wordObj, i) => {
+        const wordEl = document.createElement("div");
+        wordEl.id = `word-${i}`;
+        wordEl.textContent = wordObj.text;
+        // Tailwind + inline styling
+        wordEl.className = "text-6xl font-bold text-center";
+        wordEl.style.color = colorInactive;
+        wordEl.style.lineHeight = "1.3";
+        // Setup initial state (subtle pop effect on active)
+        wordEl.style.transform = "scale(0.95)";
+        wordEl.style.transformOrigin = "center";
+
+        container.appendChild(wordEl);
+
+        // Timeline animations mapping start/end times
+        // Activation
+        tl.to(wordEl, {
+          color: colorActive,
+          scale: 1.05,
+          duration: 0.1,
+          ease: "power1.out"
+        }, wordObj.start);
+
+        // Deactivation
+        // Adding a slight buffer to avoid overlaps or fast deactivations unless next word is immediate
+        let deactivateTime = wordObj.end;
+        if (i < transcript.length - 1 && transcript[i+1].start < wordObj.end) {
+            deactivateTime = transcript[i+1].start;
+        }
+
+        tl.to(wordEl, {
+          color: colorInactive,
+          scale: 0.95,
+          duration: 0.2,
+          ease: "power1.inOut"
+        }, deactivateTime);
+      });
+
+      // Exit tween safety as per memory directives:
+      // In HyperFrames GSAP animations, caption exit tweens (e.g., animating opacity to 0) must be followed by a deterministic kill step like `tl.set(element, { opacity: 0, visibility: 'hidden' }, time)` to prevent rendering conflicts.
+      // Since this composition might loop or exit, we add a final cleanup at the end of duration if needed.
+      const duration = window.__vars?.duration || 8.6;
+      tl.set(container.children, { color: colorInactive, scale: 0.95 }, duration);
+
+    })();
+  </script>
+</div>

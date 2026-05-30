@@ -1,0 +1,6 @@
+node_modules/
+.cache
+audio-data.json
+narration.wav
+transcript.json
+chrome-headless-shell/

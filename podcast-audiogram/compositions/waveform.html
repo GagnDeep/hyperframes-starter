@@ -1,0 +1,66 @@
+<div
+  id="waveform"
+  data-composition-id="waveform"
+  data-start="0"
+  data-duration="8.6"
+  data-width="1080"
+  data-height="400"
+>
+  <canvas id="waveform-canvas" width="1080" height="400"></canvas>
+  <script>
+    (function () {
+      const compId = "waveform";
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines = window.__timelines || {};
+      window.__timelines[compId] = tl;
+
+      const canvas = document.getElementById("waveform-canvas");
+      const ctx = canvas.getContext("2d");
+      const audioData = window.AUDIO_DATA;
+
+      const waveColor = window.__vars?.waveformColor || "#4f46e5";
+
+      if (audioData && audioData.frames) {
+        // Build per-frame visualizer
+        for (let f = 0; f < audioData.totalFrames; f++) {
+          tl.call(
+            (frame) => {
+              // Canvas dimensions
+              const width = canvas.width;
+              const height = canvas.height;
+              const centerY = height / 2;
+
+              ctx.clearRect(0, 0, width, height);
+
+              const bands = frame.bands;
+              const numBands = bands.length;
+              const barWidth = (width - 200) / numBands; // leave margins
+              const spacing = barWidth * 0.2;
+              const actualBarWidth = barWidth - spacing;
+              const startX = 100;
+
+              ctx.fillStyle = waveColor;
+
+              for (let i = 0; i < numBands; i++) {
+                // Amplify band value
+                const amp = Math.min(bands[i] * 1.5, 1);
+                // Minimum bar height
+                const barHeight = Math.max(amp * height * 0.8, 10);
+
+                const x = startX + i * barWidth + spacing / 2;
+                const y = centerY - barHeight / 2;
+
+                // Draw rounded rect
+                ctx.beginPath();
+                ctx.roundRect(x, y, actualBarWidth, barHeight, actualBarWidth / 2);
+                ctx.fill();
+              }
+            },
+            [audioData.frames[f]],
+            f / audioData.fps
+          );
+        }
+      }
+    })();
+  </script>
+</div>

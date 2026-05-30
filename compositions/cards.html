@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<div
+  id="cards"
+  data-composition-id="cards" data-width="1080" data-height="1920"
+  data-start="0"
+  data-duration="9"
+  class="flex flex-row w-full justify-center gap-6 relative"
+>
+  <!-- Card A -->
+  <div id="card-a" class="clip flex flex-col w-[440px] rounded-3xl p-8 bg-black/40 backdrop-blur-md border-2 border-white/10" data-start="0" data-duration="9" data-track-index="1">
+    <div id="card-a-title" class="text-3xl font-bold mb-2 text-center text-white/70"></div>
+    <div id="card-a-price" class="text-6xl font-black mb-8 text-center line-through decoration-red-500/80 decoration-4"></div>
+    <div id="card-a-features" data-layout-allow-overflow class="flex flex-col gap-4 text-xl text-white/80"></div>
+  </div>
+
+  <!-- VS Text -->
+  <div id="vs-badge" class="clip absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full bg-white/10 backdrop-blur-lg flex items-center justify-center font-bold text-3xl italic z-20 border-2 border-white/20" data-start="1" data-duration="8" data-track-index="2">
+    VS
+  </div>
+
+  <!-- Card B (Bundle) -->
+  <div id="card-b" class="clip flex flex-col w-[500px] rounded-3xl p-10 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border-4 relative overflow-hidden shadow-2xl z-10" data-start="1.5" data-duration="7.5" data-track-index="3">
+    <!-- Highlight overlay -->
+    <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+
+    <div id="badge-b" data-layout-allow-overflow class="absolute -right-12 top-10 rotate-45 bg-yellow-400 text-black font-extrabold text-xl py-2 w-48 text-center shadow-lg"></div>
+
+    <div class="relative z-10 flex flex-col h-full">
+      <div id="card-b-title" class="text-4xl font-black mb-2 text-center"></div>
+      <div id="card-b-price" class="text-7xl font-black mb-8 text-center drop-shadow-lg"></div>
+      <div id="card-b-features" data-layout-allow-overflow class="flex flex-col gap-5 text-2xl font-bold mt-auto"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+
+    // Populate Card A
+    document.getElementById('card-a-title').textContent = window.__vars.planA.name;
+    const priceA = document.getElementById('card-a-price');
+    priceA.textContent = window.__vars.planA.price;
+    priceA.style.color = window.__vars.theme.textColor;
+
+    const featuresA = document.getElementById('card-a-features');
+    window.__vars.planA.features.forEach(f => {
+      const el = document.createElement('div');
+      el.className = 'flex items-center gap-3 opacity-60';
+      el.innerHTML = `<span class="text-red-400">✖</span> ${f}`;
+      featuresA.appendChild(el);
+    });
+
+    // Populate Card B
+    document.getElementById('card-b').style.borderColor = window.__vars.theme.accentColor;
+
+    const titleB = document.getElementById('card-b-title');
+    titleB.textContent = window.__vars.planB.name;
+    titleB.style.color = window.__vars.theme.accentColor;
+
+    const priceB = document.getElementById('card-b-price');
+    priceB.textContent = window.__vars.planB.price;
+    priceB.style.color = window.__vars.theme.textColor;
+
+    document.getElementById('badge-b').textContent = window.__vars.planB.badge;
+
+    const featuresB = document.getElementById('card-b-features');
+    window.__vars.planB.features.forEach(f => {
+      const el = document.createElement('div');
+      el.className = 'flex items-center gap-4';
+      el.innerHTML = `<span class="text-green-400 text-3xl">✓</span> <span class="text-white">${f}</span>`;
+      featuresB.appendChild(el);
+    });
+
+    document.getElementById('vs-badge').style.color = window.__vars.theme.textColor;
+
+    // Animations
+    // Slow entry for card A
+    tl.from("#card-a", { x: -50, opacity: 0, duration: 1, ease: "power2.out" }, 0);
+    // Pop in VS badge
+    tl.from("#vs-badge", { scale: 0, rotate: -180, opacity: 0, duration: 0.8, ease: "back.out(2)" }, 1);
+
+    // Grand entrance for Card B
+    tl.from("#card-b", { x: 100, opacity: 0, scale: 0.9, duration: 1.2, ease: "elastic.out(1, 0.75)" }, 1.5);
+    tl.from("#badge-b", { scale: 0, opacity: 0, duration: 0.6, ease: "back.out(2)" }, 2.2);
+
+    // Feature stagger
+    tl.from("#card-a-features > div", { x: -20, opacity: 0, duration: 0.5, stagger: 0.2, ease: "power1.out" }, 0.5);
+    tl.from("#card-b-features > div", { x: 30, opacity: 0, duration: 0.6, stagger: 0.2, ease: "power2.out" }, 2.5);
+
+    // Hard kill at the end (duration is 9)
+    tl.set("#card-a", { opacity: 0 }, 9);
+    tl.set("#vs-badge", { opacity: 0 }, 9);
+    tl.set("#card-b", { opacity: 0 }, 9);
+
+    window.__timelines["cards"] = tl;
+  })();
+</script>
